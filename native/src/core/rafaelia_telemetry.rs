@@ -430,21 +430,25 @@ impl Drop for TelemetryCollector {
     }
 }
 
+use std::sync::OnceLock;
+
 /// Global telemetry collector instance (optional)
-static mut GLOBAL_TELEMETRY: Option<Arc<Mutex<TelemetryCollector>>> = None;
+/// Thread-safe initialization using OnceLock
+static GLOBAL_TELEMETRY: OnceLock<Arc<Mutex<TelemetryCollector>>> = OnceLock::new();
 
 /// Initialize global telemetry collector
+/// Returns Ok if initialized successfully, or if already initialized
 pub fn init_global_telemetry(interval_ms: u64) -> Result<(), io::Error> {
-    unsafe {
+    GLOBAL_TELEMETRY.get_or_try_init(|| {
         let collector = TelemetryCollector::new(interval_ms)?;
-        GLOBAL_TELEMETRY = Some(Arc::new(Mutex::new(collector)));
-        Ok(())
-    }
+        Ok(Arc::new(Mutex::new(collector)))
+    })?;
+    Ok(())
 }
 
 /// Get reference to global telemetry collector
 pub fn get_global_telemetry() -> Option<Arc<Mutex<TelemetryCollector>>> {
-    unsafe { GLOBAL_TELEMETRY.as_ref().cloned() }
+    GLOBAL_TELEMETRY.get().cloned()
 }
 
 /// Start global telemetry collection

@@ -325,21 +325,25 @@ pub struct AuditStatistics {
     pub session_id: String,
 }
 
+use std::sync::OnceLock;
+
 /// Global audit system instance (optional, for convenience)
-static mut GLOBAL_AUDIT: Option<Arc<Mutex<AuditSystem>>> = None;
+/// Thread-safe initialization using OnceLock
+static GLOBAL_AUDIT: OnceLock<Arc<Mutex<AuditSystem>>> = OnceLock::new();
 
 /// Initialize global audit system
+/// Returns Ok if initialized successfully, or if already initialized
 pub fn init_global_audit() -> Result<(), std::io::Error> {
-    unsafe {
+    GLOBAL_AUDIT.get_or_try_init(|| {
         let audit = AuditSystem::init()?;
-        GLOBAL_AUDIT = Some(Arc::new(Mutex::new(audit)));
-        Ok(())
-    }
+        Ok(Arc::new(Mutex::new(audit)))
+    })?;
+    Ok(())
 }
 
 /// Get reference to global audit system
 pub fn get_global_audit() -> Option<Arc<Mutex<AuditSystem>>> {
-    unsafe { GLOBAL_AUDIT.as_ref().cloned() }
+    GLOBAL_AUDIT.get().cloned()
 }
 
 /// Log operation to global audit system (convenience function)

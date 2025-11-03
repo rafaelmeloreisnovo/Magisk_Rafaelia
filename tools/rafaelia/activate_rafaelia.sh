@@ -8,7 +8,7 @@
 MAGISK_DIR="/data/adb/magisk"
 AUDIT_DIR="$MAGISK_DIR/rafaelia_audit"
 METRICS_DIR="$MAGISK_DIR/rafaelia_metrics"
-MANIFEST_FILE="$MAGISK_DIR/RAFAELIA_MANIFEST.json"
+MANIFEST_FILE="/data/adb/RAFAELIA_MANIFEST.json"
 TOOLS_DIR="/data/local/tmp/rafaelia"
 
 COLOR_RED='\033[0;31m'
