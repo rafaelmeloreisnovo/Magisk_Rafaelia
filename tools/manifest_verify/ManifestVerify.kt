@@ -9,7 +9,7 @@ import java.security.MessageDigest
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 import android.util.Base64
- 
+
 fun hexStringToByteArray(s: String): ByteArray {
     val len = s.length
     val data = ByteArray(len / 2)
@@ -99,7 +99,7 @@ fun main(args: Array<String>) {
             println("manifest_verify: HMAC mismatch: expected=$expectedHmac computed=$computedB64")
             kotlin.system.exitProcess(8)
         }
-    } else  {
+    } else {
         println("manifest_verify: device mode not implemented in this CLI - use app verifier via adb if needed.")
         kotlin.system.exitProcess(9)
     }
