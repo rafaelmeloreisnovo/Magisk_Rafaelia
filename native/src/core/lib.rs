@@ -34,6 +34,8 @@ mod magisk;
 mod module;
 mod mount;
 mod package;
+mod rafaelia_audit;
+mod rafaelia_telemetry;
 mod resetprop;
 mod selinux;
 mod socket;
