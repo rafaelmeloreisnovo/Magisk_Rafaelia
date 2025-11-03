@@ -261,24 +261,28 @@ object TypeValidator {
 
     /**
      * Validate all conditions in a list.
+     * @param enableLogging If true, logs validation failures (default: true)
      */
     fun validateAll(
         component: String,
-        vararg validations: Pair<String, Result<*>>
+        vararg validations: Pair<String, Result<*>>,
+        enableLogging: Boolean = true
     ): Result<Unit> {
         val failures = mutableListOf<String>()
         
         validations.forEach { (name, result) ->
             result.onFailure { error ->
                 failures.add("$name: ${error.message}")
-                JSONLogger.warn(
-                    component,
-                    "validation_failed",
-                    extra = mapOf(
-                        "field" to name,
-                        "error" to error.message
+                if (enableLogging) {
+                    JSONLogger.warn(
+                        component,
+                        "validation_failed",
+                        extra = mapOf(
+                            "field" to name,
+                            "error" to error.message
+                        )
                     )
-                )
+                }
             }
         }
         
