@@ -1,0 +1,698 @@
+{
+  "version": "1.0.0",
+  "signature": "RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ",
+  "generated": "2025-11-03",
+  "total_primitives": 56,
+  "total_contexts": 18,
+  "total_states": 1008,
+  "primitives": {
+    "boot": {
+      "category": "Boot Primitives",
+      "count": 8,
+      "items": {
+        "boot_patch": {
+          "id": 1,
+          "name": "boot_patch",
+          "description": "Patch boot image with Magisk",
+          "location": "native/src/boot/",
+          "criticality": "HIGH",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": ["SHA3-256", "Blake3"],
+          "security_impact": "Modifies boot image, requires verification"
+        },
+        "ramdisk_load": {
+          "id": 2,
+          "name": "ramdisk_load",
+          "description": "Load ramdisk into memory",
+          "location": "native/src/init/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Early boot, integrity critical"
+        },
+        "magiskinit_load": {
+          "id": 3,
+          "name": "magiskinit_load",
+          "description": "Initialize Magisk early boot",
+          "location": "native/src/init/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Bootstrap Magisk system"
+        },
+        "selinux_patch": {
+          "id": 4,
+          "name": "selinux_patch",
+          "description": "Patch SELinux policies",
+          "location": "native/src/sepolicy/",
+          "criticality": "HIGH",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Modifies security policies"
+        },
+        "dtb_patch": {
+          "id": 5,
+          "name": "dtb_patch",
+          "description": "Patch device tree blob",
+          "location": "native/src/boot/",
+          "criticality": "MEDIUM",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Hardware configuration changes"
+        },
+        "avb_patch": {
+          "id": 6,
+          "name": "avb_patch",
+          "description": "Handle Android Verified Boot",
+          "location": "native/src/boot/",
+          "criticality": "HIGH",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": ["SHA3-256", "Blake3"],
+          "security_impact": "Bypasses verified boot, critical security"
+        },
+        "compression_handle": {
+          "id": 7,
+          "name": "compression_handle",
+          "description": "Handle image compression/decompression",
+          "location": "native/src/boot/",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Image integrity during processing"
+        },
+        "boot_verify": {
+          "id": 8,
+          "name": "boot_verify",
+          "description": "Verify boot image integrity",
+          "location": "native/src/boot/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256", "Blake3"],
+          "security_impact": "Integrity validation critical"
+        }
+      }
+    },
+    "runtime": {
+      "category": "Runtime Primitives",
+      "count": 12,
+      "items": {
+        "daemon_start": {
+          "id": 9,
+          "name": "daemon_start",
+          "description": "Start Magisk daemon",
+          "location": "native/src/core/daemon.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Core service initialization"
+        },
+        "daemon_stop": {
+          "id": 10,
+          "name": "daemon_stop",
+          "description": "Stop Magisk daemon",
+          "location": "native/src/core/daemon.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Service shutdown"
+        },
+        "daemon_restart": {
+          "id": 11,
+          "name": "daemon_restart",
+          "description": "Restart Magisk daemon",
+          "location": "native/src/core/daemon.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Service restart for updates"
+        },
+        "socket_create": {
+          "id": 12,
+          "name": "socket_create",
+          "description": "Create IPC socket",
+          "location": "native/src/core/socket.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Communication channel setup"
+        },
+        "socket_listen": {
+          "id": 13,
+          "name": "socket_listen",
+          "description": "Listen for socket connections",
+          "location": "native/src/core/socket.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Accept client connections"
+        },
+        "ipc_handle": {
+          "id": 14,
+          "name": "ipc_handle",
+          "description": "Handle IPC messages",
+          "location": "native/src/core/daemon.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Process privileged commands"
+        },
+        "module_mount": {
+          "id": 15,
+          "name": "module_mount",
+          "description": "Mount module overlay",
+          "location": "native/src/core/module.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": true,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Modify system behavior"
+        },
+        "module_unmount": {
+          "id": 16,
+          "name": "module_unmount",
+          "description": "Unmount module overlay",
+          "location": "native/src/core/module.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Restore system state"
+        },
+        "su_exec": {
+          "id": 17,
+          "name": "su_exec",
+          "description": "Execute command with root",
+          "location": "native/src/core/su/su.cpp",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Root command execution"
+        },
+        "su_grant": {
+          "id": 18,
+          "name": "su_grant",
+          "description": "Grant root access to app",
+          "location": "native/src/core/su/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Authorize privileged access"
+        },
+        "su_deny": {
+          "id": 19,
+          "name": "su_deny",
+          "description": "Deny root access to app",
+          "location": "native/src/core/su/",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Block unauthorized access"
+        },
+        "hide_enable": {
+          "id": 20,
+          "name": "hide_enable",
+          "description": "Enable MagiskHide for app",
+          "location": "native/src/core/deny/",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Hide root from detection"
+        }
+      }
+    },
+    "module": {
+      "category": "Module Primitives",
+      "count": 10,
+      "items": {
+        "module_install": {
+          "id": 21,
+          "name": "module_install",
+          "description": "Install Magisk module",
+          "location": "native/src/core/module.rs",
+          "criticality": "HIGH",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": ["SHA3-256", "Blake3"],
+          "security_impact": "Add system modifications"
+        },
+        "module_remove": {
+          "id": 22,
+          "name": "module_remove",
+          "description": "Remove Magisk module",
+          "location": "native/src/core/module.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Remove modifications"
+        },
+        "module_enable": {
+          "id": 23,
+          "name": "module_enable",
+          "description": "Enable module",
+          "location": "native/src/core/module.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Activate modifications"
+        },
+        "module_disable": {
+          "id": 24,
+          "name": "module_disable",
+          "description": "Disable module",
+          "location": "native/src/core/module.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Deactivate modifications"
+        },
+        "module_update": {
+          "id": 25,
+          "name": "module_update",
+          "description": "Update module to new version",
+          "location": "native/src/core/module.rs",
+          "criticality": "HIGH",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": ["SHA3-256", "Blake3"],
+          "security_impact": "Update system modifications"
+        },
+        "module_verify": {
+          "id": 26,
+          "name": "module_verify",
+          "description": "Verify module integrity",
+          "location": "native/src/core/module.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256", "Blake3"],
+          "security_impact": "Validate module authenticity"
+        },
+        "module_load": {
+          "id": 27,
+          "name": "module_load",
+          "description": "Load module into memory",
+          "location": "native/src/core/module.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Prepare module execution"
+        },
+        "module_unload": {
+          "id": 28,
+          "name": "module_unload",
+          "description": "Unload module from memory",
+          "location": "native/src/core/module.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Clean up module resources"
+        },
+        "module_config": {
+          "id": 29,
+          "name": "module_config",
+          "description": "Configure module settings",
+          "location": "native/src/core/module.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Modify module behavior"
+        },
+        "module_rollback": {
+          "id": 30,
+          "name": "module_rollback",
+          "description": "Rollback module to previous version",
+          "location": "native/src/core/module.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Restore previous state"
+        }
+      }
+    },
+    "storage": {
+      "category": "Storage Primitives",
+      "count": 8,
+      "items": {
+        "db_open": {
+          "id": 31,
+          "name": "db_open",
+          "description": "Open Magisk database",
+          "location": "native/src/core/db.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Access configuration data"
+        },
+        "db_query": {
+          "id": 32,
+          "name": "db_query",
+          "description": "Query database",
+          "location": "native/src/core/db.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Read configuration"
+        },
+        "db_insert": {
+          "id": 33,
+          "name": "db_insert",
+          "description": "Insert data into database",
+          "location": "native/src/core/db.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Add configuration"
+        },
+        "db_update": {
+          "id": 34,
+          "name": "db_update",
+          "description": "Update database records",
+          "location": "native/src/core/db.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Modify configuration"
+        },
+        "db_delete": {
+          "id": 35,
+          "name": "db_delete",
+          "description": "Delete database records",
+          "location": "native/src/core/db.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Remove configuration"
+        },
+        "db_backup": {
+          "id": 36,
+          "name": "db_backup",
+          "description": "Backup database",
+          "location": "native/src/core/db.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Preserve configuration"
+        },
+        "tmpfs_cache_write": {
+          "id": 37,
+          "name": "tmpfs_cache_write",
+          "description": "Write to tmpfs cache",
+          "location": "native/src/core/mount.rs",
+          "criticality": "LOW",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Temporary storage"
+        },
+        "tmpfs_cache_read": {
+          "id": 38,
+          "name": "tmpfs_cache_read",
+          "description": "Read from tmpfs cache",
+          "location": "native/src/core/mount.rs",
+          "criticality": "LOW",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Read temporary data"
+        }
+      }
+    },
+    "security": {
+      "category": "Security Primitives",
+      "count": 10,
+      "items": {
+        "selinux_enforce": {
+          "id": 39,
+          "name": "selinux_enforce",
+          "description": "Enable SELinux enforcing mode",
+          "location": "native/src/core/selinux.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Enable security enforcement"
+        },
+        "selinux_permissive": {
+          "id": 40,
+          "name": "selinux_permissive",
+          "description": "Set SELinux to permissive mode",
+          "location": "native/src/core/selinux.rs",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Weaken security for debugging"
+        },
+        "seccomp_enable": {
+          "id": 41,
+          "name": "seccomp_enable",
+          "description": "Enable seccomp filter",
+          "location": "native/src/core/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Restrict syscalls"
+        },
+        "ebpf_attach": {
+          "id": 42,
+          "name": "ebpf_attach",
+          "description": "Attach eBPF probe",
+          "location": "native/src/core/",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Monitor system calls"
+        },
+        "hash_compute": {
+          "id": 43,
+          "name": "hash_compute",
+          "description": "Compute cryptographic hash",
+          "location": "native/src/core/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256", "Blake3"],
+          "security_impact": "Verify integrity"
+        },
+        "signature_verify": {
+          "id": 44,
+          "name": "signature_verify",
+          "description": "Verify digital signature",
+          "location": "native/src/core/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Validate authenticity"
+        },
+        "keystore_access": {
+          "id": 45,
+          "name": "keystore_access",
+          "description": "Access Android Keystore",
+          "location": "app/src/main/java/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Manage encryption keys"
+        },
+        "hmac_compute": {
+          "id": 46,
+          "name": "hmac_compute",
+          "description": "Compute HMAC",
+          "location": "native/src/core/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["HMAC-SHA256"],
+          "security_impact": "Authenticate data"
+        },
+        "audit_log": {
+          "id": 47,
+          "name": "audit_log",
+          "description": "Write audit log entry",
+          "location": "native/src/core/logging.rs",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Track operations"
+        },
+        "rollback_trigger": {
+          "id": 48,
+          "name": "rollback_trigger",
+          "description": "Trigger system rollback",
+          "location": "native/src/core/",
+          "criticality": "HIGH",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Restore previous state"
+        }
+      }
+    },
+    "network": {
+      "category": "Network Primitives",
+      "count": 4,
+      "items": {
+        "network_check": {
+          "id": 49,
+          "name": "network_check",
+          "description": "Check network connectivity",
+          "location": "app/src/main/java/",
+          "criticality": "LOW",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Verify network access"
+        },
+        "download_module": {
+          "id": 50,
+          "name": "download_module",
+          "description": "Download module from repository",
+          "location": "app/src/main/java/",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": ["SHA3-256"],
+          "security_impact": "Fetch external code"
+        },
+        "upload_log": {
+          "id": 51,
+          "name": "upload_log",
+          "description": "Upload logs for analysis",
+          "location": "app/src/main/java/",
+          "criticality": "LOW",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Share diagnostic data"
+        },
+        "sync_state": {
+          "id": 52,
+          "name": "sync_state",
+          "description": "Sync state to remote server",
+          "location": "app/src/main/java/",
+          "criticality": "LOW",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Backup configuration"
+        }
+      }
+    },
+    "system": {
+      "category": "System Primitives",
+      "count": 4,
+      "items": {
+        "mount_patch": {
+          "id": 53,
+          "name": "mount_patch",
+          "description": "Patch system mount points",
+          "location": "native/src/core/mount.rs",
+          "criticality": "HIGH",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Modify filesystem structure"
+        },
+        "property_set": {
+          "id": 54,
+          "name": "property_set",
+          "description": "Set system property",
+          "location": "native/src/core/resetprop/",
+          "criticality": "MEDIUM",
+          "requires_backup": true,
+          "rollback_capable": true,
+          "hash_algorithms": [],
+          "security_impact": "Modify system behavior"
+        },
+        "process_kill": {
+          "id": 55,
+          "name": "process_kill",
+          "description": "Kill system process",
+          "location": "native/src/core/",
+          "criticality": "MEDIUM",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Terminate processes"
+        },
+        "ecc_compute": {
+          "id": 56,
+          "name": "ecc_compute",
+          "description": "Compute error correction codes",
+          "location": "native/src/core/",
+          "criticality": "LOW",
+          "requires_backup": false,
+          "rollback_capable": false,
+          "hash_algorithms": [],
+          "security_impact": "Data integrity"
+        }
+      }
+    }
+  },
+  "contexts": {
+    "boot": "Boot-time operations",
+    "runtime": "Normal runtime operations",
+    "install": "Installation phase",
+    "update": "Update operations",
+    "debug": "Debug mode operations",
+    "kernel": "Kernel-level operations",
+    "cpu": "CPU-intensive operations",
+    "irq": "Interrupt handling",
+    "network": "Network operations",
+    "logs": "Logging operations",
+    "rollback": "Rollback operations",
+    "audit": "Audit operations",
+    "selinux": "SELinux operations",
+    "seccomp": "Seccomp operations",
+    "ebpf": "eBPF operations",
+    "tmpfs": "Tmpfs operations",
+    "cache": "Cache operations",
+    "db": "Database operations"
+  },
+  "security_levels": {
+    "HIGH": "Critical operations requiring full audit and verification",
+    "MEDIUM": "Important operations requiring monitoring",
+    "LOW": "Standard operations with basic logging"
+  },
+  "hash_algorithms": {
+    "SHA3-256": "SHA-3 256-bit hash for integrity verification",
+    "Blake3": "Blake3 hash for fast verification",
+    "HMAC-SHA256": "HMAC with SHA-256 for authentication"
+  }
+}
