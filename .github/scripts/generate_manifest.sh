@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# generate_manifest.sh
+# generate_manifest.sh 
 # Produz RAFAELIA_MANIFEST.json para o build atual com hashes e metadata.
 # Usage: .github/scripts/generate_manifest.sh <artifact-path> <output-manifest-path>
 set -euo pipefail
