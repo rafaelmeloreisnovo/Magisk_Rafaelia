@@ -18,29 +18,6 @@ Some highlight features:
 
 [Github](https://github.com/topjohnwu/Magisk/releases) is the only source where you can get official Magisk information and downloads.
 
-## RAFAELIA Framework
-
-**Magisk_Rafaelia** includes the comprehensive **RAFAELIA Framework** for advanced auditing, monitoring, and security:
-
-- **1008 State Matrix**: Complete operational state coverage (56 primitives × 18 contexts)
-- **Full Audit System**: SHA3/Blake3 verified logging with rollback support
-- **Real-time Telemetry**: CPU, memory, I/O monitoring with anomaly detection
-- **Security Hardening**: SELinux, seccomp, eBPF integration
-- **Ethical Computing**: Transparency, accountability, and safety guarantees
-
-### RAFAELIA Documentation
-
-- [Framework Overview](docs/RAFAELIA_FRAMEWORK.md) - Complete specification
-- [Summary](docs/RAFAELIA_SUMMARY.md) - Quick overview and features
-- [Implementation Guide](docs/RAFAELIA_IMPLEMENTATION_GUIDE.md) - Step-by-step guide
-- [State Matrix](docs/RAFAELIA_STATE_MATRIX.csv) - All 1008 states
-- [Primitives](docs/RAFAELIA_PRIMITIVES.json) - Detailed primitive specs
-- [Audit System](docs/RAFAELIA_AUDIT_SYSTEM.md) - Audit and rollback
-- [Telemetry](docs/RAFAELIA_TELEMETRY.md) - Monitoring and observability
-- [Operational Checklist](docs/RAFAELIA_CHECKLIST.md) - Daily/weekly/monthly tasks
-
-**Philosophy**: VAZIO → VERBO → CHEIO → RETRO (Empty → Action → Full → Feedback)
-
 ## Useful Links
 
 - [Installation Instruction](https://topjohnwu.github.io/Magisk/install.html)
