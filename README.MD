@@ -23,13 +23,27 @@ Some highlight features:
 **Magisk_Rafaelia** includes the comprehensive **RAFAELIA Framework** for advanced auditing, monitoring, and security:
 
 - **1008 State Matrix**: Complete operational state coverage (56 primitives × 18 contexts)
-- **Full Audit System**: SHA3/Blake3 verified logging with rollback support
-- **Real-time Telemetry**: CPU, memory, I/O monitoring with anomaly detection
+- **Full Audit System**: SHA3/Blake3 verified logging with rollback support ✓ **IMPLEMENTED**
+- **Real-time Telemetry**: CPU, memory, I/O monitoring with anomaly detection ✓ **IMPLEMENTED**
 - **Security Hardening**: SELinux, seccomp, eBPF integration
 - **Ethical Computing**: Transparency, accountability, and safety guarantees
 
+### 🚀 Quick Start
+
+**Activate RAFAELIA** (requires root):
+```bash
+adb push tools/rafaelia /data/local/tmp/
+adb shell
+su
+cd /data/local/tmp/rafaelia
+./activate_rafaelia.sh activate
+```
+
+See [Activation Guide](docs/ACTIVATION_GUIDE.md) for detailed instructions.
+
 ### RAFAELIA Documentation
 
+- **[Activation Guide](docs/ACTIVATION_GUIDE.md)** - ✓ **Start here!** Enable RAFAELIA features
 - [Framework Overview](docs/RAFAELIA_FRAMEWORK.md) - Complete specification
 - [Summary](docs/RAFAELIA_SUMMARY.md) - Quick overview and features
 - [Implementation Guide](docs/RAFAELIA_IMPLEMENTATION_GUIDE.md) - Step-by-step guide
@@ -38,6 +52,21 @@ Some highlight features:
 - [Audit System](docs/RAFAELIA_AUDIT_SYSTEM.md) - Audit and rollback
 - [Telemetry](docs/RAFAELIA_TELEMETRY.md) - Monitoring and observability
 - [Operational Checklist](docs/RAFAELIA_CHECKLIST.md) - Daily/weekly/monthly tasks
+
+### Implementation Status
+
+✅ **Core Modules** (Rust)
+- Audit system: `native/src/core/rafaelia_audit.rs`
+- Telemetry system: `native/src/core/rafaelia_telemetry.rs`
+
+✅ **Tools** (Python & Shell)
+- State validator, metrics collector, integrity checker
+- Audit analyzer, activation script
+
+🔄 **In Progress**
+- FFI bindings for C++ integration
+- Daemon integration
+- Comprehensive testing
 
 **Philosophy**: VAZIO → VERBO → CHEIO → RETRO (Empty → Action → Full → Feedback)
 
