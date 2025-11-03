@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# rafaelia_rollback.sh 
+# rafaelia_rollback.sh
 # Rollback helper: verify manifest and flash backup via fastboot.
 # Usage: .github/scripts/rafaelia_rollback.sh <manifest.json> [--force]
 set -euo pipefail
