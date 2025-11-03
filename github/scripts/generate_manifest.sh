@@ -32,7 +32,6 @@ fi
 PACKAGE="unknown"
 VERSION_NAME="unknown"
 if command -v aapt >/dev/null 2>&1; then
-  # Parse package and version name from aapt
   PKG_INFO=$(aapt dump badging "$APK" | awk -F"'" '/package: name=/{print $2","$6}') || true
   PACKAGE=$(echo "$PKG_INFO" | cut -d',' -f1 || true)
   VERSION_NAME=$(echo "$PKG_INFO" | cut -d',' -f2 || true)
