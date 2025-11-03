@@ -104,7 +104,7 @@ object TestWrapper {
                 "totalAttempts" to maxAttempts,
                 "errors" to errors.map { it.toMap() },
                 "errorCategories" to errors.groupingBy { it.category }.eachCount(),
-                "errorTypes" to errors.map { it.throwable.javaClass.simpleName }.distinct()
+                "errorTypes" to errors.distinctBy { it.throwable.javaClass.simpleName }.map { it.throwable.javaClass.simpleName }
             )
             
             JSONLogger.fatal(

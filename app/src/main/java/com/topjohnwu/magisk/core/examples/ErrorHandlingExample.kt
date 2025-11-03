@@ -249,23 +249,26 @@ object ErrorHandlingExample {
      * Example 7: Error statistics monitoring
      */
     fun monitoringExample() {
-        // Get error statistics
+        // Get error statistics (type-safe)
         val stats = ErrorHandlerUtil.getErrorStats()
         
         JSONLogger.info(
             "Monitoring",
             "error_statistics",
-            extra = stats
+            extra = mapOf(
+                "totalErrors" to stats.totalErrors,
+                "byCategory" to stats.byCategory,
+                "bySeverity" to stats.bySeverity,
+                "byComponent" to stats.byComponent
+            )
         )
         
-        // Analyze patterns
-        @Suppress("UNCHECKED_CAST")
-        val byCategory = stats["byCategory"] as? Map<String, Int> ?: emptyMap()
-        @Suppress("UNCHECKED_CAST")
-        val bySeverity = stats["bySeverity"] as? Map<String, Int> ?: emptyMap()
+        // Analyze patterns (type-safe)
+        val byCategory = stats.byCategory
+        val bySeverity = stats.bySeverity
         
         // Log alerts for high severity errors
-        val criticalCount = bySeverity["CRITICAL"] ?: 0
+        val criticalCount = bySeverity[com.topjohnwu.magisk.core.error.ErrorSeverity.CRITICAL] ?: 0
         if (criticalCount > 0) {
             JSONLogger.fatal(
                 "Monitoring",

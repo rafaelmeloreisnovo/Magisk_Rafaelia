@@ -198,27 +198,41 @@ object ErrorHandlerUtil {
      * Record error for analytics and tracking.
      */
     private fun recordError(context: ErrorContext) {
-        errorHistory.offer(context)
+        errorHistory.add(context)
         while (errorHistory.size > MAX_HISTORY_SIZE) {
             errorHistory.poll()
         }
     }
 
     /**
-     * Get error statistics for monitoring.
+     * Get error statistics for monitoring (type-safe).
      */
-    fun getErrorStats(): Map<String, Any> {
+    fun getErrorStats(): ErrorStatistics {
         val errors = errorHistory.toList()
         val categoryCounts = errors.groupingBy { it.category }.eachCount()
         val severityCounts = errors.groupingBy { it.severity }.eachCount()
         val componentCounts = errors.groupingBy { it.component }.eachCount()
         
+        return ErrorStatistics(
+            totalErrors = errors.size,
+            byCategory = categoryCounts,
+            bySeverity = severityCounts,
+            byComponent = componentCounts,
+            recentErrors = errors.takeLast(10).map { it.toMap() }
+        )
+    }
+    
+    /**
+     * Get error statistics as map (for backward compatibility).
+     */
+    fun getErrorStatsMap(): Map<String, Any> {
+        val stats = getErrorStats()
         return mapOf(
-            "totalErrors" to errors.size,
-            "byCategory" to categoryCounts,
-            "bySeverity" to severityCounts,
-            "byComponent" to componentCounts,
-            "recentErrors" to errors.takeLast(10).map { it.toMap() }
+            "totalErrors" to stats.totalErrors,
+            "byCategory" to stats.byCategory,
+            "bySeverity" to stats.bySeverity,
+            "byComponent" to stats.byComponent,
+            "recentErrors" to stats.recentErrors
         )
     }
 

@@ -21,7 +21,10 @@ enum class ErrorCategory {
                 is java.io.IOException -> IO
                 is java.net.UnknownHostException, 
                 is java.net.SocketTimeoutException,
-                is java.net.ConnectException -> NETWORK
+                is java.net.ConnectException,
+                is java.net.SocketException,
+                is java.net.NoRouteToHostException,
+                is java.net.ProtocolException -> NETWORK
                 is SecurityException -> SECURITY
                 is IllegalArgumentException,
                 is IllegalStateException -> VALIDATION

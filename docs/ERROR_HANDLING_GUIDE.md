@@ -114,10 +114,13 @@ val result = ErrorHandlerUtil.validate(
 )
 ```
 
-**Error Statistics** - Monitor error patterns:
+**Error Statistics** - Monitor error patterns (type-safe):
 ```kotlin
 val stats = ErrorHandlerUtil.getErrorStats()
-// Returns: totalErrors, byCategory, bySeverity, byComponent, recentErrors
+// Returns: ErrorStatistics with totalErrors, byCategory, bySeverity, byComponent, recentErrors
+
+// Or use map format for compatibility
+val statsMap = ErrorHandlerUtil.getErrorStatsMap()
 ```
 
 ### 4. TypeValidator
@@ -292,10 +295,12 @@ val context = ErrorContext(
 ```
 
 ### 6. Monitor Error Patterns
-Regularly review error statistics:
+Regularly review error statistics (type-safe):
 ```kotlin
 val stats = ErrorHandlerUtil.getErrorStats()
 // Analyze patterns to identify systemic issues
+val criticalErrors = stats.bySeverity[ErrorSeverity.CRITICAL] ?: 0
+val networkErrors = stats.byCategory[ErrorCategory.NETWORK] ?: 0
 ```
 
 ### 7. Use ErrorCategory for Routing
