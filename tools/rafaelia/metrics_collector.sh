@@ -165,6 +165,7 @@ main() {
     echo "Metrics dir: $METRICS_DIR"
     echo ""
     
+    iteration=0
     while true; do
         metrics_file="$METRICS_DIR/metrics_$(date +%Y%m%d).jsonl"
         
@@ -172,7 +173,8 @@ main() {
         collect_all_metrics >> "$metrics_file"
         
         # Rotate if needed (every 10 iterations)
-        if [ $(($(date +%s) % 50)) -eq 0 ]; then
+        iteration=$((iteration + 1))
+        if [ $((iteration % 10)) -eq 0 ]; then
             rotate_logs
         fi
         
