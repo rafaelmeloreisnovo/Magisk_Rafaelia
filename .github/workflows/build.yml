@@ -28,12 +28,14 @@ jobs:
         include:
           - runner: ubuntu-24.04
             purpose: "default-ci"
+            skip-condition: false
           - runner: macos-14
             purpose: "manual-macos"
-    # Run macOS variant only for manual dispatch to avoid automatic billing
+            skip-condition: true
+    # Skip macOS builds for non-manual events
     if: >-
       ${{
-        !(matrix.runner == 'macos-14' &&
+        !(matrix.skip-condition == true &&
           github.event_name != 'workflow_dispatch')
       }}
     steps:

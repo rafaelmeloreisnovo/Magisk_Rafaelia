@@ -7,7 +7,6 @@ on:
     branches: [main, master]
 
 env:
-  ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
   EMULATOR_NAME: test
 
 jobs:
@@ -67,6 +66,8 @@ jobs:
     name: Android build & unit tests
     runs-on: ubuntu-latest
     needs: native-build
+    env:
+      ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
     steps:
       - uses: actions/checkout@v4
 
@@ -114,6 +115,8 @@ jobs:
     name: Instrumented tests (emulator) and snapshot
     runs-on: ubuntu-latest
     needs: android-build
+    env:
+      ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
     steps:
       - uses: actions/checkout@v4
 
@@ -199,11 +202,8 @@ jobs:
           name: emulator-snapshot
           path: rafaelia-instrumented-snapshot.zip
 
-      - name: Conditional AVD delete
+      - name: Cleanup AVD
+        if: always()
         run: |
-          if [ "${{ needs.android-instrumented.result }}" = "success" ]; then
-            ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager \
-              delete avd -n ${EMULATOR_NAME}
-          else
-            echo "Instrumented failed; keeping AVD for debug"
-          fi
+          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager \
+            delete avd -n ${EMULATOR_NAME} || true
