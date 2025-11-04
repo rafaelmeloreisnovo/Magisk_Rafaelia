@@ -18,7 +18,7 @@ permissions:
 
 jobs:
   # Build job: default runner is ubuntu to avoid macOS billable minutes.
-  # macOS build is available only for manual dispatch (workflow_dispatch) to avoid automatic costs.
+  # macOS build is available only for manual dispatch to avoid costs.
   build:
     name: Build Magisk artifacts
     runs-on: ${{ matrix.runner }}
@@ -30,8 +30,12 @@ jobs:
             purpose: "default-ci"
           - runner: macos-14
             purpose: "manual-macos"
-    # Run macOS variant only for manual dispatch to avoid automatic billing on pushes/PRs
-    if: ${{ !(matrix.runner == 'macos-14' && github.event_name != 'workflow_dispatch') }}
+    # Run macOS variant only for manual dispatch to avoid automatic billing
+    if: >-
+      ${{
+        !(matrix.runner == 'macos-14' &&
+          github.event_name != 'workflow_dispatch')
+      }}
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -74,17 +78,23 @@ jobs:
       - name: Generate RAFAELIA manifest for release APK
         run: |
           if [ -f out/app-release.apk ]; then
-            .github/scripts/generate_manifest.sh out/app-release.apk out/RAFAELIA_MANIFEST_release.json
+            .github/scripts/generate_manifest.sh \
+              out/app-release.apk out/RAFAELIA_MANIFEST_release.json
           fi
 
       - name: Generate RAFAELIA manifest for debug APK
         run: |
           if [ -f out/app-debug.apk ]; then
-            .github/scripts/generate_manifest.sh out/app-debug.apk out/RAFAELIA_MANIFEST_debug.json
+            .github/scripts/generate_manifest.sh \
+              out/app-debug.apk out/RAFAELIA_MANIFEST_debug.json
           fi
 
-      - name: Upload build artifact (conditional, avoid huge uploads for default CI)
-        if: ${{ matrix.runner != 'ubuntu-24.04' || github.event_name == 'workflow_dispatch' }}
+      - name: Upload build artifact (conditional)
+        if: >-
+          ${{
+            matrix.runner != 'ubuntu-24.04' ||
+            github.event_name == 'workflow_dispatch'
+          }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}
@@ -92,8 +102,12 @@ jobs:
           compression-level: 9
           retention-days: 7
 
-      - name: Upload mapping and native debug symbols (kept small)
-        if: ${{ matrix.runner != 'ubuntu-24.04' || github.event_name == 'workflow_dispatch' }}
+      - name: Upload mapping and native debug symbols
+        if: >-
+          ${{
+            matrix.runner != 'ubuntu-24.04' ||
+            github.event_name == 'workflow_dispatch'
+          }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}-symbols
@@ -101,7 +115,7 @@ jobs:
           compression-level: 9
           retention-days: 7
 
-  # Test build across OS matrix — use stable runner labels to avoid unavailable custom labels.
+  # Test build across OS matrix — use stable runner labels
   test-build:
     name: Test building on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
@@ -141,7 +155,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [23,24,25,26,27,28,29,30,31,32,33,34,35,36,"CANARY"]
+        version:
+          - 23
+          - 24
+          - 25
+          - 26
+          - 27
+          - 28
+          - 29
+          - 30
+          - 31
+          - 32
+          - 33
+          - 34
+          - 35
+          - 36
+          - "CANARY"
         type: [""]
         include:
           - version: "CANARY"
@@ -158,7 +187,9 @@ jobs:
 
       - name: Enable KVM group perms
         run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", \
+            OPTIONS+="static_node=kvm"' | \
+            sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
@@ -186,7 +217,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [23,24,25,26,27,28,29,30]
+        version: [23, 24, 25, 26, 27, 28, 29, 30]
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -199,7 +230,9 @@ jobs:
 
       - name: Enable KVM group perms
         run: |
-          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+          echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", \
+            OPTIONS+="static_node=kvm"' | \
+            sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
 
@@ -246,7 +279,8 @@ jobs:
       - name: Setup Cuttlefish environment
         run: |
           scripts/cuttlefish.sh setup
-          scripts/cuttlefish.sh download ${{ matrix.branch }} ${{ matrix.device }}
+          scripts/cuttlefish.sh download \
+            ${{ matrix.branch }} ${{ matrix.device }}
 
       - name: Run Cuttlefish test
         timeout-minutes: 15

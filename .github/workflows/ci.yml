@@ -2,9 +2,9 @@ name: RAFAELIA CI - native & android (full pipeline)
 
 on:
   push:
-    branches: [ main, master, 'dev-*' ]
+    branches: [main, master, 'dev-*']
   pull_request:
-    branches: [ main, master ]
+    branches: [main, master]
 
 env:
   ANDROID_SDK_ROOT: ${{ runner.temp }}/android-sdk
@@ -20,7 +20,9 @@ jobs:
       - name: Setup deps
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake pkg-config zlib1g-dev liblzma-dev liblz4-dev libssl-dev ca-certificates cpio gzip zip jq
+          sudo apt-get install -y build-essential cmake pkg-config \
+            zlib1g-dev liblzma-dev liblz4-dev libssl-dev ca-certificates \
+            cpio gzip zip jq
 
       - name: Configure build dir
         working-directory: native
@@ -39,9 +41,20 @@ jobs:
         run: |
           if [ -x ./test_sha ]; then
             mkdir -p ../tests
-            if [ ! -f ../tests/fixture_boot.img ]; then dd if=/dev/urandom of=../tests/fixture_boot.img bs=1024 count=32; fi
-            if [ ! -f ../tests/fixture_ramdisk.cpio.gz ]; then tmp=$(mktemp -d); echo "hello" > $tmp/f1.txt; echo "bye" > $tmp/f2.txt; (cd $tmp && find . -print0 | cpio --null -ov --format=newc > ../ramdisk.cpio); gzip -c $tmp/../ramdisk.cpio > ../tests/fixture_ramdisk.cpio.gz; rm -rf $tmp; fi
-            ./test_sha ../tests/fixture_boot.img ../tests/fixture_ramdisk.cpio.gz
+            if [ ! -f ../tests/fixture_boot.img ]; then
+              dd if=/dev/urandom of=../tests/fixture_boot.img bs=1024 count=32
+            fi
+            if [ ! -f ../tests/fixture_ramdisk.cpio.gz ]; then
+              tmp=$(mktemp -d)
+              echo "hello" > $tmp/f1.txt
+              echo "bye" > $tmp/f2.txt
+              (cd $tmp && find . -print0 | cpio --null -ov \
+                --format=newc > ../ramdisk.cpio)
+              gzip -c $tmp/../ramdisk.cpio > ../tests/fixture_ramdisk.cpio.gz
+              rm -rf $tmp
+            fi
+            ./test_sha ../tests/fixture_boot.img \
+              ../tests/fixture_ramdisk.cpio.gz
           fi
 
       - name: Upload native artifacts
@@ -76,13 +89,18 @@ jobs:
             system-images;android-33;google_apis;x86_64
 
       - name: Accept licenses
-        run: yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager --licenses
+        run: |
+          yes | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/sdkmanager \
+            --licenses
 
       - name: Build APK
         run: ./gradlew assembleDebug --stacktrace
 
       - name: Generate manifest (artifact)
-        run: .github/scripts/generate_manifest.sh app/build/outputs/apk/debug/app-debug.apk RAFAELIA_MANIFEST.json
+        run: |
+          .github/scripts/generate_manifest.sh \
+            app/build/outputs/apk/debug/app-debug.apk \
+            RAFAELIA_MANIFEST.json
 
       - name: Upload APK & manifest
         uses: actions/upload-artifact@v4
@@ -110,11 +128,16 @@ jobs:
 
       - name: Create AVD
         run: |
-          echo "no" | ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager create avd --force --name ${EMULATOR_NAME} --package "system-images;android-33;google_apis;x86_64" --device "pixel"
+          echo "no" | \
+            ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager \
+            create avd --force --name ${EMULATOR_NAME} \
+            --package "system-images;android-33;google_apis;x86_64" \
+            --device "pixel"
 
       - name: Start emulator
         run: |
-          ${ANDROID_SDK_ROOT}/emulator/emulator -avd ${EMULATOR_NAME} -no-window -no-audio -gpu swiftshader_indirect -no-boot-anim & 
+          ${ANDROID_SDK_ROOT}/emulator/emulator -avd ${EMULATOR_NAME} \
+            -no-window -no-audio -gpu swiftshader_indirect -no-boot-anim &
           adb wait-for-device
 
       - name: Wait for boot
@@ -122,32 +145,53 @@ jobs:
           TIMEOUT=600
           SECONDS=0
           while [ $SECONDS -lt $TIMEOUT ]; do
-            BOOT=$(adb shell getprop sys.boot_completed 2>/dev/null | tr -d '\r\n')
+            BOOT=$(adb shell getprop sys.boot_completed 2>/dev/null | \
+              tr -d '\r\n')
             if [ "$BOOT" = "1" ]; then echo "booted"; break; fi
             sleep 5
           done
-          if [ "$BOOT" != "1" ]; then echo "Emulator failed to boot"; exit 1; fi
+          if [ "$BOOT" != "1" ]; then
+            echo "Emulator failed to boot"
+            exit 1
+          fi
 
       - name: Start background logcat
         run: |
           mkdir -p $GITHUB_WORKSPACE/artifacts
-          adb logcat -v time > $GITHUB_WORKSPACE/artifacts/emulator-logcat.txt 2>&1 & echo $! > $GITHUB_WORKSPACE/logcat.pid || true
+          adb logcat -v time > \
+            $GITHUB_WORKSPACE/artifacts/emulator-logcat.txt 2>&1 & \
+            echo $! > $GITHUB_WORKSPACE/logcat.pid || true
 
       - name: Run connectedAndroidTest (continue on error)
         run: |
           set -o pipefail
-          ./gradlew connectedAndroidTest --no-daemon --stacktrace | tee $GITHUB_WORKSPACE/artifacts/instrumentation-output.txt
+          ./gradlew connectedAndroidTest --no-daemon --stacktrace | \
+            tee $GITHUB_WORKSPACE/artifacts/instrumentation-output.txt
         continue-on-error: true
 
       - name: Collect artifacts & snapshot
         run: |
-          if [ -f $GITHUB_WORKSPACE/logcat.pid ]; then kill $(cat $GITHUB_WORKSPACE/logcat.pid) || true; fi
-          adb logcat -d > $GITHUB_WORKSPACE/artifacts/emulator-logcat-final.txt || true
-          if adb shell ls /data/tombstones 2>/dev/null | grep -q .; then mkdir -p $GITHUB_WORKSPACE/artifacts/tombstones && adb pull /data/tombstones $GITHUB_WORKSPACE/artifacts/tombstones || true; fi
-          if adb shell ls /data/anr 2>/dev/null | grep -q .; then mkdir -p $GITHUB_WORKSPACE/artifacts/anr && adb pull /data/anr $GITHUB_WORKSPACE/artifacts/anr || true; fi
-          adb shell dumpsys activity activities > $GITHUB_WORKSPACE/artifacts/dumpsys-activities.txt || true
-          if [ -f RAFAELIA_MANIFEST.json ]; then cp RAFAELIA_MANIFEST.json $GITHUB_WORKSPACE/artifacts/ || true; fi
-          zip -r $GITHUB_WORKSPACE/rafaelia-instrumented-snapshot.zip $GITHUB_WORKSPACE/artifacts || true
+          if [ -f $GITHUB_WORKSPACE/logcat.pid ]; then
+            kill $(cat $GITHUB_WORKSPACE/logcat.pid) || true
+          fi
+          adb logcat -d > \
+            $GITHUB_WORKSPACE/artifacts/emulator-logcat-final.txt || true
+          if adb shell ls /data/tombstones 2>/dev/null | grep -q .; then
+            mkdir -p $GITHUB_WORKSPACE/artifacts/tombstones && \
+              adb pull /data/tombstones \
+              $GITHUB_WORKSPACE/artifacts/tombstones || true
+          fi
+          if adb shell ls /data/anr 2>/dev/null | grep -q .; then
+            mkdir -p $GITHUB_WORKSPACE/artifacts/anr && \
+              adb pull /data/anr $GITHUB_WORKSPACE/artifacts/anr || true
+          fi
+          adb shell dumpsys activity activities > \
+            $GITHUB_WORKSPACE/artifacts/dumpsys-activities.txt || true
+          if [ -f RAFAELIA_MANIFEST.json ]; then
+            cp RAFAELIA_MANIFEST.json $GITHUB_WORKSPACE/artifacts/ || true
+          fi
+          zip -r $GITHUB_WORKSPACE/rafaelia-instrumented-snapshot.zip \
+            $GITHUB_WORKSPACE/artifacts || true
 
       - name: Upload snapshot
         uses: actions/upload-artifact@v4
@@ -158,7 +202,8 @@ jobs:
       - name: Conditional AVD delete
         run: |
           if [ "${{ needs.android-instrumented.result }}" = "success" ]; then
-            ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager delete avd -n ${EMULATOR_NAME}
+            ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager \
+              delete avd -n ${EMULATOR_NAME}
           else
             echo "Instrumented failed; keeping AVD for debug"
           fi
