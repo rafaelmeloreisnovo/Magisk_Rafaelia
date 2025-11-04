@@ -31,8 +31,6 @@ jobs:
           path: |
             native_artifacts
             native/build
-            native/build/**/*.debug
-            native/build/**/*.sym
 
       - name: Download emulator snapshot (if any)
         uses: actions/download-artifact@v4

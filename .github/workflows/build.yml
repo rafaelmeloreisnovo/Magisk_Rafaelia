@@ -35,8 +35,8 @@ jobs:
     # Skip macOS builds for non-manual events
     if: >-
       ${{
-        !(matrix.skip-condition == true &&
-          github.event_name != 'workflow_dispatch')
+        matrix.skip-condition != true ||
+        github.event_name == 'workflow_dispatch'
       }}
     steps:
       - name: Check out

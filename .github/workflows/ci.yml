@@ -205,5 +205,8 @@ jobs:
       - name: Cleanup AVD
         if: always()
         run: |
-          ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager \
-            delete avd -n ${EMULATOR_NAME} || true
+          if ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager \
+            list avd | grep -q "Name: ${EMULATOR_NAME}"; then
+            ${ANDROID_SDK_ROOT}/cmdline-tools/latest/bin/avdmanager \
+              delete avd -n ${EMULATOR_NAME}
+          fi
