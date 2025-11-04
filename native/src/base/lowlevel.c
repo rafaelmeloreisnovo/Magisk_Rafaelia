@@ -55,7 +55,7 @@ void* lowlevel_mmap(void* addr, size_t length, int prot, int flags, int fd, off_
 int lowlevel_munmap(void* addr, size_t length) {
     long result = syscall(__NR_munmap, addr, length);
     if (result < 0) {
-        errno = -result;
+        errno = -(int)result;
         return -1;
     }
     return 0;
@@ -65,7 +65,7 @@ int lowlevel_munmap(void* addr, size_t length) {
 int lowlevel_mprotect(void* addr, size_t len, int prot) {
     long result = syscall(__NR_mprotect, addr, len, prot);
     if (result < 0) {
-        errno = -result;
+        errno = -(int)result;
         return -1;
     }
     return 0;
