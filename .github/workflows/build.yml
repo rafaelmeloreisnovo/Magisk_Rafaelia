@@ -14,10 +14,12 @@ on:
 
 jobs:
   build:
-    name: Build Magisk artifacts
-    runs-on: macos-15
+    name: Build Magisk artifacts on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
+      matrix:
+        os: [macos-15, ubuntu-24.04]
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -52,6 +54,7 @@ jobs:
 
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
+        if: matrix.os == 'macos-15'
         with:
           name: ${{ github.sha }}
           path: out
@@ -59,9 +62,12 @@ jobs:
 
       - name: Upload mapping and native debug symbols
         uses: actions/upload-artifact@v4
+        if: hashFiles('app/apk/build/outputs/**') != '' || hashFiles('app/build/outputs/**') != ''
         with:
-          name: ${{ github.sha }}-symbols
-          path: app/apk/build/outputs
+          name: ${{ github.sha }}-symbols-${{ matrix.os }}
+          path: |
+            app/apk/build/outputs
+            app/build/outputs
           compression-level: 9
 
   test-build:
@@ -117,7 +123,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Run AVD test
-        timeout-minutes: 15
+        timeout-minutes: 30
         env:
           AVD_TEST_LOG: 1
         run: scripts/avd.sh test ${{ matrix.version }} ${{ matrix.type }}
@@ -158,7 +164,7 @@ jobs:
           sudo udevadm trigger --name-match=kvm
 
       - name: Run AVD test
-        timeout-minutes: 15
+        timeout-minutes: 30
         env:
           FORCE_32_BIT: 1
           AVD_TEST_LOG: 1
@@ -203,7 +209,7 @@ jobs:
           scripts/cuttlefish.sh download ${{ matrix.branch }} ${{ matrix.device }}
 
       - name: Run Cuttlefish test
-        timeout-minutes: 15
+        timeout-minutes: 30
         run: sudo -E -u $USER scripts/cuttlefish.sh test
 
       - name: Upload logs on error
