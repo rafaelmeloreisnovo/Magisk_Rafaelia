@@ -12,17 +12,45 @@ on:
     branches: [master]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
+  # Build job: default runner is ubuntu to avoid macOS billable minutes.
+  # macOS build is available only for manual dispatch (workflow_dispatch) to avoid automatic costs.
   build:
     name: Build Magisk artifacts
-    runs-on: macos-15
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
+      matrix:
+        include:
+          - runner: ubuntu-24.04
+            purpose: "default-ci"
+          - runner: macos-14
+            purpose: "manual-macos"
+    # Run macOS variant only for manual dispatch to avoid automatic billing on pushes/PRs
+    if: ${{ !(matrix.runner == 'macos-14' && github.event_name != 'workflow_dispatch') }}
     steps:
       - name: Check out
         uses: actions/checkout@v4
         with:
-          submodules: "recursive"
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Debug info (runner, user, ls)
+        run: |
+          uname -a || true
+          id || true
+          whoami || true
+          ls -la || true
+
+      - name: Make scripts executable
+        run: |
+          chmod +x build.py || true
+          chmod +x .github/scripts/*.sh || true
 
       - name: Setup environment
         uses: ./.github/actions/setup
@@ -35,8 +63,13 @@ jobs:
       - name: Build debug
         run: ./build.py -v all
 
-      - name: Stop gradle daemon
+      - name: Stop gradle daemon (Unix)
+        if: runner.os != 'Windows'
         run: ./app/gradlew --stop
+
+      - name: Stop gradle daemon (Windows)
+        if: runner.os == 'Windows'
+        run: .\\app\\gradlew.bat --stop
 
       - name: Generate RAFAELIA manifest for release APK
         run: |
@@ -50,42 +83,56 @@ jobs:
             .github/scripts/generate_manifest.sh out/app-debug.apk out/RAFAELIA_MANIFEST_debug.json
           fi
 
-      - name: Upload build artifact
+      - name: Upload build artifact (conditional, avoid huge uploads for default CI)
+        if: ${{ matrix.runner != 'ubuntu-24.04' || github.event_name == 'workflow_dispatch' }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}
           path: out
           compression-level: 9
+          retention-days: 7
 
-      - name: Upload mapping and native debug symbols
+      - name: Upload mapping and native debug symbols (kept small)
+        if: ${{ matrix.runner != 'ubuntu-24.04' || github.event_name == 'workflow_dispatch' }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}-symbols
           path: app/apk/build/outputs
           compression-level: 9
+          retention-days: 7
 
+  # Test build across OS matrix — use stable runner labels to avoid unavailable custom labels.
   test-build:
     name: Test building on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-2025, ubuntu-24.04]
+        os: [windows-latest, ubuntu-24.04]
     steps:
       - name: Check out
         uses: actions/checkout@v4
         with:
-          submodules: "recursive"
+          submodules: recursive
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
+
+      - name: Make scripts executable (test-build)
+        run: |
+          chmod +x build.py || true
+          chmod +x .github/scripts/*.sh || true
 
       - name: Setup environment
         uses: ./.github/actions/setup
 
       - name: Test build
-        run: python build.py -v -c .github/ci.prop all
+        run: python3 build.py -v -c .github/ci.prop all
 
       - name: Stop gradle daemon
+        if: runner.os != 'Windows'
         run: ./app/gradlew --stop
 
+  # AVD tests: expensive. Run only on non-push events (PRs or manual) as before.
   avd-test:
     name: Test API ${{ matrix.version }} (x86_64)
     runs-on: ubuntu-24.04
@@ -94,12 +141,11 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, "CANARY"]
+        version: [23,24,25,26,27,28,29,30,31,32,33,34,35,36,"CANARY"]
         type: [""]
         include:
           - version: "CANARY"
             type: "google_apis_ps16k"
-
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -131,6 +177,7 @@ jobs:
             kernel.log
             logcat.log
 
+  # 32-bit AVD tests (x86) — also expensive — same restrictions as avd-test.
   avd-test-32:
     name: Test API ${{ matrix.version }} (x86)
     runs-on: ubuntu-24.04
@@ -139,8 +186,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [23, 24, 25, 26, 27, 28, 29, 30]
-
+        version: [23,24,25,26,27,28,29,30]
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -173,6 +219,7 @@ jobs:
             kernel.log
             logcat.log
 
+  # Cuttlefish (CVD) tests — heavy. Keep gated as non-push only.
   cf-test:
     name: Test ${{ matrix.device }}
     runs-on: ubuntu-24.04
@@ -186,7 +233,6 @@ jobs:
         include:
           - branch: "aosp-android-latest-release"
             device: "aosp_cf_x86_64_only_phone"
-
     steps:
       - name: Check out
         uses: actions/checkout@v4
