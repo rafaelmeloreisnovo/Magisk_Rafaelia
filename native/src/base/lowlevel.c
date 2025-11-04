@@ -20,6 +20,9 @@
 #define AT_FDCWD -100
 #endif
 
+// Linux kernel returns errors in the range [-1, -4095]
+#define SYSCALL_ERROR_THRESHOLD 4095UL
+
 // Direct syscall wrapper for open
 long lowlevel_open(const char* pathname, int flags, int mode) {
     return syscall(__NR_openat, AT_FDCWD, pathname, flags, mode);
@@ -43,8 +46,8 @@ long lowlevel_close(int fd) {
 // Direct syscall wrapper for mmap with error checking
 void* lowlevel_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) {
     long result = syscall(__NR_mmap, addr, length, prot, flags, fd, offset);
-    // Check if result is an error (small negative number, typically -1 to -4095)
-    if ((unsigned long)result >= (unsigned long)-4095UL) {
+    // Check if result is an error
+    if ((unsigned long)result >= (unsigned long)-SYSCALL_ERROR_THRESHOLD) {
         errno = -(int)result;
         return MAP_FAILED;
     }

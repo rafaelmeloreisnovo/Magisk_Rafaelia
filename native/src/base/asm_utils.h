@@ -67,6 +67,9 @@ static inline void asm_ic_ivau(uint64_t addr) {
 }
 
 // Read system register (example: MIDR_EL1 - CPU ID)
+// NOTE: Reading system registers may require elevated privileges (EL1/EL2).
+// On user-space applications, this may cause an illegal instruction exception.
+// Use only in kernel modules or privileged contexts.
 static inline uint64_t asm_read_midr(void) {
     uint64_t value;
     __asm__ __volatile__("mrs %0, midr_el1" : "=r"(value));

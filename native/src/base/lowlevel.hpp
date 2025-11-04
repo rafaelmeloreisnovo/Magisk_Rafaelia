@@ -13,6 +13,10 @@
 // Direct syscall wrappers to bypass libc
 // These are critical for injection where we need to avoid library dependencies
 
+// Linux kernel returns errors in the range [-1, -4095]
+// See: https://www.kernel.org/doc/html/latest/x86/kernel-stacks.html
+#define SYSCALL_ERROR_THRESHOLD 4095UL
+
 namespace lowlevel {
 
 // Direct memory read/write using volatile pointers to prevent optimization
@@ -35,8 +39,8 @@ static inline void mem_write64(uintptr_t addr, uint64_t value) {
 // Direct syscall for mmap to allocate memory at specific addresses
 static inline void* sys_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) {
     long result = syscall(__NR_mmap, addr, length, prot, flags, fd, offset);
-    // Check if result is an error (small negative number, typically -1 to -4095)
-    if (static_cast<unsigned long>(result) >= static_cast<unsigned long>(-4095UL)) {
+    // Check if result is an error
+    if (static_cast<unsigned long>(result) >= static_cast<unsigned long>(-SYSCALL_ERROR_THRESHOLD)) {
         errno = -static_cast<int>(result);
         return MAP_FAILED;
     }
