@@ -10,6 +10,8 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <sys/mman.h>
+#include <sys/uio.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <string.h>
 

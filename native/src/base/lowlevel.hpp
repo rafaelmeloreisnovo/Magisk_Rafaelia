@@ -102,9 +102,13 @@ static inline void icache_flush(void* addr, size_t len) {
     __asm__ __volatile__("isb" ::: "memory");
 #elif defined(__x86_64__) || defined(__i386__)
     // x86 has coherent instruction cache
+    (void)addr;
+    (void)len;
     __asm__ __volatile__("" ::: "memory");
 #elif defined(__riscv)
     // RISC-V fence.i instruction
+    (void)addr;
+    (void)len;
     __asm__ __volatile__("fence.i" ::: "memory");
 #else
     // Fallback - use system call
@@ -187,5 +191,3 @@ static inline void mem_copy_safe(void* dest, const void* src, size_t n) {
 }
 
 } // namespace lowlevel
-
-#endif // LOWLEVEL_HPP
