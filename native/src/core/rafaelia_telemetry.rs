@@ -454,9 +454,8 @@ pub fn get_global_telemetry() -> Option<Arc<Mutex<TelemetryCollector>>> {
 /// Start global telemetry collection
 pub fn start_global_telemetry() -> Result<(), io::Error> {
     if let Some(telemetry_arc) = get_global_telemetry() {
-        if let Ok(mut telemetry) = telemetry_arc.lock() {
-            telemetry.start()?;
-        }
+        let mut telemetry = telemetry_arc.lock().map_err(|e| io::Error::new(io::ErrorKind::Other, format!("Failed to acquire telemetry lock: {}", e)))?;
+        telemetry.start()?;
     }
     Ok(())
 }
