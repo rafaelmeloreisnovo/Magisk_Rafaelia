@@ -2,10 +2,9 @@
 // Signature: RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ
 // Philosophy: VAZIO → VERBO → CHEIO → RETRO
 
-use base::{libc, ResultExt};
 use std::collections::VecDeque;
-use std::fs::{File, read_to_string};
-use std::io::{self, BufRead, BufReader};
+use std::fs::read_to_string;
+use std::io;
 use std::sync::{Arc, Mutex};
 use std::thread;
 use std::time::{Duration, SystemTime, UNIX_EPOCH};
@@ -439,8 +438,8 @@ static GLOBAL_TELEMETRY: OnceLock<Arc<Mutex<TelemetryCollector>>> = OnceLock::ne
 /// Initialize global telemetry collector
 /// Returns Ok if initialized successfully, or if already initialized
 pub fn init_global_telemetry(interval_ms: u64) -> Result<(), io::Error> {
-    GLOBAL_TELEMETRY.get_or_try_init(|| {
-        let collector = TelemetryCollector::new(interval_ms)?;
+    GLOBAL_TELEMETRY.get_or_try_init(|| -> Result<Arc<Mutex<TelemetryCollector>>, io::Error> {
+        let collector = TelemetryCollector::new(interval_ms);
         Ok(Arc::new(Mutex::new(collector)))
     })?;
     Ok(())

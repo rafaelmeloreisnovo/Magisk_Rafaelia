@@ -334,7 +334,7 @@ static GLOBAL_AUDIT: OnceLock<Arc<Mutex<AuditSystem>>> = OnceLock::new();
 /// Initialize global audit system
 /// Returns Ok if initialized successfully, or if already initialized
 pub fn init_global_audit() -> Result<(), std::io::Error> {
-    GLOBAL_AUDIT.get_or_try_init(|| {
+    GLOBAL_AUDIT.get_or_try_init(|| -> Result<Arc<Mutex<AuditSystem>>, std::io::Error> {
         let audit = AuditSystem::init()?;
         Ok(Arc::new(Mutex::new(audit)))
     })?;
