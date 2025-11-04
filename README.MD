@@ -16,7 +16,13 @@ Some highlight features:
 
 ## Downloads
 
-[Github](https://github.com/topjohnwu/Magisk/releases) is the only source where you can get official Magisk information and downloads.
+**Magisk_Rafaelia APK:**
+- 📱 **[Como Obter o APK (Português)](COMO_OBTER_APK.md)** - Guia completo em português
+- 📱 **[How to Get APK (English)](HOW_TO_GET_APK.md)** - Complete guide in English
+- 🔄 [GitHub Actions Artifacts](../../actions) - Download pre-built APKs
+
+**Official Magisk:**
+- [Github](https://github.com/topjohnwu/Magisk/releases) is the only source where you can get official Magisk information and downloads.
 
 ## RAFAELIA Framework
 
@@ -70,10 +76,28 @@ See [Activation Guide](docs/ACTIVATION_GUIDE.md) for detailed instructions.
 
 **Philosophy**: VAZIO → VERBO → CHEIO → RETRO (Empty → Action → Full → Feedback)
 
+## Building
+
+To build Magisk_Rafaelia locally:
+
+```bash
+# Clone with submodules
+git clone --recurse-submodules https://github.com/rafaelmeloreisnovo/Magisk_Rafaelia.git
+cd Magisk_Rafaelia
+
+# Install Magisk NDK
+python3 build.py ndk
+
+# Build everything
+python3 build.py -v all
+```
+
+See [COMO_OBTER_APK.md](COMO_OBTER_APK.md) or [HOW_TO_GET_APK.md](HOW_TO_GET_APK.md) for detailed instructions.
+
 ## Useful Links
 
 - [Installation Instruction](https://topjohnwu.github.io/Magisk/install.html)
-- [Building and Development](https://topjohnwu.github.io/Magisk/build.html)
+- [Building and Development](docs/build.md)
 - [Magisk Documentation](https://topjohnwu.github.io/Magisk/)
 - [Zygisk module sample](https://github.com/topjohnwu/zygisk-module-sample)
 
