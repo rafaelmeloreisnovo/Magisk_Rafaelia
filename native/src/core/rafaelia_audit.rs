@@ -356,8 +356,15 @@ pub fn log_global_operation(
     error_msg: Option<String>,
 ) {
     if let Some(audit_arc) = get_global_audit() {
-        if let Ok(mut audit) = audit_arc.lock() {
-            let _ = audit.log_operation(primitive, context, action, duration_ms, success, error_msg);
+        match audit_arc.lock() {
+            Ok(mut audit) => {
+                if let Err(e) = audit.log_operation(primitive, context, action, duration_ms, success, error_msg) {
+                    eprintln!("RAFAELIA Audit log_operation error: {}", e);
+                }
+            }
+            Err(e) => {
+                eprintln!("RAFAELIA Audit lock error: {}", e);
+            }
         }
     }
 }
