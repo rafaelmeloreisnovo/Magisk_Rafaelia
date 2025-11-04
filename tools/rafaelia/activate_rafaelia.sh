@@ -5,6 +5,9 @@
 # Signature: RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ
 #
 
+# Version configuration
+RAFAELIA_VERSION="1.1.0"
+
 MAGISK_DIR="/data/adb/magisk"
 AUDIT_DIR="$MAGISK_DIR/rafaelia_audit"
 METRICS_DIR="$MAGISK_DIR/rafaelia_metrics"
@@ -93,7 +96,7 @@ create_manifest() {
 {
   "signature": "RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ",
   "timestamp": "$timestamp",
-  "version": "1.1.0",
+  "version": "$RAFAELIA_VERSION",
   "status": "activated",
   "components": {
     "audit_system": true,
