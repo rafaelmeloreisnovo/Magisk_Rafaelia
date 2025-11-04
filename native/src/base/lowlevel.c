@@ -15,6 +15,11 @@
 #include <errno.h>
 #include <string.h>
 
+// Define AT_FDCWD if not already defined
+#ifndef AT_FDCWD
+#define AT_FDCWD -100
+#endif
+
 // Direct syscall wrapper for open
 long lowlevel_open(const char* pathname, int flags, int mode) {
     return syscall(__NR_openat, AT_FDCWD, pathname, flags, mode);
@@ -38,8 +43,9 @@ long lowlevel_close(int fd) {
 // Direct syscall wrapper for mmap with error checking
 void* lowlevel_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) {
     long result = syscall(__NR_mmap, addr, length, prot, flags, fd, offset);
-    if (result < 0 && result >= -4095) {
-        errno = -result;
+    // Check if result is an error (small negative number, typically -1 to -4095)
+    if ((unsigned long)result >= (unsigned long)-4095UL) {
+        errno = -(int)result;
         return MAP_FAILED;
     }
     return (void*)result;
@@ -205,7 +211,7 @@ void lowlevel_flush_icache(void* addr, size_t len) {
     __asm__ __volatile__("dsb ish" ::: "memory");
     __asm__ __volatile__("isb" ::: "memory");
 #elif defined(__x86_64__) || defined(__i386__)
-    // x86 has coherent I-cache
+    // x86 has coherent I-cache - no flush needed
     (void)addr;
     (void)len;
     __asm__ __volatile__("" ::: "memory");
@@ -214,7 +220,12 @@ void lowlevel_flush_icache(void* addr, size_t len) {
     (void)len;
     __asm__ __volatile__("fence.i" ::: "memory");
 #else
+    // For other architectures, try cacheflush if available
+    (void)addr;
+    (void)len;
+#ifdef __NR_cacheflush
     syscall(__NR_cacheflush, addr, len, 0);
+#endif
 #endif
 }
 
