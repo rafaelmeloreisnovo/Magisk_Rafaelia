@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include <sys/mman.h>
+#include <errno.h>
 
 // Direct syscall wrappers to bypass libc
 // These are critical for injection where we need to avoid library dependencies
@@ -33,17 +34,33 @@ static inline void mem_write64(uintptr_t addr, uint64_t value) {
 
 // Direct syscall for mmap to allocate memory at specific addresses
 static inline void* sys_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) {
-    return reinterpret_cast<void*>(syscall(__NR_mmap, addr, length, prot, flags, fd, offset));
+    long result = syscall(__NR_mmap, addr, length, prot, flags, fd, offset);
+    // Check if result is an error (small negative number, typically -1 to -4095)
+    if (static_cast<unsigned long>(result) >= static_cast<unsigned long>(-4095UL)) {
+        errno = -static_cast<int>(result);
+        return MAP_FAILED;
+    }
+    return reinterpret_cast<void*>(result);
 }
 
 // Direct syscall for munmap
 static inline int sys_munmap(void* addr, size_t length) {
-    return static_cast<int>(syscall(__NR_munmap, addr, length));
+    long result = syscall(__NR_munmap, addr, length);
+    if (result < 0) {
+        errno = -static_cast<int>(result);
+        return -1;
+    }
+    return 0;
 }
 
 // Direct syscall for mprotect - critical for code injection
 static inline int sys_mprotect(void* addr, size_t len, int prot) {
-    return static_cast<int>(syscall(__NR_mprotect, addr, len, prot));
+    long result = syscall(__NR_mprotect, addr, len, prot);
+    if (result < 0) {
+        errno = -static_cast<int>(result);
+        return -1;
+    }
+    return 0;
 }
 
 // Direct syscall for reading memory from another process
