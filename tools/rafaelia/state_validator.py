@@ -11,7 +11,7 @@ import argparse
 import csv
 from pathlib import Path
 from collections import defaultdict
-from typing import Dict, List, Set, Tuple, Optional
+from typing import Dict, Tuple, Optional
 
 class StateValidator:
     def __init__(self, state_matrix_path: Path):
