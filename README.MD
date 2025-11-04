@@ -4,6 +4,16 @@
 
 #### This is not an officially supported Google product
 
+---
+
+## 🚀 Quick Start
+
+**Want the APK?**
+- 🇧🇷 [**OBTER APK RÁPIDO**](OBTER_APK_RAPIDO.md) ← Comece aqui! (Português)
+- 🇬🇧 [**GET APK QUICK**](GET_APK_QUICK.md) ← Start here! (English)
+
+---
+
 ## Introduction
 
 Magisk is a suite of open source software for customizing Android, supporting devices higher than Android 6.0.<br>
