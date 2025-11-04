@@ -128,15 +128,15 @@ struct NetStats {
 
 impl TelemetryCollector {
     /// Create a new telemetry collector
-    pub fn new(interval_ms: u64) -> Result<Self, io::Error> {
-        Ok(TelemetryCollector {
+    pub fn new(interval_ms: u64) -> Self {
+        TelemetryCollector {
             interval_ms,
             metrics_history: Arc::new(Mutex::new(VecDeque::with_capacity(MAX_METRICS_HISTORY))),
             running: Arc::new(Mutex::new(false)),
             prev_cpu_stats: Arc::new(Mutex::new(None)),
             prev_io_stats: Arc::new(Mutex::new(None)),
             prev_net_stats: Arc::new(Mutex::new(None)),
-        })
+        }
     }
     
     /// Start the telemetry collection daemon
