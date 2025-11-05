@@ -90,7 +90,7 @@ class StateValidator:
             
         return True, None
         
-    def validate_audit_log(self, audit_log_path: Path) -> Dict[str, any]:
+    def validate_audit_log(self, audit_log_path: Path) -> Dict[str, Any]:
         """Validate all state transitions in an audit log"""
         print(f"Validating audit log: {audit_log_path}")
         
