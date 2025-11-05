@@ -38,10 +38,8 @@ jobs:
           echo "Setting executable permissions for all scripts..."
           # Make all shell scripts executable
           find . -type f -name "*.sh" -exec chmod +x {} \;
-          # Make Python scripts executable
+          # Make Python scripts executable (includes build.py)
           find . -type f -name "*.py" -exec chmod +x {} \;
-          # Verify build.py is executable
-          chmod +x build.py
           echo "Permissions set successfully"
 
       - name: Setup environment
@@ -112,10 +110,8 @@ jobs:
           echo "Setting executable permissions for all scripts..."
           # Make all shell scripts executable
           find . -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
-          # Make Python scripts executable
+          # Make Python scripts executable (includes build.py)
           find . -type f -name "*.py" -exec chmod +x {} \; 2>/dev/null || true
-          # Verify build.py is executable
-          chmod +x build.py 2>/dev/null || true
           echo "Permissions set successfully"
         shell: bash
 
