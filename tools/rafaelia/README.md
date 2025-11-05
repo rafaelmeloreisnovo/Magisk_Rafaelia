@@ -1,7 +1,8 @@
 # RAFAELIA Tools
 
-**Version:** 1.0.0  
-**Signature:** RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ
+**Version:** 1.1.0  
+**Signature:** RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ  
+**Status:** Core Tools Implemented ✓
 
 ---
 
@@ -9,11 +10,16 @@
 
 This directory contains automation tools and scripts for the RAFAELIA framework:
 
-- **audit_analyzer.py** - Analyze audit logs and generate reports
-- **state_validator.py** - Validate state transitions in the fractal matrix
-- **metrics_collector.sh** - Collect and export telemetry metrics
-- **integrity_checker.sh** - Verify system integrity
-- **rollback_manager.py** - Manage rollback points
+### ✓ Implemented Tools
+
+- **audit_analyzer.py** - Analyze audit logs and generate comprehensive reports
+- **state_validator.py** - Validate state transitions against the 1008-state matrix ✓ NEW
+- **metrics_collector.sh** - Collect system metrics continuously ✓ NEW
+- **integrity_checker.sh** - Comprehensive integrity verification ✓ NEW
+
+### 📋 Planned Tools
+
+- **rollback_manager.py** - Manage rollback points (foundation in audit system)
 - **hotspot_analyzer.py** - Analyze performance hotspots
 - **security_scanner.sh** - Security vulnerability scanner
 
@@ -41,19 +47,44 @@ adb shell pip3 install -r /data/local/tmp/rafaelia/requirements.txt
 python3 audit_analyzer.py --input /data/adb/magisk/rafaelia_audit/audit_*.jsonl --output report.html
 ```
 
-### State Validation
+### State Validation ✓ NEW
 ```bash
-python3 state_validator.py --matrix RAFAELIA_STATE_MATRIX.csv --audit /data/adb/magisk/rafaelia_audit/
+# Validate audit logs against state matrix
+python3 state_validator.py \
+    --matrix /path/to/RAFAELIA_STATE_MATRIX.csv \
+    --audit-log /data/adb/magisk/rafaelia_audit/audit_SESSION.jsonl \
+    --output validation_report.txt
+
+# Show validation report
+cat validation_report.txt
 ```
 
-### Metrics Collection
+### Metrics Collection ✓ NEW
 ```bash
-./metrics_collector.sh --interval 60 --output /data/adb/magisk/rafaelia_audit/metrics.json
+# Run continuous collection (in background)
+./metrics_collector.sh run &
+
+# Collect metrics once
+./metrics_collector.sh once
+
+# Custom interval
+INTERVAL=10 MAX_SAMPLES=500 ./metrics_collector.sh run &
+
+# View collected metrics
+tail -f /data/adb/magisk/rafaelia_metrics/metrics_$(date +%Y%m%d).jsonl
 ```
 
-### Integrity Check
+### Integrity Check ✓ NEW
 ```bash
-./integrity_checker.sh --full
+# Full integrity check
+./integrity_checker.sh full
+
+# Check specific components
+./integrity_checker.sh boot
+./integrity_checker.sh modules
+./integrity_checker.sh database
+./integrity_checker.sh audit
+./integrity_checker.sh manifest
 ```
 
 ### Rollback Management
@@ -75,27 +106,56 @@ Analyzes audit logs and generates comprehensive reports with:
 - Timeline visualization
 - Anomaly detection
 
-### state_validator.py
+### state_validator.py ✓ NEW
 Validates state transitions against the 1008-state matrix:
-- Checks for invalid transitions
-- Verifies integrity requirements
-- Validates audit compliance
-- Generates state flow diagrams
+- Loads state matrix from CSV (56 primitives × 18 contexts)
+- Validates primitives, contexts, and state IDs
+- Checks state transitions in audit logs
+- Generates detailed validation reports
+- Reports success rate and identifies errors
+- Supports both single file and batch validation
 
-### metrics_collector.sh
-Collects system metrics:
-- CPU usage
-- Memory usage
-- I/O statistics
-- Network activity
-- Process information
+**Features:**
+- Validates against official 1008-state matrix
+- Detailed error messages with line numbers
+- Warning system for suspicious transitions
+- JSON parsing validation
+- Success rate calculation
 
-### integrity_checker.sh
-Verifies system integrity:
-- Boot image verification
-- Module verification
-- Database verification
-- File system checks
+### metrics_collector.sh ✓ NEW
+Collects comprehensive system metrics in real-time:
+- CPU usage, user/system/idle time
+- Memory total, available, used, usage percentage
+- I/O read/write bytes and operations
+- Network RX/TX bytes and packets
+- System load average (1, 5, 15 minutes)
+- Process count
+- Temperature (if available)
+- Battery status (if available)
+
+**Features:**
+- Continuous collection with configurable interval
+- JSONL output format for easy parsing
+- Automatic log rotation
+- Single-shot collection mode
+- Low overhead monitoring
+
+### integrity_checker.sh ✓ NEW
+Comprehensive system integrity verification:
+- Boot image and partition checks
+- Module integrity (module.prop, disabled status)
+- Database integrity (readable, table count)
+- Audit system integrity (log files, entries)
+- Manifest validation (JSON format, signature)
+- SELinux status verification
+- System properties validation
+
+**Features:**
+- Colored output for easy reading
+- Full or component-specific checks
+- Summary report with pass/fail counts
+- Root access verification
+- Modular check system
 
 ### rollback_manager.py
 Manages rollback points:

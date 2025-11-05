@@ -5,6 +5,7 @@
 #![feature(unix_socket_peek)]
 #![feature(default_field_values)]
 #![feature(peer_credentials_unix_socket)]
+#![feature(once_cell_try)]
 #![allow(clippy::missing_safety_doc)]
 
 use crate::ffi::SuRequest;
@@ -34,6 +35,8 @@ mod magisk;
 mod module;
 mod mount;
 mod package;
+mod rafaelia_audit;
+mod rafaelia_telemetry;
 mod resetprop;
 mod selinux;
 mod socket;
