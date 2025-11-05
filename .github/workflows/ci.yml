@@ -28,9 +28,9 @@ jobs:
           echo "=========================================="
           echo "RAFAELIA Activation - Reading ativar.txt"
           echo "=========================================="
-          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
+          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt" || true
           echo "=========================================="
-          echo "RAFAELIA activation marker read successfully"
+          echo "RAFAELIA activation marker read (non-fatal)"
 
       - name: Setup deps
         run: |
@@ -99,9 +99,9 @@ jobs:
           echo "=========================================="
           echo "RAFAELIA Activation - Reading ativar.txt"
           echo "=========================================="
-          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
+          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt" || true
           echo "=========================================="
-          echo "RAFAELIA activation marker read successfully"
+          echo "RAFAELIA activation marker read (non-fatal)"
 
       - name: Setup JDK
         uses: actions/setup-java@v4
