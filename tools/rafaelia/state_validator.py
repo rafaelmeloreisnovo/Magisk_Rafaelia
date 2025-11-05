@@ -11,7 +11,7 @@ import argparse
 import csv
 from pathlib import Path
 from collections import defaultdict
-from typing import Dict, Tuple, Optional
+from typing import Dict, Tuple, Optional, Any
 
 class StateValidator:
     def __init__(self, state_matrix_path: Path):
@@ -90,7 +90,7 @@ class StateValidator:
             
         return True, None
         
-    def validate_audit_log(self, audit_log_path: Path) -> Dict[str, any]:
+    def validate_audit_log(self, audit_log_path: Path) -> Dict[str, Any]:
         """Validate all state transitions in an audit log"""
         print(f"Validating audit log: {audit_log_path}")
         
@@ -185,7 +185,7 @@ class StateValidator:
             
         return results
         
-    def generate_report(self, results: Dict, output_path: Optional[Path] = None):
+    def generate_report(self, results: Dict[str, Any], output_path: Optional[Path] = None):
         """Generate validation report"""
         report = []
         report.append("=" * 80)
