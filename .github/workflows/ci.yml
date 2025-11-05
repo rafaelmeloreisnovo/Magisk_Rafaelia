@@ -16,6 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set executable permissions for scripts
+        run: |
+          echo "Setting executable permissions for all scripts..."
+          find . -type f -name "*.sh" -exec chmod +x {} \;
+          find . -type f -name "*.py" -exec chmod +x {} \;
+          echo "Permissions set successfully"
+
       - name: Activate RAFAELIA (ativar.txt)
         run: |
           echo "=========================================="
@@ -24,13 +31,6 @@ jobs:
           cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
           echo "=========================================="
           echo "RAFAELIA activation marker read successfully"
-
-      - name: Set executable permissions for scripts
-        run: |
-          echo "Setting executable permissions for all scripts..."
-          find . -type f -name "*.sh" -exec chmod +x {} \;
-          find . -type f -name "*.py" -exec chmod +x {} \;
-          echo "Permissions set successfully"
 
       - name: Setup deps
         run: |
@@ -87,6 +87,13 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set executable permissions for scripts
+        run: |
+          echo "Setting executable permissions for all scripts..."
+          find . -type f -name "*.sh" -exec chmod +x {} \;
+          find . -type f -name "*.py" -exec chmod +x {} \;
+          echo "Permissions set successfully"
+
       - name: Activate RAFAELIA (ativar.txt)
         run: |
           echo "=========================================="
@@ -95,13 +102,6 @@ jobs:
           cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
           echo "=========================================="
           echo "RAFAELIA activation marker read successfully"
-
-      - name: Set executable permissions for scripts
-        run: |
-          echo "Setting executable permissions for all scripts..."
-          find . -type f -name "*.sh" -exec chmod +x {} \;
-          find . -type f -name "*.py" -exec chmod +x {} \;
-          echo "Permissions set successfully"
 
       - name: Setup JDK
         uses: actions/setup-java@v4
