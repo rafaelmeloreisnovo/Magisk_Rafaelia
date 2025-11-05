@@ -9,6 +9,11 @@ out
 # Built binaries
 native/out
 
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
 # Android Studio
 *.iml
 .idea
