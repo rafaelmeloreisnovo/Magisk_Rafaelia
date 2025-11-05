@@ -112,7 +112,7 @@ jobs:
           echo "Setting executable permissions for all scripts..."
           # Make all shell scripts executable
           find . -type f -name "*.sh" -exec chmod +x {} \; 2>/dev/null || true
-          # Make Python scripts executable  
+          # Make Python scripts executable
           find . -type f -name "*.py" -exec chmod +x {} \; 2>/dev/null || true
           # Verify build.py is executable
           chmod +x build.py 2>/dev/null || true
