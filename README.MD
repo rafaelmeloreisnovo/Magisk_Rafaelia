@@ -59,7 +59,18 @@ See [Activation Guide](docs/ACTIVATION_GUIDE.md) for detailed instructions.
 
 ### RAFAELIA Documentation
 
-- **[Activation Guide](docs/ACTIVATION_GUIDE.md)** - ✓ **Start here!** Enable RAFAELIA features
+#### 📚 Start Here
+- **[RAFAELIA Index](docs/RAFAELIA_INDEX.md)** - ✓ **Complete navigation guide** to all documentation
+- **[Activation Guide](docs/ACTIVATION_GUIDE.md)** - ✓ Enable RAFAELIA features (practical start)
+
+#### 🏛️ Meta-Architecture (Theoretical Foundation)
+- **[Meta-Architecture](docs/RAFAELIA_META_ARCHITECTURE.md)** - ✓ **NEW!** 30 holistic analyses
+  - Livro I: Hardware as Metaphor (ICE, 4-64 bit spectrum, DSP, ADC)
+  - Livro II: Data Nexus (Interleaving, Permutation, Fractal Geometry)
+  - Livro III: Software Abstraction (Yin-Yang model, CLIMEX, PLIMEX)
+- **[Toolkit Analysis](docs/RAFAELIA_TOOLKIT_ANALYSIS.md)** - ✓ **NEW!** retro_feed.py, bootctl, futility
+
+#### 🔧 Implementation & Operations
 - [Framework Overview](docs/RAFAELIA_FRAMEWORK.md) - Complete specification
 - [Summary](docs/RAFAELIA_SUMMARY.md) - Quick overview and features
 - [Implementation Guide](docs/RAFAELIA_IMPLEMENTATION_GUIDE.md) - Step-by-step guide
