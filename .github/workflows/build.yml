@@ -50,25 +50,88 @@ jobs:
           whoami || true
           ls -la || true
 
+      - name: Prepare logs directory
+        run: |
+          mkdir -p out/logs
+          echo "Logs directory created at $(date)"
+
+      - name: Capture environment snapshot
+        run: |
+          echo "Capturing environment variables..."
+          env | sort > out/logs/env_snapshot.txt
+          echo "Environment snapshot saved to out/logs/env_snapshot.txt"
+
+      - name: Print tool versions
+        run: |
+          echo "============================================"
+          echo "Tool Versions for Debugging"
+          echo "============================================"
+          echo "Python version:"
+          python3 --version || echo "python3 not found"
+          echo ""
+          echo "Java version:"
+          java -version 2>&1 || echo "java not found"
+          echo ""
+          if [ -f ./app/gradlew ]; then
+            echo "Gradle wrapper version:"
+            ./app/gradlew --version || echo "gradlew execution failed"
+          else
+            echo "Gradle wrapper not found at ./app/gradlew"
+          fi
+          echo "============================================"
+
       - name: Make scripts executable
         run: |
-          chmod +x build.py || true
-          chmod +x .github/scripts/*.sh || true
+          echo "Making build.py executable..."
+          find . -type f -name "build.py" -exec chmod +x {} \; -print
+          echo "Making .github/scripts/*.sh executable..."
+          find .github/scripts -type f -name "*.sh" -exec chmod +x {} \; -print || true
 
       - name: Activate RAFAELIA (ativar.txt)
         run: |
           echo "=========================================="
           echo "RAFAELIA Activation - Reading ativar.txt"
           echo "=========================================="
-          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt" || true
+          
+          ATIVAR_FOUND=false
+          
+          # Check for ZIPRAF_OMEGA_FULL/ativar.txt
+          if [ -f "ZIPRAF_OMEGA_FULL/ativar.txt" ]; then
+            echo "Found ativar.txt in ZIPRAF_OMEGA_FULL directory"
+            cat "ZIPRAF_OMEGA_FULL/ativar.txt"
+            head -n 10 "ZIPRAF_OMEGA_FULL/ativar.txt" > out/logs/ativar_excerpt.txt
+            ATIVAR_FOUND=true
+          fi
+          
+          # Check for ativar.txt at repo root
+          if [ -f "ativar.txt" ]; then
+            echo "Found ativar.txt at repository root"
+            cat "ativar.txt"
+            head -n 10 "ativar.txt" > out/logs/ativar_excerpt.txt
+            ATIVAR_FOUND=true
+          fi
+          
+          # Check for the file with spaces in name (fallback for existing setup)
+          if [ -f "ZIPRAF_OMEGA_FULL DO it ativar.txt" ]; then
+            echo "Found 'ZIPRAF_OMEGA_FULL DO it ativar.txt' at repository root"
+            cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
+            head -n 10 "ZIPRAF_OMEGA_FULL DO it ativar.txt" > out/logs/ativar_excerpt.txt
+            ATIVAR_FOUND=true
+          fi
+          
+          if [ "$ATIVAR_FOUND" = false ]; then
+            echo "No ativar.txt file found (checked ZIPRAF_OMEGA_FULL/ativar.txt, ativar.txt, and legacy path)"
+            echo "No ativar.txt file found" > out/logs/ativar_excerpt.txt
+          fi
+          
           echo "=========================================="
-          echo "RAFAELIA activation marker read (non-fatal)"
+          echo "RAFAELIA activation marker processed (non-fatal)"
 
       - name: Set executable permissions for scripts
         run: |
           echo "Setting executable permissions for all scripts..."
-          find . -type f -name "*.sh" -exec chmod +x {} \;
-          find . -type f -name "*.py" -exec chmod +x {} \;
+          find . -type f -name "*.sh" -exec chmod +x {} \; -print
+          find . -type f -name "*.py" -exec chmod +x {} \; -print
           echo "Permissions set successfully"
 
       - name: Setup environment
@@ -77,18 +140,24 @@ jobs:
           is-asset-build: true
 
       - name: Build release
-        run: ./build.py -vr all
+        run: |
+          set -o pipefail
+          echo "Starting release build with full logging..."
+          ./build.py -vr all 2>&1 | tee out/logs/build_release.log
 
       - name: Build debug
-        run: ./build.py -v all
+        run: |
+          set -o pipefail
+          echo "Starting debug build with full logging..."
+          ./build.py -v all 2>&1 | tee out/logs/build_debug.log
 
       - name: Stop gradle daemon (Unix)
         if: runner.os != 'Windows'
-        run: ./app/gradlew --stop
+        run: ./app/gradlew --stop || true
 
       - name: Stop gradle daemon (Windows)
         if: runner.os == 'Windows'
-        run: .\\app\\gradlew.bat --stop
+        run: .\\app\\gradlew.bat --stop || true
 
       - name: Generate RAFAELIA manifest for release APK
         run: |
@@ -104,25 +173,17 @@ jobs:
               out/app-debug.apk out/RAFAELIA_MANIFEST_debug.json
           fi
 
-      - name: Upload build artifact (conditional)
-        if: >-
-          ${{
-            matrix.runner != 'ubuntu-24.04' ||
-            github.event_name == 'workflow_dispatch'
-          }}
+      - name: Upload build artifacts and logs
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.sha }}
+          name: ${{ github.sha }}-out
           path: out
           compression-level: 9
           retention-days: 7
 
       - name: Upload mapping and native debug symbols
-        if: >-
-          ${{
-            matrix.runner != 'ubuntu-24.04' ||
-            github.event_name == 'workflow_dispatch'
-          }}
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}-symbols
