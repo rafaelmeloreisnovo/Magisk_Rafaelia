@@ -27,6 +27,18 @@ Este documento serve como índice mestre para toda a documentação da meta-arqu
 - Sistema de Audit e Telemetria
 - Integração e Deployment
 
+### Livro IV: Visualização
+**[RAFAELIA Diagrams](RAFAELIA_DIAGRAMS.md)** - ✓ **NEW!** Diagramas Arquitetônicos
+- System Overview (3-layer architecture)
+- Hybrid Processor Architecture (SoC metaphor)
+- Data Flow (Interleaved & Permuted)
+- Yin-Yang Model (Software/Hardware duality)
+- Sacred Cycle (VAZIO → VERBO → CHEIO → RETRO)
+- State Matrix Structure (1008 states)
+- Mathematical Framework (ΣΩΔΦ)
+- Security & Integrity
+- Toolkit Integration Flow
+
 ---
 
 ## 🏛️ As 30 Análises: Mapa Conceitual
