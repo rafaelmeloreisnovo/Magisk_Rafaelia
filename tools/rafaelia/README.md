@@ -2,6 +2,7 @@
 
 **Version:** 1.1.0  
 **Signature:** RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ  
+**Philosophy:** VAZIO → VERBO → CHEIO → RETRO (Empty → Action → Full → Feedback)  
 **Status:** Core Tools Implemented ✓
 
 ---
