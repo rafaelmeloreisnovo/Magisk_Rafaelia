@@ -1,4 +1,4 @@
-name: Magisk Build
+name: Magisk Build (with enhanced logging)
 
 on:
   push:
@@ -35,6 +35,8 @@ jobs:
         matrix.skip-condition != true ||
         github.event_name == 'workflow_dispatch'
       }}
+    env:
+      RAFAELIA_DEBUG: "true"
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -45,84 +47,131 @@ jobs:
 
       - name: Debug info (runner, user, ls)
         run: |
+          set -x
           uname -a || true
           id || true
           whoami || true
+          pwd || true
+          echo "Top-level files:"
           ls -la || true
+          echo "List .github/scripts if exists:"
+          ls -la .github/scripts || true
+          set +x
 
-      - name: Make scripts executable
+      - name: Prepare logs dir
         run: |
-          chmod +x build.py || true
-          chmod +x .github/scripts/*.sh || true
+          mkdir -p out/logs
+          echo "logs directory ready: $(pwd)/out/logs"
+          ls -la out || true
 
-      - name: Activate RAFAELIA (ativar.txt)
+      - name: Make scripts executable (and show what changed)
         run: |
-          echo "=========================================="
-          echo "RAFAELIA Activation - Reading ativar.txt"
-          echo "=========================================="
-          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt" || true
-          echo "=========================================="
-          echo "RAFAELIA activation marker read (non-fatal)"
+          set -x
+          chmod +x build.py
+          find . -type f -name "*.sh" -exec chmod +x {} \; -print || true
+          find . -type f -name "*.py" -exec chmod +x {} \; -print || true
+          set +x
 
-      - name: Set executable permissions for scripts
+      - name: Activate RAFAELIA (ativar.txt) — leitura segura
         run: |
-          echo "Setting executable permissions for all scripts..."
-          find . -type f -name "*.sh" -exec chmod +x {} \;
-          find . -type f -name "*.py" -exec chmod +x {} \;
-          echo "Permissions set successfully"
+          set -x
+          if [ -f "ZIPRAF_OMEGA_FULL/ativar.txt" ]; then
+            echo "Found ZIPRAF_OMEGA_FULL/ativar.txt, printing first 200 lines:"
+            sed -n '1,200p' ZIPRAF_OMEGA_FULL/ativar.txt | tee out/logs/ativar_excerpt.txt
+          elif [ -f "ativar.txt" ]; then
+            echo "Found ativar.txt at repo root, printing excerpt:"
+            sed -n '1,200p' ativar.txt | tee out/logs/ativar_excerpt.txt
+          else
+            echo "ativar.txt not found in expected locations" | tee out/logs/ativar_excerpt.txt
+            ls -la || true
+          fi
+          set +x
+
+      - name: Print key environment and tool versions
+        run: |
+          set -x
+          echo "Python:"
+          python3 --version || true
+          echo "Java:"
+          java -version || true
+          echo "Gradle wrapper if present:"
+          if [ -f app/gradlew ]; then
+            app/gradlew --version || true
+          fi
+          echo "pip list (first 50):"
+          python3 -m pip list 2>/dev/null | head -n 50 || true
+          set +x
 
       - name: Setup environment
         uses: ./.github/actions/setup
         with:
           is-asset-build: true
 
-      - name: Build release
-        run: ./build.py -vr all
+      - name: Build release (capture output)
+        run: |
+          set -o pipefail
+          ./build.py -vr all 2>&1 | tee out/logs/build_release.log
+        continue-on-error: false
 
-      - name: Build debug
-        run: ./build.py -v all
+      - name: Build debug (capture output)
+        run: |
+          set -o pipefail
+          ./build.py -v all 2>&1 | tee out/logs/build_debug.log
+        continue-on-error: false
 
       - name: Stop gradle daemon (Unix)
         if: runner.os != 'Windows'
-        run: ./app/gradlew --stop
+        run: |
+          set -x
+          if [ -f app/gradlew ]; then
+            ./app/gradlew --stop || true
+          else
+            echo "gradle wrapper not found at app/gradlew" || true
+          fi
+          set +x
 
       - name: Stop gradle daemon (Windows)
         if: runner.os == 'Windows'
-        run: .\\app\\gradlew.bat --stop
+        run: |
+          if [ -f .\\app\\gradlew.bat ]; then
+            .\\app\\gradlew.bat --stop || true
+          else
+            echo "gradle wrapper not found (windows)" || true
+          fi
 
       - name: Generate RAFAELIA manifest for release APK
         run: |
           if [ -f out/app-release.apk ]; then
-            .github/scripts/generate_manifest.sh \
-              out/app-release.apk out/RAFAELIA_MANIFEST_release.json
+            .github/scripts/generate_manifest.sh out/app-release.apk out/RAFAELIA_MANIFEST_release.json 2>&1 | tee out/logs/generate_manifest_release.log
+          else
+            echo "out/app-release.apk not found" | tee out/logs/generate_manifest_release.log
           fi
 
       - name: Generate RAFAELIA manifest for debug APK
         run: |
           if [ -f out/app-debug.apk ]; then
-            .github/scripts/generate_manifest.sh \
-              out/app-debug.apk out/RAFAELIA_MANIFEST_debug.json
+            .github/scripts/generate_manifest.sh out/app-debug.apk out/RAFAELIA_MANIFEST_debug.json 2>&1 | tee out/logs/generate_manifest_debug.log
+          else
+            echo "out/app-debug.apk not found" | tee out/logs/generate_manifest_debug.log
           fi
 
-      - name: Upload build artifact (conditional)
-        if: >-
-          ${{
-            matrix.runner != 'ubuntu-24.04' ||
-            github.event_name == 'workflow_dispatch'
-          }}
+      - name: List out directory (for debugging)
+        run: |
+          echo "Contents of out/ (first 200 entries):"
+          ls -la out || true
+          find out -maxdepth 4 -type f -print | head -n 200 || true
+
+      - name: Upload build artifacts and logs (always)
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ github.sha }}
-          path: out
+          name: ${{ github.sha }}-out
+          path: |
+            out
+            out/logs
           compression-level: 9
           retention-days: 7
 
-      - name: Upload mapping and native debug symbols
-        if: >-
-          ${{
-            matrix.runner != 'ubuntu-24.04' ||
-            github.event_name == 'workflow_dispatch'
-          }}
+      - name: Upload mapping and native debug symbols (if exists)
         uses: actions/upload-artifact@v4
         with:
           name: ${{ github.sha }}-symbols
