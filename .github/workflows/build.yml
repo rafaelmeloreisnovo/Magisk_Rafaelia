@@ -67,7 +67,7 @@ jobs:
       - name: Make scripts executable (and show what changed)
         run: |
           set -x
-          chmod +x build.py
+          chmod +x build.py || true
           find . -type f -name "*.sh" -exec chmod +x {} \; -print || true
           find . -type f -name "*.py" -exec chmod +x {} \; -print || true
           set +x
@@ -75,7 +75,11 @@ jobs:
       - name: Activate RAFAELIA (ativar.txt) — leitura segura
         run: |
           set -x
-          if [ -f "ZIPRAF_OMEGA_FULL/ativar.txt" ]; then
+          # Procurar no diretório ZIPRAF_OMEGA_FULL primeiro, depois na raiz
+          if [ -f "ZIPRAF_OMEGA_FULL DO it ativar.txt" ]; then
+            echo "Found 'ZIPRAF_OMEGA_FULL DO it ativar.txt', printing first 200 lines:"
+            sed -n '1,200p' "ZIPRAF_OMEGA_FULL DO it ativar.txt" | tee out/logs/ativar_excerpt.txt
+          elif [ -f "ZIPRAF_OMEGA_FULL/ativar.txt" ]; then
             echo "Found ZIPRAF_OMEGA_FULL/ativar.txt, printing first 200 lines:"
             sed -n '1,200p' ZIPRAF_OMEGA_FULL/ativar.txt | tee out/logs/ativar_excerpt.txt
           elif [ -f "ativar.txt" ]; then
@@ -100,6 +104,8 @@ jobs:
           fi
           echo "pip list (first 50):"
           python3 -m pip list 2>/dev/null | head -n 50 || true
+          # snapshot env for post-mortem
+          env | sort > out/logs/env_snapshot.txt || true
           set +x
 
       - name: Setup environment
