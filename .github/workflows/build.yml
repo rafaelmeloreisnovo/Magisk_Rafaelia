@@ -82,10 +82,10 @@ jobs:
 
       - name: Make scripts executable
         run: |
-          echo "Making build.py executable..."
-          find . -type f -name "build.py" -exec chmod +x {} \; -print
-          echo "Making .github/scripts/*.sh executable..."
-          find .github/scripts -type f -name "*.sh" -exec chmod +x {} \; -print || true
+          echo "Setting executable permissions for all scripts..."
+          find . -type f -name "*.sh" -exec chmod +x {} \; -print
+          find . -type f -name "*.py" -exec chmod +x {} \; -print
+          echo "Permissions set successfully"
 
       - name: Activate RAFAELIA (ativar.txt)
         run: |
@@ -101,18 +101,14 @@ jobs:
             cat "ZIPRAF_OMEGA_FULL/ativar.txt"
             head -n 10 "ZIPRAF_OMEGA_FULL/ativar.txt" > out/logs/ativar_excerpt.txt
             ATIVAR_FOUND=true
-          fi
-          
           # Check for ativar.txt at repo root
-          if [ -f "ativar.txt" ]; then
+          elif [ -f "ativar.txt" ]; then
             echo "Found ativar.txt at repository root"
             cat "ativar.txt"
             head -n 10 "ativar.txt" > out/logs/ativar_excerpt.txt
             ATIVAR_FOUND=true
-          fi
-          
           # Check for the file with spaces in name (fallback for existing setup)
-          if [ -f "ZIPRAF_OMEGA_FULL DO it ativar.txt" ]; then
+          elif [ -f "ZIPRAF_OMEGA_FULL DO it ativar.txt" ]; then
             echo "Found 'ZIPRAF_OMEGA_FULL DO it ativar.txt' at repository root"
             cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
             head -n 10 "ZIPRAF_OMEGA_FULL DO it ativar.txt" > out/logs/ativar_excerpt.txt
@@ -126,13 +122,6 @@ jobs:
           
           echo "=========================================="
           echo "RAFAELIA activation marker processed (non-fatal)"
-
-      - name: Set executable permissions for scripts
-        run: |
-          echo "Setting executable permissions for all scripts..."
-          find . -type f -name "*.sh" -exec chmod +x {} \; -print
-          find . -type f -name "*.py" -exec chmod +x {} \; -print
-          echo "Permissions set successfully"
 
       - name: Setup environment
         uses: ./.github/actions/setup
