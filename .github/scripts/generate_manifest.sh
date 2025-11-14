@@ -1,52 +1,70 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [ "$#" -ne 2 ]; then
-  echo "Usage: $0 <apk-path> <out-json>"
-  exit 2
+APK="${1:-}"
+OUT="${2:-}"
+mkdir -p "$(dirname "${OUT}")"
+
+if [[ -z "${APK}" || -z "${OUT}" || ! -f "${APK}" ]]; then
+  echo "Usage: $0 <apk_path> <out_manifest.json>" >&2
+  exit 1
 fi
 
-APK="$1"
-OUT="$2"
+timestamp="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+commit="${GITHUB_SHA:-$(git rev-parse --short=8 HEAD 2>/dev/null || echo '')}"
+branch="${GITHUB_REF_NAME:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo '')}"
 
-if [ ! -f "$APK" ]; then
-  echo "ERROR: APK not found at $APK"
-  exit 3
-fi
-
-mkdir -p "$(dirname "$OUT")"
-
-# Compute sha256 and filesize
+# sha256
 if command -v sha256sum >/dev/null 2>&1; then
-  SHA256=$(sha256sum "$APK" | awk '{print $1}')
+  sha256="$(sha256sum "${APK}" | awk '{print $1}')"
+elif command -v shasum >/dev/null 2>&1; then
+  sha256="$(shasum -a 256 "${APK}" | awk '{print $1}')"
 else
-  SHA256=$(shasum -a 256 "$APK" | awk '{print $1}')
+  sha256="$(python3 -c 'import sys,hashlib;print(hashlib.sha256(open(sys.argv[1],"rb").read()).hexdigest())' "${APK}")"
 fi
 
-if command -v stat >/dev/null 2>&1; then
-  FILESIZE=$(stat -c%s "$APK" 2>/dev/null || stat -f%z "$APK" 2>/dev/null || echo 0)
-else
-  FILESIZE=0
+# sha3-256 via Python
+sha3="$(python3 - <<'PY' "${APK}"
+import sys,hashlib
+with open(sys.argv[1],'rb') as f:
+    print(hashlib.sha3_256(f.read()).hexdigest())
+PY
+)"
+
+# blake3 (best effort)
+blake3=""
+if python3 -c 'import blake3' >/dev/null 2>&1; then
+  blake3="$(python3 - <<'PY' "${APK}"
+import sys, blake3
+with open(sys.argv[1],'rb') as f:
+    print(blake3.blake3(f.read()).hexdigest())
+PY
+)"
 fi
 
-PACKAGE="unknown"
-VERSION_NAME="unknown"
-if command -v aapt >/dev/null 2>&1; then
-  PKG_INFO=$(aapt dump badging "$APK" | awk -F"'" '/package: name=/{print $2","$6}') || true
-  PACKAGE=$(echo "$PKG_INFO" | cut -d',' -f1 || true)
-  VERSION_NAME=$(echo "$PKG_INFO" | cut -d',' -f2 || true)
-fi
+# file size (linux/macos)
+size_bytes="$(stat -c '%s' "${APK}" 2>/dev/null || stat -f '%z' "${APK}")"
 
-cat > "$OUT" <<EOF
+cat > "${OUT}" <<JSON
 {
-  "apk_path": "${APK}",
-  "package": "${PACKAGE}",
-  "version_name": "${VERSION_NAME}",
-  "sha256": "${SHA256}",
-  "filesize": ${FILESIZE},
-  "generated_by": "generate_manifest.sh",
-  "timestamp": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+  "signature": "RAFCODE-\\u03a6-\\u2206RafaelVerbo\\u03a9",
+  "timestamp": "${timestamp}",
+  "artifact": "$(basename "${APK}")",
+  "size_bytes": ${size_bytes},
+  "hashes": {
+    "sha256": "${sha256}",
+    "sha3_256": "${sha3}",
+    "blake3": "${blake3}"
+  },
+  "build": {
+    "commit": "${commit}",
+    "branch": "${branch}",
+    "toolchain": "Gradle+ONDK r29.2",
+    "abi": "",
+    "purpose": "APK integrity manifest"
+  },
+  "notes": "Generated under ψχρΔΣΩ_LOOP with Φ_ethica"
 }
-EOF
+JSON
 
-echo "Manifest generated at $OUT"
+echo "Manifest generated at ${OUT}" at $OUT"
