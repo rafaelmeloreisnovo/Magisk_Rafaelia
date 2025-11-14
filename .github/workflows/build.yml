@@ -1,3 +1,4 @@
+
 name: Magisk Build (with enhanced logging)
 
 on:
@@ -37,6 +38,8 @@ jobs:
       }}
     env:
       RAFAELIA_DEBUG: "true"
+      GRADLE_OPTS: "-Dorg.gradle.jvmargs=-Xmx3g -Dkotlin.daemon.jvm.options=-Xmx2g -Dfile.encoding=UTF-8"
+
     steps:
       - name: Check out
         uses: actions/checkout@v4
@@ -44,6 +47,13 @@ jobs:
           submodules: recursive
           token: ${{ secrets.GITHUB_TOKEN }}
           persist-credentials: true
+
+      - name: Set up Java 21 (Temurin) with Gradle cache
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
 
       - name: Debug info (runner, user, ls)
         run: |
@@ -75,15 +85,11 @@ jobs:
       - name: Activate RAFAELIA (ativar.txt) — leitura segura
         run: |
           set -x
-          # Procurar no diretório ZIPRAF_OMEGA_FULL primeiro, depois na raiz
           if [ -f "ZIPRAF_OMEGA_FULL DO it ativar.txt" ]; then
-            echo "Found 'ZIPRAF_OMEGA_FULL DO it ativar.txt', printing first 200 lines:"
             sed -n '1,200p' "ZIPRAF_OMEGA_FULL DO it ativar.txt" | tee out/logs/ativar_excerpt.txt
           elif [ -f "ZIPRAF_OMEGA_FULL/ativar.txt" ]; then
-            echo "Found ZIPRAF_OMEGA_FULL/ativar.txt, printing first 200 lines:"
             sed -n '1,200p' ZIPRAF_OMEGA_FULL/ativar.txt | tee out/logs/ativar_excerpt.txt
           elif [ -f "ativar.txt" ]; then
-            echo "Found ativar.txt at repo root, printing excerpt:"
             sed -n '1,200p' ativar.txt | tee out/logs/ativar_excerpt.txt
           else
             echo "ativar.txt not found in expected locations" | tee out/logs/ativar_excerpt.txt
@@ -94,17 +100,12 @@ jobs:
       - name: Print key environment and tool versions
         run: |
           set -x
-          echo "Python:"
-          python3 --version || true
-          echo "Java:"
-          java -version || true
+          echo "Python:"; python3 --version || true
+          echo "Java:"; java -version || true
           echo "Gradle wrapper if present:"
-          if [ -f app/gradlew ]; then
-            app/gradlew --version || true
-          fi
+          if [ -f app/gradlew ]; then app/gradlew --version || true; fi
           echo "pip list (first 50):"
           python3 -m pip list 2>/dev/null | head -n 50 || true
-          # snapshot env for post-mortem
           env | sort > out/logs/env_snapshot.txt || true
           set +x
 
@@ -175,6 +176,24 @@ jobs:
             out
             out/logs
           compression-level: 9
+          retention-days: 7
+
+      - name: Upload APK (release) if present
+        if: ${{ hashFiles('out/app-release.apk') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}-app-release.apk
+          path: out/app-release.apk
+          compression-level: 0
+          retention-days: 7
+
+      - name: Upload APK (debug) if present
+        if: ${{ hashFiles('out/app-debug.apk') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}-app-debug.apk
+          path: out/app-debug.apk
+          compression-level: 0
           retention-days: 7
 
       - name: Upload mapping and native debug symbols (if exists)
