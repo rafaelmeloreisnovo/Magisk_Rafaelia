@@ -45,7 +45,12 @@ long lowlevel_close(int fd) {
 
 // Direct syscall wrapper for mmap with error checking
 void* lowlevel_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) {
+#ifdef __NR_mmap2
+    // 32-bit ARM and other architectures use mmap2 which takes offset in page units
+    long result = syscall(__NR_mmap2, addr, length, prot, flags, fd, (off_t)(offset >> 12));
+#else
     long result = syscall(__NR_mmap, addr, length, prot, flags, fd, offset);
+#endif
     // Check if result is an error
     if ((unsigned long)result >= (unsigned long)-SYSCALL_ERROR_THRESHOLD) {
         errno = -(int)result;

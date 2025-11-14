@@ -38,7 +38,12 @@ static inline void mem_write64(uintptr_t addr, uint64_t value) {
 
 // Direct syscall for mmap to allocate memory at specific addresses
 static inline void* sys_mmap(void* addr, size_t length, int prot, int flags, int fd, off_t offset) {
+#ifdef __NR_mmap2
+    // 32-bit ARM and other architectures use mmap2 which takes offset in page units
+    long result = syscall(__NR_mmap2, addr, length, prot, flags, fd, static_cast<off_t>(offset >> 12));
+#else
     long result = syscall(__NR_mmap, addr, length, prot, flags, fd, offset);
+#endif
     // Check if result is an error
     if (static_cast<unsigned long>(result) >= static_cast<unsigned long>(-SYSCALL_ERROR_THRESHOLD)) {
         errno = -static_cast<int>(result);
