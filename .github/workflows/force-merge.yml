@@ -1,0 +1,67 @@
+# Force-merge workflow: cria backup da master, mescla todos os branches remotos em merge-all,
+# resolve conflitos preferindo 'theirs' e, se autorizado, força push para origin/master.
+name: Force Merge All Branches to Master
+on:
+  workflow_dispatch:
+    inputs:
+      run_backup_only:
+        description: 'If true, only create backup and do not force push master'
+        required: false
+        default: 'false'
+
+jobs:
+  merge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Setup git user
+        run: |
+          git config user.name "RAFAELIA Copilot"
+          git config user.email "noreply@users.noreply.github.com"
+
+      - name: Create backup branch from master
+        run: |
+          TIMESTAMP=$(date -u +%Y%m%dT%H%M%SZ)
+          BACKUP="master-backup-${TIMESTAMP}"
+          git fetch origin --prune
+          git checkout -B "${BACKUP}" origin/master || git checkout -B "${BACKUP}"
+          git push origin "refs/heads/${BACKUP}"
+          echo "BACKUP=${BACKUP}" >> $GITHUB_ENV
+
+      - name: Create merge-all branch
+        run: |
+          git checkout -B merge-all origin/master || git checkout -B merge-all
+          BRANCHES=$(git for-each-ref --format='%(refname:short)' refs/remotes/origin | sed 's#^origin/##' | grep -Ev '^(master|HEAD)$' || true)
+          echo "Branches to merge: $BRANCHES"
+          for b in $BRANCHES; do
+            echo "Merging origin/$b"
+            if git merge --no-edit --no-ff --strategy=recursive -X theirs "origin/$b"; then
+              echo "Merged $b"
+            else
+              echo "Conflict, resolving using theirs"
+              git merge --abort || true
+              git merge --no-edit --no-ff "origin/$b" || true
+              git checkout --theirs .
+              git add -A
+              git commit -m "Automatic merge of $b preferring theirs"
+            fi
+          done
+
+      - name: Push merge to master (force)
+        if: ${{ github.event.inputs.run_backup_only == 'false' }}
+        run: |
+          git checkout -B master merge-all
+          git push origin master --force
+          echo "Forced push to origin/master completed."
+
+      - name: Output result
+        run: |
+          echo "Backup branch created: $BACKUP"
+          git --no-pager log --oneline "${BACKUP}" | head -n 20
