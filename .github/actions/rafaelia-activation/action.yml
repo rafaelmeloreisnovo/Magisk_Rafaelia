@@ -16,25 +16,26 @@ runs:
         echo "RAFAELIA Activation - Reading ativar.txt"
         echo "=========================================="
 
+        EXCERPT_LINES=10
         ATIVAR_FOUND=false
 
         # Check for ZIPRAF_OMEGA_FULL/ativar.txt
         if [ -f "ZIPRAF_OMEGA_FULL/ativar.txt" ]; then
           echo "Found ativar.txt in ZIPRAF_OMEGA_FULL directory"
           cat "ZIPRAF_OMEGA_FULL/ativar.txt"
-          head -n 10 "ZIPRAF_OMEGA_FULL/ativar.txt" > out/logs/ativar_excerpt.txt
+          head -n "$EXCERPT_LINES" "ZIPRAF_OMEGA_FULL/ativar.txt" > out/logs/ativar_excerpt.txt
           ATIVAR_FOUND=true
         # Check for ativar.txt at repo root
         elif [ -f "ativar.txt" ]; then
           echo "Found ativar.txt at repository root"
           cat "ativar.txt"
-          head -n 10 "ativar.txt" > out/logs/ativar_excerpt.txt
+          head -n "$EXCERPT_LINES" "ativar.txt" > out/logs/ativar_excerpt.txt
           ATIVAR_FOUND=true
         # Check for the file with spaces in name (fallback for existing setup)
         elif [ -f "ZIPRAF_OMEGA_FULL DO it ativar.txt" ]; then
           echo "Found 'ZIPRAF_OMEGA_FULL DO it ativar.txt' at repository root"
           cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
-          head -n 10 "ZIPRAF_OMEGA_FULL DO it ativar.txt" > out/logs/ativar_excerpt.txt
+          head -n "$EXCERPT_LINES" "ZIPRAF_OMEGA_FULL DO it ativar.txt" > out/logs/ativar_excerpt.txt
           ATIVAR_FOUND=true
         fi
 
