@@ -1,0 +1,48 @@
+name: 'RAFAELIA Activation'
+description: 'Prepare logs directory and activate RAFAELIA by reading ativar.txt'
+runs:
+  using: "composite"
+  steps:
+    - name: Prepare logs directory
+      run: |
+        mkdir -p out/logs || { echo "Failed to create logs directory"; exit 1; }
+        echo "Logs directory created for ativar excerpt"
+      shell: bash
+
+    - name: Activate RAFAELIA (ativar.txt)
+      run: |
+        echo "=========================================="
+        echo "RAFAELIA Activation - Reading ativar.txt"
+        echo "=========================================="
+
+        ATIVAR_FOUND=false
+
+        # Check for ZIPRAF_OMEGA_FULL/ativar.txt
+        if [ -f "ZIPRAF_OMEGA_FULL/ativar.txt" ]; then
+          echo "Found ativar.txt in ZIPRAF_OMEGA_FULL directory"
+          cat "ZIPRAF_OMEGA_FULL/ativar.txt"
+          head -n 10 "ZIPRAF_OMEGA_FULL/ativar.txt" > out/logs/ativar_excerpt.txt
+          ATIVAR_FOUND=true
+        # Check for ativar.txt at repo root
+        elif [ -f "ativar.txt" ]; then
+          echo "Found ativar.txt at repository root"
+          cat "ativar.txt"
+          head -n 10 "ativar.txt" > out/logs/ativar_excerpt.txt
+          ATIVAR_FOUND=true
+        # Check for the file with spaces in name (fallback for existing setup)
+        elif [ -f "ZIPRAF_OMEGA_FULL DO it ativar.txt" ]; then
+          echo "Found 'ZIPRAF_OMEGA_FULL DO it ativar.txt' at repository root"
+          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
+          head -n 10 "ZIPRAF_OMEGA_FULL DO it ativar.txt" > out/logs/ativar_excerpt.txt
+          ATIVAR_FOUND=true
+        fi
+
+        if [ "$ATIVAR_FOUND" = false ]; then
+          echo "No ativar.txt file found (checked ZIPRAF_OMEGA_FULL/ativar.txt, ativar.txt, and legacy path)"
+          echo "No ativar.txt file found" > out/logs/ativar_excerpt.txt
+          exit 1
+        fi
+
+        echo "=========================================="
+        echo "RAFAELIA activation marker processed"
+      shell: bash
