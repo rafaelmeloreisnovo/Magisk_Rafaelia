@@ -130,7 +130,7 @@ jobs:
 
       - name: Prepare logs directory
         run: |
-          mkdir -p out/logs
+          mkdir -p out/logs || { echo "Failed to create logs directory"; exit 1; }
           echo "Logs directory created for ativar excerpt"
         shell: bash
 
