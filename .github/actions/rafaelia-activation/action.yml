@@ -18,28 +18,34 @@ runs:
 
         EXCERPT_LINES=10
         ATIVAR_FOUND=false
+        ATIVAR_PATH=""
+
+        # Define function to save excerpt
+        save_excerpt() {
+          head -n "$EXCERPT_LINES" "$1" > out/logs/ativar_excerpt.txt
+        }
 
         # Check for ZIPRAF_OMEGA_FULL/ativar.txt
         if [ -f "ZIPRAF_OMEGA_FULL/ativar.txt" ]; then
           echo "Found ativar.txt in ZIPRAF_OMEGA_FULL directory"
-          cat "ZIPRAF_OMEGA_FULL/ativar.txt"
-          head -n "$EXCERPT_LINES" "ZIPRAF_OMEGA_FULL/ativar.txt" > out/logs/ativar_excerpt.txt
+          ATIVAR_PATH="ZIPRAF_OMEGA_FULL/ativar.txt"
           ATIVAR_FOUND=true
         # Check for ativar.txt at repo root
         elif [ -f "ativar.txt" ]; then
           echo "Found ativar.txt at repository root"
-          cat "ativar.txt"
-          head -n "$EXCERPT_LINES" "ativar.txt" > out/logs/ativar_excerpt.txt
+          ATIVAR_PATH="ativar.txt"
           ATIVAR_FOUND=true
         # Check for the file with spaces in name (fallback for existing setup)
         elif [ -f "ZIPRAF_OMEGA_FULL DO it ativar.txt" ]; then
           echo "Found 'ZIPRAF_OMEGA_FULL DO it ativar.txt' at repository root"
-          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
-          head -n "$EXCERPT_LINES" "ZIPRAF_OMEGA_FULL DO it ativar.txt" > out/logs/ativar_excerpt.txt
+          ATIVAR_PATH="ZIPRAF_OMEGA_FULL DO it ativar.txt"
           ATIVAR_FOUND=true
         fi
 
-        if [ "$ATIVAR_FOUND" = false ]; then
+        if [ "$ATIVAR_FOUND" = true ]; then
+          cat "$ATIVAR_PATH"
+          save_excerpt "$ATIVAR_PATH"
+        else
           echo "No ativar.txt file found (checked ZIPRAF_OMEGA_FULL/ativar.txt, ativar.txt, and legacy path)"
           echo "No ativar.txt file found" > out/logs/ativar_excerpt.txt
         fi
