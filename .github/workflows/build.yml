@@ -60,6 +60,7 @@ jobs:
           if [ "$ATIVAR_FOUND" = false ]; then
             echo "No ativar.txt file found (checked ZIPRAF_OMEGA_FULL/ativar.txt, ativar.txt, and legacy path)"
             echo "No ativar.txt file found" > out/logs/ativar_excerpt.txt
+            exit 1
           fi
 
           echo "=========================================="
