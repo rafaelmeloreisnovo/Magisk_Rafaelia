@@ -1,4 +1,37 @@
 #!/usr/bin/env python3
+"""
+build.py - Magisk Build System
+
+This is the main build script for Magisk_Rafaelia. It handles:
+- Native code compilation (C/C++/Rust)
+- Android NDK setup and management
+- Multi-architecture builds (ARM, ARM64, x86, x86_64, RISC-V)
+- APK packaging and signing
+- Build artifact management
+
+Usage:
+    ./build.py all              # Build everything
+    ./build.py binary           # Build native binaries only
+    ./build.py app              # Build APK only
+    ./build.py clean            # Clean build artifacts
+    ./build.py ndk              # Setup ONDK (Organized NDK)
+
+For more options: ./build.py --help
+
+Requirements:
+- Python 3.8+
+- Android SDK
+- Java/Kotlin toolchain
+- Rust toolchain (for native components)
+- On Windows: colorama package for colored output
+
+Architecture Support:
+- armeabi-v7a (32-bit ARM)
+- arm64-v8a (64-bit ARM)
+- x86 (32-bit Intel/AMD)
+- x86_64 (64-bit Intel/AMD)
+- riscv64 (RISC-V 64-bit, experimental)
+"""
 import argparse
 import glob
 import multiprocessing
@@ -15,7 +48,14 @@ from pathlib import Path
 from zipfile import ZipFile
 
 
+# Terminal color output helpers
 def color_print(code, str):
+    """Print colored text to terminal if colors are supported"""
+    if no_color:
+        print(str)
+    else:
+        str = str.replace("\n", f"\033[0m\n{code}")
+        print(f"{code}{str}\033[0m")
     if no_color:
         print(str)
     else:
@@ -24,15 +64,18 @@ def color_print(code, str):
 
 
 def error(str):
+    """Print error message in red and exit"""
     color_print("\033[41;39m", f"\n! {str}\n")
     sys.exit(1)
 
 
 def header(str):
+    """Print section header in blue"""
     color_print("\033[44;39m", f"\n{str}\n")
 
 
 def vprint(str):
+    """Print verbose output if verbose mode is enabled"""
     if args.verbose > 0:
         print(str)
 
