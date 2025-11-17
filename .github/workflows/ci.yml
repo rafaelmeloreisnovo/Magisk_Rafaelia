@@ -17,14 +17,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Activate RAFAELIA (ativar.txt)
-        run: |
-          echo "=========================================="
-          echo "RAFAELIA Activation - Reading ativar.txt"
-          echo "=========================================="
-          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
-          echo "=========================================="
-          echo "RAFAELIA activation marker read successfully"
+      - name: RAFAELIA activation
+        uses: ./.github/actions/rafaelia-activate
 
       - name: Set executable permissions for scripts
         run: |
@@ -73,14 +67,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Activate RAFAELIA (ativar.txt)
-        run: |
-          echo "=========================================="
-          echo "RAFAELIA Activation - Reading ativar.txt"
-          echo "=========================================="
-          cat "ZIPRAF_OMEGA_FULL DO it ativar.txt"
-          echo "=========================================="
-          echo "RAFAELIA activation marker read successfully"
+      - name: RAFAELIA activation
+        uses: ./.github/actions/rafaelia-activate
 
       - name: Set executable permissions for scripts
         run: |
