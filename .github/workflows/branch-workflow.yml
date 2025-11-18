@@ -11,6 +11,8 @@ jobs:
   check-target-branch:
     name: Check PR Target Branch
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -162,6 +164,8 @@ jobs:
   check-branch-name:
     name: Validate Branch Naming
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Check branch name convention
         env:
