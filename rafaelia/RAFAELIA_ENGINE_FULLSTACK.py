@@ -2,6 +2,58 @@
 """
 RAFAELIA ENGINE FULLSTACK - Integrated TT Processing Engine
 
+====================================================================
+RESUMO TÉCNICO / TECHNICAL SUMMARY
+====================================================================
+
+PORTUGUÊS:
+----------
+Este módulo implementa o motor principal de processamento Tensor Train (TT)
+do framework RAFAELIA. Ele orquestra três componentes fundamentais:
+
+1. **Aproximação TT-Cross**: Algoritmo adaptativo que constrói decomposições
+   TT de tensores de alta dimensão usando apenas avaliações seletivas da
+   função original. Reduz complexidade exponencial para linear.
+
+2. **Atualizações Locais ALS**: Refinamento iterativo da decomposição usando
+   Alternating Least Squares. Permite aprendizado incremental e adaptação
+   a novos dados sem reconstruir toda a aproximação.
+
+3. **Adaptação de Ranks**: Ajuste dinâmico da capacidade representacional
+   do TT, permitindo trade-off entre precisão e eficiência computacional.
+
+O motor fornece interface unificada com checkpointing automático, geração
+de manifestos de auditoria e suporte opcional para aceleração GPU.
+
+INTEGRAÇÃO: Conecta-se com RAFAELIA_TT_CROSS_FULL.py e 
+RAFAELIA_TT_UPDATE_FULL.py para operações específicas.
+
+ENGLISH:
+--------
+This module implements the main Tensor Train (TT) processing engine for the
+RAFAELIA framework. It orchestrates three fundamental components:
+
+1. **TT-Cross Approximation**: Adaptive algorithm that builds TT decompositions
+   of high-dimensional tensors using only selective evaluations of the original
+   function. Reduces exponential complexity to linear.
+
+2. **ALS Local Updates**: Iterative refinement using Alternating Least Squares.
+   Enables incremental learning and adaptation to new data without rebuilding
+   the entire approximation.
+
+3. **Rank Adaptation**: Dynamic adjustment of TT representational capacity,
+   allowing trade-off between accuracy and computational efficiency.
+
+The engine provides unified interface with automatic checkpointing, audit
+manifest generation, and optional GPU acceleration support.
+
+INTEGRATION: Connects to RAFAELIA_TT_CROSS_FULL.py and 
+RAFAELIA_TT_UPDATE_FULL.py for specific operations.
+
+====================================================================
+
+RAFAELIA ENGINE FULLSTACK - Integrated TT Processing Engine
+
 This module provides the main orchestration engine for RAFAELIA Tensor Train
 processing, integrating cross-approximation, local updates, and adaptive algorithms.
 
@@ -118,7 +170,11 @@ except ImportError:
 
 class RAFAELIAEngine:
     """
+    Motor Fullstack TT integrando aproximação cruzada e atualizações.
     Fullstack TT Engine integrating cross-approximation and updates.
+    
+    Fornece interface de alto nível para operações tensoriais com adaptação
+    automática de ranks, checkpoints e geração de manifesto RAFAELIA.
     
     Provides high-level interface for tensor operations with automatic
     rank adaptation, checkpointing, and RAFAELIA manifest generation.
@@ -126,27 +182,32 @@ class RAFAELIAEngine:
     
     def __init__(self, config: Optional[Dict[str, Any]] = None):
         """
-        Initialize RAFAELIA Engine.
+        Inicializa o Motor RAFAELIA / Initialize RAFAELIA Engine.
         
         Args:
-            config: Configuration dictionary with options:
-                - use_gpu: Enable GPU acceleration (bool)
-                - checkpoint_dir: Directory for checkpoints (str)
-                - auto_checkpoint: Auto-save after operations (bool)
-                - compression: Use zstd compression (bool)
+            config: Dicionário de configuração com opções:
+                - use_gpu: Habilita aceleração GPU (bool)
+                - checkpoint_dir: Diretório para checkpoints (str)
+                - auto_checkpoint: Salvamento automático após operações (bool)
+                - compression: Usa compressão zstd (bool)
         """
+        # Configuração básica / Basic configuration
         self.config = config or {}
         self.use_gpu = self.config.get('use_gpu', False) and HAS_CUPY
         self.checkpoint_dir = Path(self.config.get('checkpoint_dir', '/tmp'))
         self.auto_checkpoint = self.config.get('auto_checkpoint', True)
         self.compression = self.config.get('compression', True) and HAS_ZSTD
         
-        # Engine state
+        # Estado do motor / Engine state
+        # tt_cross: objeto de aproximação cruzada TT / TT cross approximation object
+        # tt_update: objeto de atualização local / local update object
         self.tt_cross = None
         self.tt_update = None
+        
+        # Metadados para auditoria e rastreamento / Metadata for audit and tracking
         self.metadata = {
             'created': time.time(),
-            'operations': [],
+            'operations': [],  # histórico de operações / operation history
             'rafaelia': {
                 'signature': 'RAFCODE-Φ-∆RafaelVerboΩ',
                 'module': 'ENGINE_FULLSTACK',
@@ -154,22 +215,34 @@ class RAFAELIAEngine:
             }
         }
         
-        # Ensure checkpoint directory exists
+        # Garante que diretório de checkpoint existe / Ensure checkpoint directory exists
         self.checkpoint_dir.mkdir(parents=True, exist_ok=True)
     
     def approximate_tensor(self, func: Callable, shape: List[int],
                           ranks: List[int], **kwargs) -> Dict[str, Any]:
         """
+        Aproxima tensor de alta dimensão usando TT-cross.
         Approximate high-dimensional tensor using TT-cross.
         
+        Este método implementa a aproximação cruzada de Tensor Train (TT-cross),
+        uma técnica eficiente para representar tensores de alta dimensão com
+        poucos parâmetros, usando decomposição de baixo rank.
+        
         Args:
-            func: Function to approximate (takes list of indices)
-            shape: Tensor dimensions
-            ranks: TT ranks
-            **kwargs: Additional arguments for cross approximation
+            func: Função a aproximar (recebe lista de índices e retorna valor escalar)
+            shape: Dimensões do tensor (ex: [10, 20, 30] para tensor 3D)
+            ranks: Ranks TT entre cada dimensão (ex: [1, 5, 7, 1])
+            **kwargs: Argumentos adicionais:
+                - epsilon: Tolerância de erro (padrão: 1e-6)
+                - max_iter: Número máximo de iterações (padrão: 100)
+                - verbose: Mostra progresso (padrão: False)
             
         Returns:
-            Dictionary with approximation results
+            Dicionário com resultados da aproximação contendo:
+            - converged: Se convergiu
+            - error: Erro final
+            - iterations: Número de iterações
+            - elapsed_time: Tempo decorrido
         """
         print(f"Starting TT-cross approximation...")
         print(f"  Shape: {shape}")
@@ -177,7 +250,9 @@ class RAFAELIAEngine:
         
         start_time = time.time()
         
-        # Create cross approximation
+        # Cria objeto de aproximação cruzada / Create cross approximation object
+        # O TT-cross é um algoritmo adaptativo que seleciona automaticamente
+        # os índices mais importantes para a aproximação
         self.tt_cross = TTCrossApproximation(
             shape=shape,
             ranks=ranks,
@@ -185,7 +260,8 @@ class RAFAELIAEngine:
             epsilon=kwargs.get('epsilon', 1e-6)
         )
         
-        # Perform approximation
+        # Executa aproximação iterativa / Perform iterative approximation
+        # O algoritmo refina os cores TT até convergência ou max_iter
         stats = self.tt_cross.cross_approximation(
             func=func,
             max_iter=kwargs.get('max_iter', 100),
@@ -195,7 +271,7 @@ class RAFAELIAEngine:
         elapsed = time.time() - start_time
         stats['elapsed_time'] = elapsed
         
-        # Record operation
+        # Registra operação no histórico / Record operation in history
         self.metadata['operations'].append({
             'type': 'cross_approximation',
             'timestamp': time.time(),
@@ -204,7 +280,7 @@ class RAFAELIAEngine:
             'stats': stats
         })
         
-        # Auto-checkpoint
+        # Checkpoint automático se habilitado / Auto-checkpoint if enabled
         if self.auto_checkpoint:
             self._save_checkpoint('tt_cross_auto')
         
@@ -217,30 +293,47 @@ class RAFAELIAEngine:
     def update_tensor(self, target_data: Dict[Tuple, float],
                      **kwargs) -> Dict[str, Any]:
         """
-        Update TT decomposition using local updates.
+        Atualiza decomposição TT usando atualizações locais (ALS).
+        Update TT decomposition using local updates (ALS).
+        
+        Este método usa o algoritmo Alternating Least Squares (ALS) para
+        ajustar a decomposição TT existente para melhor aproximar novos dados.
+        É útil para refinamento adaptativo e aprendizado incremental.
         
         Args:
-            target_data: Dictionary mapping indices to target values
-            **kwargs: Additional arguments for update
+            target_data: Dicionário mapeando índices para valores alvo
+                        Ex: {(0,1,2): 3.5, (1,2,3): 4.2}
+            **kwargs: Argumentos adicionais:
+                - n_iterations: Número de iterações ALS (padrão: 10)
+                - verbose: Mostra progresso (padrão: False)
             
         Returns:
-            Dictionary with update results
+            Dicionário com resultados da atualização contendo:
+            - final_error: Erro final médio
+            - iteration_errors: Erros por iteração
+            - elapsed_time: Tempo decorrido
+        
+        Raises:
+            RuntimeError: Se approximate_tensor não foi executado primeiro
         """
         if self.tt_cross is None:
-            raise RuntimeError("Must run approximate_tensor first")
+            raise RuntimeError("Deve executar approximate_tensor primeiro / Must run approximate_tensor first")
         
         print(f"Starting TT local update...")
         print(f"  Target samples: {len(target_data)}")
         
         start_time = time.time()
         
+        # Cria atualizador a partir dos cores da aproximação cruzada
         # Create updater from cross approximation cores
         self.tt_update = TTLocalUpdate(
             cores=self.tt_cross.cores,
             use_gpu=self.use_gpu
         )
         
-        # Perform ALS updates
+        # Executa varreduras ALS (Alternating Least Squares)
+        # Perform ALS sweeps
+        # ALS otimiza cada core mantendo os outros fixos, alternadamente
         stats = self.tt_update.als_sweep(
             target_data=target_data,
             n_iterations=kwargs.get('n_iterations', 10),
@@ -250,10 +343,11 @@ class RAFAELIAEngine:
         elapsed = time.time() - start_time
         stats['elapsed_time'] = elapsed
         
-        # Update cross approximation cores
+        # Atualiza cores da aproximação cruzada com resultados do ALS
+        # Update cross approximation cores with ALS results
         self.tt_cross.cores = self.tt_update.cores
         
-        # Record operation
+        # Registra operação / Record operation
         self.metadata['operations'].append({
             'type': 'local_update',
             'timestamp': time.time(),
@@ -261,7 +355,7 @@ class RAFAELIAEngine:
             'stats': stats
         })
         
-        # Auto-checkpoint
+        # Checkpoint automático / Auto-checkpoint
         if self.auto_checkpoint:
             self._save_checkpoint('tt_update_auto')
         
@@ -273,35 +367,50 @@ class RAFAELIAEngine:
     def adapt_ranks(self, core_idx: int, new_rank: int,
                    method: str = 'truncate') -> Dict[str, Any]:
         """
+        Adapta ranks TT em posição específica.
         Adapt TT ranks at specified position.
         
+        Permite ajustar dinamicamente a capacidade representacional do TT
+        aumentando (expand) ou reduzindo (truncate) os ranks.
+        
         Args:
-            core_idx: Core index where rank changes
-            new_rank: New rank value
-            method: 'truncate' or 'expand'
+            core_idx: Índice do core onde o rank muda (0 a d-2, onde d é número de dimensões)
+            new_rank: Novo valor do rank
+            method: Método de adaptação:
+                - 'truncate': Reduz rank (remove componentes menos importantes)
+                - 'expand': Aumenta rank (adiciona novos componentes)
             
         Returns:
-            Dictionary with adaptation results
+            Dicionário com resultados da adaptação contendo:
+            - old_rank: Rank anterior
+            - new_rank: Novo rank
+            - method: Método usado
+            - elapsed_time: Tempo decorrido
+        
+        Raises:
+            RuntimeError: Se não há decomposição TT disponível
         """
         if self.tt_update is None:
             if self.tt_cross is not None:
+                # Inicializa atualizador se só temos aproximação / Initialize updater if we only have approximation
                 self.tt_update = TTLocalUpdate(
                     cores=self.tt_cross.cores,
                     use_gpu=self.use_gpu
                 )
             else:
-                raise RuntimeError("No TT decomposition available")
+                raise RuntimeError("Nenhuma decomposição TT disponível / No TT decomposition available")
         
         print(f"Adapting rank at position {core_idx} to {new_rank}...")
         
         old_rank = self.tt_update.ranks[core_idx + 1]
         start_time = time.time()
         
+        # Executa adaptação de rank / Perform rank adaptation
         self.tt_update.rank_adaptation(core_idx, new_rank, method)
         
         elapsed = time.time() - start_time
         
-        # Update cross approximation if it exists
+        # Sincroniza com aproximação cruzada se existir / Update cross approximation if it exists
         if self.tt_cross is not None:
             self.tt_cross.cores = self.tt_update.cores
             self.tt_cross.ranks = self.tt_update.ranks
@@ -326,16 +435,32 @@ class RAFAELIAEngine:
         return result
     
     def evaluate(self, indices: List[int]) -> float:
-        """Evaluate TT at given indices."""
+        """
+        Avalia TT em índices específicos / Evaluate TT at given indices.
+        
+        Args:
+            indices: Lista de índices para avaliar (um por dimensão)
+        
+        Returns:
+            Valor escalar da aproximação TT nesses índices
+        
+        Raises:
+            RuntimeError: Se não há decomposição TT disponível
+        """
         if self.tt_cross is not None:
             return self.tt_cross.evaluate(indices)
         elif self.tt_update is not None:
             return self.tt_update._evaluate(tuple(indices))
         else:
-            raise RuntimeError("No TT decomposition available")
+            raise RuntimeError("Nenhuma decomposição TT disponível / No TT decomposition available")
     
     def _save_checkpoint(self, name: str):
-        """Save checkpoint with RAFAELIA manifest."""
+        """
+        Salva checkpoint com manifesto RAFAELIA / Save checkpoint with RAFAELIA manifest.
+        
+        Args:
+            name: Nome base do checkpoint (timestamp será adicionado)
+        """
         timestamp = int(time.time())
         filepath = self.checkpoint_dir / f"{name}_{timestamp}.json"
         
@@ -346,14 +471,28 @@ class RAFAELIAEngine:
     
     def generate_manifest(self, output_path: Optional[str] = None) -> Dict[str, Any]:
         """
+        Gera manifesto RAFAELIA para estado atual.
         Generate RAFAELIA manifest for current state.
         
+        O manifesto contém metadados completos sobre a execução, incluindo
+        configuração, operações realizadas, estado do TT e hashes de integridade.
+        Essencial para auditoria e reprodutibilidade.
+        
         Args:
-            output_path: Optional path to save manifest JSON
+            output_path: Caminho opcional para salvar manifesto JSON
             
         Returns:
-            Manifest dictionary
+            Dicionário com manifesto completo contendo:
+            - signature: Assinatura RAFAELIA
+            - timestamp: Momento de geração
+            - module: Nome do módulo
+            - philosophy: Filosofia VAZIO→VERBO→CHEIO→RETRO
+            - metadata: Histórico de operações
+            - config: Configuração do motor
+            - tt_state: Estado da decomposição TT (se disponível)
+            - hashes: Hashes de integridade (SHA256, Blake3)
         """
+        # Estrutura base do manifesto / Base manifest structure
         manifest = {
             'signature': 'RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩARKRE-VERBOΩ',
             'timestamp': time.time(),
@@ -369,7 +508,7 @@ class RAFAELIAEngine:
             }
         }
         
-        # Add TT state if available
+        # Adiciona estado TT se disponível / Add TT state if available
         if self.tt_cross is not None:
             manifest['tt_state'] = {
                 'shape': self.tt_cross.shape,
@@ -377,12 +516,13 @@ class RAFAELIAEngine:
                 'epsilon': self.tt_cross.epsilon
             }
         
-        # Compute manifest hash
+        # Computa hashes do manifesto para integridade / Compute manifest hash for integrity
         manifest_str = json.dumps(manifest['metadata'], sort_keys=True)
         manifest['hashes'] = {
             'sha256': hashlib.sha256(manifest_str.encode()).hexdigest()
         }
         
+        # Adiciona Blake3 se disponível (mais rápido que SHA256) / Add Blake3 if available
         if HAS_BLAKE3:
             manifest['hashes']['blake3'] = blake3.blake3(
                 manifest_str.encode()
@@ -397,7 +537,15 @@ class RAFAELIAEngine:
 
 
 def demo_engine():
-    """Demonstration of RAFAELIA Engine."""
+    """
+    Demonstração do Motor RAFAELIA / Demonstration of RAFAELIA Engine.
+    
+    Executa exemplo completo mostrando:
+    1. Aproximação TT-cross de uma função
+    2. Atualização local com ALS
+    3. Avaliação de pontos
+    4. Geração de manifesto
+    """
     print("=" * 60)
     print("RAFAELIA ENGINE FULLSTACK - Demonstration")
     print("=" * 60)
