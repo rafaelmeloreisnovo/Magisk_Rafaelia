@@ -2,6 +2,60 @@
 """
 RAFAELIA TT-CROSS FULL - Tensor Train Cross Approximation Algorithm
 
+====================================================================
+RESUMO TÉCNICO / TECHNICAL SUMMARY
+====================================================================
+
+PORTUGUÊS:
+----------
+Este módulo implementa o algoritmo TT-Cross (Tensor Train Cross-Approximation),
+uma técnica adaptativa para construir decomposições TT de tensores de alta
+dimensão usando apenas avaliações seletivas da função original.
+
+PRINCIPAIS FUNCIONALIDADES:
+1. **Maxvol**: Seleciona linhas/colunas maximalmente lineares independentes
+   para formar uma base ótima de aproximação.
+
+2. **Cross-Approximation**: Constrói decomposição TT iterativamente,
+   selecionando pontos de amostragem ótimos automaticamente.
+
+3. **Rank Adaptation**: Ajusta ranks dinamicamente durante aproximação
+   para balancear precisão vs. eficiência.
+
+O algoritmo reduz complexidade de O(n^d) para O(d*n*r^2), onde:
+- n: tamanho de cada dimensão
+- d: número de dimensões
+- r: rank TT (tipicamente r << n)
+
+INTEGRAÇÃO: Usado por RAFAELIA_ENGINE_FULLSTACK.py como motor de aproximação.
+
+ENGLISH:
+--------
+This module implements the TT-Cross (Tensor Train Cross-Approximation) algorithm,
+an adaptive technique for building TT decompositions of high-dimensional tensors
+using only selective evaluations of the original function.
+
+MAIN FEATURES:
+1. **Maxvol**: Selects maximally linearly independent rows/columns to form
+   an optimal approximation basis.
+
+2. **Cross-Approximation**: Builds TT decomposition iteratively, selecting
+   optimal sampling points automatically.
+
+3. **Rank Adaptation**: Adjusts ranks dynamically during approximation to
+   balance accuracy vs. efficiency.
+
+Algorithm reduces complexity from O(n^d) to O(d*n*r^2), where:
+- n: size of each dimension
+- d: number of dimensions
+- r: TT rank (typically r << n)
+
+INTEGRATION: Used by RAFAELIA_ENGINE_FULLSTACK.py as approximation engine.
+
+====================================================================
+
+RAFAELIA TT-CROSS FULL - Tensor Train Cross Approximation Algorithm
+
 This module implements the TT-cross approximation algorithm for efficient
 representation of high-dimensional tensors using low-rank decompositions.
 
