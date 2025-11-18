@@ -30,7 +30,7 @@ import argparse
 import json
 from typing import Optional, Dict, Any
 import warnings
-
+import logging
 # Import RAFAELIA modules
 try:
     from RAFAELIA_TT_CROSS_FULL import TTBuilder
@@ -407,8 +407,8 @@ def create_flask_app(engine: RAFAELIAEngine) -> 'Flask':
             engine.load_checkpoint(checkpoint_name)
             return jsonify({"success": True, "status": engine.get_status()})
         except Exception as e:
-            return jsonify({"success": False, "error": str(e)}), 500
-    
+            logging.exception("Exception occurred in /load endpoint.")
+            return jsonify({"success": False, "error": "An internal error occurred."}), 500
     return app
 
 
