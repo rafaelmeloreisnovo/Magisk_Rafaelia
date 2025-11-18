@@ -90,64 +90,72 @@ jobs:
             
             // Check if this is a feature branch to master (incorrect workflow)
             if (prBase === 'master' && !prHead.startsWith('rascunho') && !prHead.startsWith('release')) {
+              const body = [
+                `👋 Hello @${prAuthor}! Thank you for your contribution!`,
+                '',
+                '❌ **This PR targets `master` directly, which doesn\'t follow our workflow.**',
+                '',
+                '## 🔄 Our Two-Branch Workflow',
+                '',
+                '```',
+                'feature branch → rascunho → master',
+                '     (PR)          (PR)',
+                '```',
+                '',
+                '### Please change this PR\'s target branch to `rascunho`',
+                '',
+                '**Why?**',
+                '- `master` is our production branch (stable, tested code only)',
+                '- `rascunho` is our staging branch (where changes are reviewed and tested together)',
+                '- All feature branches should first merge into `rascunho`',
+                '',
+                '### How to change the target branch:',
+                '1. Click the "Edit" button next to the PR title',
+                '2. Change "base branch" from `master` to `rascunho`',
+                '3. Click "Change base"',
+                '',
+                '### 📖 Documentation',
+                '- [CONTRIBUTING.md](../blob/rascunho/CONTRIBUTING.md) - Full contribution guide',
+                '- [WORKFLOW_GUIDE.md](../blob/rascunho/WORKFLOW_GUIDE.md) - Detailed workflow examples',
+                '',
+                'Thank you for understanding! 🙏'
+              ].join('\n');
+              
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
-                body: `👋 Hello @${prAuthor}! Thank you for your contribution!
-
-❌ **This PR targets \`master\` directly, which doesn't follow our workflow.**
-
-## 🔄 Our Two-Branch Workflow
-
-\`\`\`
-feature branch → rascunho → master
-     (PR)          (PR)
-\`\`\`
-
-### Please change this PR's target branch to \`rascunho\`
-
-**Why?**
-- \`master\` is our production branch (stable, tested code only)
-- \`rascunho\` is our staging branch (where changes are reviewed and tested together)
-- All feature branches should first merge into \`rascunho\`
-
-### How to change the target branch:
-1. Click the "Edit" button next to the PR title
-2. Change "base branch" from \`master\` to \`rascunho\`
-3. Click "Change base"
-
-### 📖 Documentation
-- [CONTRIBUTING.md](../blob/rascunho/CONTRIBUTING.md) - Full contribution guide
-- [WORKFLOW_GUIDE.md](../blob/rascunho/WORKFLOW_GUIDE.md) - Detailed workflow examples
-
-Thank you for understanding! 🙏`
+                body: body
               });
             }
             
             // Add helpful comment for rascunho PRs
             if (prBase === 'rascunho' && prHead !== 'master') {
+              const body = [
+                `👋 Hello @${prAuthor}! Thank you for your contribution!`,
+                '',
+                '✅ **This PR correctly targets `rascunho` - our staging branch.**',
+                '',
+                '### Next Steps:',
+                '1. ✅ CI/CD checks will run automatically',
+                '2. 🔍 Code review will be performed',
+                '3. 💬 Address any review comments',
+                '4. ✅ After approval, this will be merged into `rascunho`',
+                '5. 🚀 Changes in `rascunho` will later be promoted to `master`',
+                '',
+                '### Checklist:',
+                '- [ ] Tests pass locally',
+                '- [ ] Documentation updated (if needed)',
+                '- [ ] Commit messages follow [semantic format](../blob/rascunho/CONTRIBUTING.md#commit-guidelines)',
+                '',
+                'Thank you for following our workflow! 🙏'
+              ].join('\n');
+              
               await github.rest.issues.createComment({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 issue_number: context.payload.pull_request.number,
-                body: `👋 Hello @${prAuthor}! Thank you for your contribution!
-
-✅ **This PR correctly targets \`rascunho\` - our staging branch.**
-
-### Next Steps:
-1. ✅ CI/CD checks will run automatically
-2. 🔍 Code review will be performed
-3. 💬 Address any review comments
-4. ✅ After approval, this will be merged into \`rascunho\`
-5. 🚀 Changes in \`rascunho\` will later be promoted to \`master\`
-
-### Checklist:
-- [ ] Tests pass locally
-- [ ] Documentation updated (if needed)
-- [ ] Commit messages follow [semantic format](../blob/rascunho/CONTRIBUTING.md#commit-guidelines)
-
-Thank you for following our workflow! 🙏`
+                body: body
               });
             }
 
