@@ -115,7 +115,7 @@ class TestTTCross(unittest.TestCase):
         
         builder = TTBuilder(
             shape=shape,
-            value_function=lambda idx: sum(idx),
+            value_function=sum,
             max_rank=5,
             tol=1e-3,
             verbose=False
@@ -375,7 +375,7 @@ class TestIntegration(unittest.TestCase):
         )
         
         loaded.cores = updated_cores
-        loaded._compute_hash()
+        loaded.compute_hash()
         
         # Step 5: Save updated checkpoint
         checkpoint2 = os.path.join(self.temp_dir, "step2.bitraf64")

@@ -113,7 +113,6 @@ def local_patch_update_tt(
     Returns:
         Updated TT-cores
     """
-    d = len(cores)
     updated_cores = [core.copy() for core in cores]
     
     if method == "direct":
@@ -151,7 +150,6 @@ def _direct_patch_update(
     warnings.warn("Direct patch update is a simplified placeholder")
     
     # Get patch bounds
-    d = len(cores)
     patch_slices = []
     for idx in patch_indices:
         if isinstance(idx, slice):
@@ -163,7 +161,6 @@ def _direct_patch_update(
     
     # For simplicity, just modify the middle core if possible
     # This is a placeholder - real implementation would be more sophisticated
-    mid_core = d // 2
     return cores
 
 

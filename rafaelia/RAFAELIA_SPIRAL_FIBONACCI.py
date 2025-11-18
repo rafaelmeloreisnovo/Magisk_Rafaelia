@@ -19,7 +19,7 @@ Design rationale:
 """
 
 import numpy as np
-from typing import Tuple, Callable, Optional
+from typing import Tuple, Callable
 import math
 
 
@@ -165,8 +165,6 @@ def inverse_spiral_distance(
         r_offset = 0.0
     
     # Compute spiral angle
-    phi = (1 + np.sqrt(5)) / 2
-    theta = math.atan2(y - 0.5, x - 0.5)
     r = math.sqrt((x - 0.5) ** 2 + (y - 0.5) ** 2) + r_offset
     
     # Inverse spiral: map (r, θ) back to parameter t
@@ -203,12 +201,12 @@ def gaussian_blob_field(
     Returns:
         Field value at index
     """
-    np.random.seed(seed)
+    rng = np.random.default_rng(seed)
     
     d = len(idx)
     
     # Generate blob centers
-    centers = np.random.rand(n_blobs, d)
+    centers = rng.random((n_blobs, d))
     
     # Normalize index to [0, 1]
     normalized = np.array([idx[i] / max(1, shape[i] - 1) for i in range(d)])

@@ -153,7 +153,7 @@ class TTBuilder:
             idx = P[:r]
         else:
             # Numpy fallback: use QR without pivoting, then greedy selection
-            Q, R = np.linalg.qr(A)
+            _, _ = np.linalg.qr(A)
             idx = np.arange(r)
         
         # Iterative maxvol refinement
@@ -211,7 +211,6 @@ class TTBuilder:
             
             # Build core by sampling
             # For simplicity, sample a representative set of fibers
-            n_samples = min(r_left * n_k * r_right, self.max_samples - self.samples_used)
             
             if k == 0:
                 # First core: simple structure
@@ -228,8 +227,12 @@ class TTBuilder:
                 # SVD truncation
                 core_mat = core[0, :, :]
                 U, S, Vt = np.linalg.svd(core_mat, full_matrices=False)
-                r_new = min(self.max_rank, np.sum(S > self.tol * S[0]))
-                r_new = max(1, r_new)
+                # Check if S[0] is zero or very small to avoid division issues
+                if S[0] < 1e-15:
+                    r_new = 1
+                else:
+                    r_new = min(self.max_rank, np.sum(S > self.tol * S[0]))
+                    r_new = max(1, r_new)
                 core = (U[:, :r_new] * S[:r_new]).reshape(1, n_k, r_new)
                 
             elif k == self.d - 1:
@@ -297,6 +300,13 @@ class TTBuilder:
     def _build_index_last(self, left_multi: tuple, j: int) -> Tuple:
         """Build index for last dimension."""
         return left_multi + (j,)
+    
+    def compute_hash(self):
+        """
+        Compute HashVivo metadata for reproducibility.
+        Public method to update hash after manual core modifications.
+        """
+        self._compute_hash()
     
     def _compute_hash(self):
         """Compute HashVivo metadata for reproducibility."""

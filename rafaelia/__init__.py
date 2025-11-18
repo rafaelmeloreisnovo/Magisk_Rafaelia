@@ -24,6 +24,14 @@ Quick start:
 
 __version__ = "0.1.0"
 __author__ = "RAFAELIA Team"
+
+# Import key classes and functions for convenience
+from rafaelia.RAFAELIA_TT_CROSS_FULL import TTBuilder
+from rafaelia.RAFAELIA_SPIRAL_FIBONACCI import value_generator
+from rafaelia.RAFAELIA_ENGINE_FULLSTACK import RAFAELIAEngine
+from rafaelia.RAFAELIA_TT_UPDATE_FULL import local_patch_update_tt, tt_round
+from rafaelia.RAFAELIA_TT_ACCEL import tt_svd_from_full
+
 __all__ = [
     "TTBuilder",
     "value_generator",

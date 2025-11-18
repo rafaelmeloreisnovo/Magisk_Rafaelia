@@ -61,7 +61,7 @@ pip install numpy
 
 ```bash
 # For improved performance and features
-pip install scipy          # Better maxvol pivot selection
+pip install scipy          # better maxvol pivot selection
 pip install blake3         # Faster hashing than SHA3
 pip install zstandard      # Checkpoint compression
 pip install flask          # REST API server

@@ -38,7 +38,6 @@ try:
         local_patch_update_tt, tt_round, compute_patch_error, tt_energy
     )
     from RAFAELIA_SPIRAL_FIBONACCI import value_generator
-    from RAFAELIA_TT_ACCEL import tt_svd_from_full, estimate_compression_ratio
 except ImportError:
     # Try relative import
     try:
@@ -47,7 +46,6 @@ except ImportError:
             local_patch_update_tt, tt_round, compute_patch_error, tt_energy
         )
         from .RAFAELIA_SPIRAL_FIBONACCI import value_generator
-        from .RAFAELIA_TT_ACCEL import tt_svd_from_full, estimate_compression_ratio
     except ImportError:
         warnings.warn("Could not import RAFAELIA modules. Some features may not work.")
 
@@ -154,7 +152,7 @@ class RAFAELIAEngine:
             verbose=self.verbose
         )
         
-        cores = self.builder.build_tt_cross()
+        self.builder.build_tt_cross()
         
         # Log action
         self.log_action("build_tt", {
@@ -246,7 +244,7 @@ class RAFAELIAEngine:
         
         # Update builder
         self.builder.cores = updated_cores
-        self.builder._compute_hash()
+        self.builder.compute_hash()
         
         # Log action
         self.log_action("apply_patch", {
@@ -291,7 +289,7 @@ class RAFAELIAEngine:
         print(f"New ranks: {self.builder.ranks}")
         
         # Update hash
-        self.builder._compute_hash()
+        self.builder.compute_hash()
         
         self.log_action("round_tt", {
             "old_ranks": old_ranks,
@@ -390,6 +388,21 @@ def create_flask_app(engine: RAFAELIAEngine) -> 'Flask':
         data = request.json
         shape = tuple(data.get('shape', [8, 8, 8]))
         generator = data.get('generator', 'fibonacci_spiral')
+        
+        # Validate shape: max dimension size and total element count
+        MAX_DIM_SIZE = 1024
+        MAX_TOTAL_ELEMENTS = 1_000_000
+        if (
+            not isinstance(shape, tuple)
+            or not shape
+            or not all(isinstance(dim, int) and 1 <= dim <= MAX_DIM_SIZE for dim in shape)
+        ):
+            return jsonify({"success": False, "error": f"Invalid shape: dimensions must be integers between 1 and {MAX_DIM_SIZE}."}), 400
+        total_elements = 1
+        for dim in shape:
+            total_elements *= dim
+        if total_elements > MAX_TOTAL_ELEMENTS:
+            return jsonify({"success": False, "error": f"Invalid shape: total number of elements ({total_elements}) exceeds maximum allowed ({MAX_TOTAL_ELEMENTS})."}), 400
         
         try:
             engine.build_tt(shape=shape, generator_type=generator)

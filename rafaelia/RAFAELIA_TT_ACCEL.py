@@ -186,10 +186,8 @@ def tt_slice_reconstruct(
     
     for k in range(1, len(cores)):
         core_slice = cores[k][:, slices[k], :]
-        # Contract
-        r_left = result.shape[-1]
-        result = result.reshape(-1, r_left) @ core_slice.reshape(r_left, -1)
-        result = result.reshape(*result.shape[:-1], core_slice.shape[1], core_slice.shape[-1])
+        # Contract last axis of result with first axis of core_slice
+        result = np.tensordot(result, core_slice, axes=([-1], [0]))
     
     # Squeeze singleton dimensions
     result = result.squeeze()
