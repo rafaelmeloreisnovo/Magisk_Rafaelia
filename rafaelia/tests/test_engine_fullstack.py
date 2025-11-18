@@ -46,8 +46,8 @@ class TestRAFAELIAEngineInitialization:
         """Testa inicialização com configuração padrão / Test default initialization."""
         engine = RAFAELIAEngine()
         
-        assert engine.use_gpu == False
-        assert engine.auto_checkpoint == True
+        assert engine.use_gpu is False
+        assert engine.auto_checkpoint is True
         assert engine.tt_cross is None
         assert engine.tt_update is None
         assert 'rafaelia' in engine.metadata
@@ -62,8 +62,8 @@ class TestRAFAELIAEngineInitialization:
         }
         engine = RAFAELIAEngine(config)
         
-        assert engine.use_gpu == False
-        assert engine.auto_checkpoint == False
+        assert engine.use_gpu is False
+        assert engine.auto_checkpoint is False
         assert str(engine.checkpoint_dir) == '/tmp/test_rafaelia'
     
     def test_checkpoint_directory_creation(self):

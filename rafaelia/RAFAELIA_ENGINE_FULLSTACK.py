@@ -317,7 +317,7 @@ class RAFAELIAEngine:
             RuntimeError: Se approximate_tensor não foi executado primeiro
         """
         if self.tt_cross is None:
-            raise RuntimeError("Deve executar approximate_tensor primeiro / Must run approximate_tensor first")
+            raise RuntimeError("Must run approximate_tensor first")
         
         print(f"Starting TT local update...")
         print(f"  Target samples: {len(target_data)}")
@@ -398,7 +398,7 @@ class RAFAELIAEngine:
                     use_gpu=self.use_gpu
                 )
             else:
-                raise RuntimeError("Nenhuma decomposição TT disponível / No TT decomposition available")
+                raise RuntimeError("No TT decomposition available")
         
         print(f"Adapting rank at position {core_idx} to {new_rank}...")
         
@@ -452,7 +452,7 @@ class RAFAELIAEngine:
         elif self.tt_update is not None:
             return self.tt_update._evaluate(tuple(indices))
         else:
-            raise RuntimeError("Nenhuma decomposição TT disponível / No TT decomposition available")
+            raise RuntimeError("No TT decomposition available")
     
     def _save_checkpoint(self, name: str):
         """
