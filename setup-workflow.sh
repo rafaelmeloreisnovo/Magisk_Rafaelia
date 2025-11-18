@@ -93,7 +93,26 @@ echo -e "${YELLOW}⚠ Branch protection must be configured manually on GitHub${N
 echo ""
 echo "Please follow these steps:"
 echo ""
-echo "1. Go to: https://github.com/$(git config --get remote.origin.url | sed 's/.*github.com[:\/]\(.*\)\.git/\1/')/settings/branches"
+
+# Extract GitHub repo path robustly
+REMOTE_URL=$(git config --get remote.origin.url 2>/dev/null || echo "")
+REPO_PATH=""
+
+if [ -n "$REMOTE_URL" ]; then
+    # Remove possible .git suffix
+    REMOTE_URL=${REMOTE_URL%.git}
+    # Try to extract user/repo from SSH and HTTPS formats
+    if [[ "$REMOTE_URL" =~ github\.com[:/]+([^/]+/[^/]+)$ ]]; then
+        REPO_PATH="${BASH_REMATCH[1]}"
+    fi
+fi
+
+if [ -z "$REPO_PATH" ]; then
+    echo -e "${YELLOW}Warning: Could not determine GitHub repository path.${NC}"
+    echo "1. Go to: https://github.com/<your-username>/<your-repo>/settings/branches"
+else
+    echo "1. Go to: https://github.com/$REPO_PATH/settings/branches"
+fi
 echo ""
 echo "2. Configure protection for 'master' branch:"
 echo "   - Click 'Add rule'"

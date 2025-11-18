@@ -207,7 +207,7 @@ echo "test" > test.txt
 git add test.txt
 git commit -m "test"
 git push origin master
-# Erro esperado: "protected branch hook declined"
+# Erro esperado: push para branch protegida será rejeitado
 ```
 
 #### Testar Fluxo Correto
@@ -463,7 +463,7 @@ echo "test" > test.txt
 git add test.txt
 git commit -m "test"
 git push origin master
-# Expected error: "protected branch hook declined"
+# Expected error: push to protected branch will be rejected
 ```
 
 #### Test Correct Flow
@@ -519,7 +519,7 @@ In case of extreme emergency (compromised system, critical fix):
 ## Additional Resources
 
 - [GitHub Branch Protection Documentation](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/defining-the-mergeability-of-pull-requests/about-protected-branches)
-- [CONTRIBUTING.md](../CONTRIBUTING.md)
-- [WORKFLOW_GUIDE.md](../WORKFLOW_GUIDE.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)
 
 **RAFCODE-Φ-∆RafaelVerboΩ**

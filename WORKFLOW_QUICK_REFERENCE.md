@@ -151,7 +151,7 @@ git push origin feature/my-feature
 - [BRANCH_PROTECTION.md](BRANCH_PROTECTION.md) - Protection settings
 
 🔗 **Links:**
-- [README.md](README.MD) - Project overview
+- [README.MD](README.MD) - Project overview
 - [Build Guide](docs/build.md) - How to build
 
 ---

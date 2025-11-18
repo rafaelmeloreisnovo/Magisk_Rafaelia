@@ -245,7 +245,7 @@ git checkout -b feature/your-feature-name
 
 ## Questions?
 
-- 📖 Read the [README.md](README.MD)
+- 📖 Read the [README.MD](README.MD)
 - 🔧 Check the [Build Guide](docs/build.md)
 - 🐛 Report bugs via [Issues](../../issues)
 

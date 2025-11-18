@@ -32,7 +32,7 @@ jobs:
           echo "=========================================="
           
           # Check if PR is directly from a feature branch to master
-          if [[ "${PR_BASE}" == "master" ]] && [[ "${PR_HEAD}" != "rascunho"* ]] && [[ "${PR_HEAD}" != "release"* ]]; then
+          if [[ "${PR_BASE}" == "master" ]] && [[ "${PR_HEAD}" != rascunho* ]] && [[ "${PR_HEAD}" != release/* ]]; then
             echo "❌ ERROR: Feature branches should target 'rascunho', not 'master'"
             echo ""
             echo "📖 Our workflow requires:"
@@ -58,7 +58,7 @@ jobs:
           fi
           
           # Check if PR from release branch to master
-          if [[ "${PR_BASE}" == "master" ]] && [[ "${PR_HEAD}" == "release"* ]]; then
+          if [[ "${PR_BASE}" == "master" ]] && [[ "${PR_HEAD}" == release/* ]]; then
             echo "✅ VALID: Release branch to master"
             echo "This PR represents a new release"
             echo ""
@@ -117,8 +117,8 @@ jobs:
                 '3. Click "Change base"',
                 '',
                 '### 📖 Documentation',
-                '- [CONTRIBUTING.md](../blob/rascunho/CONTRIBUTING.md) - Full contribution guide',
-                '- [WORKFLOW_GUIDE.md](../blob/rascunho/WORKFLOW_GUIDE.md) - Detailed workflow examples',
+                `- [CONTRIBUTING.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/rascunho/CONTRIBUTING.md) - Full contribution guide`,
+                `- [WORKFLOW_GUIDE.md](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/rascunho/WORKFLOW_GUIDE.md) - Detailed workflow examples`,
                 '',
                 'Thank you for understanding! 🙏'
               ].join('\n');
@@ -148,7 +148,7 @@ jobs:
                 '### Checklist:',
                 '- [ ] Tests pass locally',
                 '- [ ] Documentation updated (if needed)',
-                '- [ ] Commit messages follow [semantic format](../blob/rascunho/CONTRIBUTING.md#commit-guidelines)',
+                `- [ ] Commit messages follow [semantic format](https://github.com/${context.repo.owner}/${context.repo.repo}/blob/rascunho/CONTRIBUTING.md#commit-guidelines)`,
                 '',
                 'Thank you for following our workflow! 🙏'
               ].join('\n');
@@ -174,7 +174,7 @@ jobs:
           echo "Checking branch name: ${PR_HEAD}"
           
           # Skip check for rascunho and release branches
-          if [[ "${PR_HEAD}" == "rascunho" ]] || [[ "${PR_HEAD}" == "release/"* ]]; then
+          if [[ "${PR_HEAD}" == "rascunho" ]] || [[ "${PR_HEAD}" == release/* ]]; then
             echo "✅ Branch name is valid (main branch)"
             exit 0
           fi
@@ -186,7 +186,7 @@ jobs:
           fi
           
           # Check for copilot branches (legacy, but allowed)
-          if [[ "${PR_HEAD}" == "copilot/"* ]]; then
+          if [[ "${PR_HEAD}" == copilot/* ]]; then
             echo "⚠️  Branch name uses copilot convention (legacy)"
             echo "Consider using: feature/, bugfix/, docs/, etc."
             exit 0

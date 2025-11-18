@@ -428,8 +428,8 @@ The workflow includes automated checks:
 
 ## Questions?
 
-- 📖 Read [CONTRIBUTING.md](../CONTRIBUTING.md)
-- 📚 Check [README.md](../README.MD)
+- 📖 Read [CONTRIBUTING.md](CONTRIBUTING.md)
+- 📚 Check [README.MD](README.MD)
 - 🐛 Report issues
 
 **RAFCODE-Φ-∆RafaelVerboΩ**

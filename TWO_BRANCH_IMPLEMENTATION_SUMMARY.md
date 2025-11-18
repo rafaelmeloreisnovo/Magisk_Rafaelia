@@ -6,7 +6,7 @@ This document summarizes the implementation of a two-branch workflow strategy fo
 
 ## Problem Statement (Original)
 
-> Arrumar brancch adicionar as coisas que estao adicionando ao master ou seja melhores praticas para ter apenas 2branch aplicar as coisas no segundo chamar de rascunho e eu vejo o que apkico no master. Ou seja deixar enfilerados e nao perder rastreabilidades
+> Arrumar brancch adicionar as coisas que estao adicionando ao master ou seja melhores praticas para ter apenas 2branch aplicar as coisas no segundo chamar de rascunho e eu vejo o que aplico no master. Ou seja deixar enfilerados e nao perder rastreabilidades
 
 **Translation:** Fix branches, add things being added to master using best practices to have only 2 branches, apply things to the second one called draft (rascunho) so I can see what I apply to master. In other words, keep things queued and not lose traceability.
 
