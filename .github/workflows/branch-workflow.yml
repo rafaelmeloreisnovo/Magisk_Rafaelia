@@ -1,0 +1,197 @@
+name: Branch Workflow Assistant
+
+on:
+  pull_request:
+    types: [opened, edited, reopened]
+    branches:
+      - master
+      - rascunho
+
+jobs:
+  check-target-branch:
+    name: Check PR Target Branch
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Validate PR target branch
+        env:
+          PR_BASE: ${{ github.base_ref }}
+          PR_HEAD: ${{ github.head_ref }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          echo "=========================================="
+          echo "PR Branch Validation"
+          echo "=========================================="
+          echo "PR #${PR_NUMBER}"
+          echo "Source branch: ${PR_HEAD}"
+          echo "Target branch: ${PR_BASE}"
+          echo "=========================================="
+          
+          # Check if PR is directly from a feature branch to master
+          if [[ "${PR_BASE}" == "master" ]] && [[ "${PR_HEAD}" != "rascunho"* ]] && [[ "${PR_HEAD}" != "release"* ]]; then
+            echo "❌ ERROR: Feature branches should target 'rascunho', not 'master'"
+            echo ""
+            echo "📖 Our workflow requires:"
+            echo "  1. Feature branches → rascunho (via PR)"
+            echo "  2. rascunho → master (via PR, after review)"
+            echo ""
+            echo "Please change the target branch of this PR to 'rascunho'"
+            echo "See CONTRIBUTING.md and WORKFLOW_GUIDE.md for details"
+            echo ""
+            exit 1
+          fi
+          
+          # Check if PR from rascunho to master
+          if [[ "${PR_BASE}" == "master" ]] && [[ "${PR_HEAD}" == "rascunho" ]]; then
+            echo "✅ VALID: Promotion from rascunho to master"
+            echo "This PR will promote tested changes from rascunho to production"
+            echo ""
+            echo "⚠️  Reminder: Ensure all changes in rascunho have been:"
+            echo "  - Tested thoroughly"
+            echo "  - Reviewed and approved"
+            echo "  - Documented properly"
+            echo ""
+          fi
+          
+          # Check if PR from release branch to master
+          if [[ "${PR_BASE}" == "master" ]] && [[ "${PR_HEAD}" == "release"* ]]; then
+            echo "✅ VALID: Release branch to master"
+            echo "This PR represents a new release"
+            echo ""
+          fi
+          
+          # Check if PR is to rascunho
+          if [[ "${PR_BASE}" == "rascunho" ]]; then
+            echo "✅ VALID: Feature branch targeting rascunho"
+            echo "This follows our two-branch workflow"
+            echo ""
+          fi
+          
+          echo "=========================================="
+          echo "Branch validation completed successfully"
+          echo "=========================================="
+
+  add-workflow-comment:
+    name: Add Workflow Comment
+    runs-on: ubuntu-latest
+    if: github.event.action == 'opened'
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Add helpful comment for first-time contributors
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prBase = context.payload.pull_request.base.ref;
+            const prHead = context.payload.pull_request.head.ref;
+            const prAuthor = context.payload.pull_request.user.login;
+            
+            // Check if this is a feature branch to master (incorrect workflow)
+            if (prBase === 'master' && !prHead.startsWith('rascunho') && !prHead.startsWith('release')) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `👋 Hello @${prAuthor}! Thank you for your contribution!
+
+❌ **This PR targets \`master\` directly, which doesn't follow our workflow.**
+
+## 🔄 Our Two-Branch Workflow
+
+\`\`\`
+feature branch → rascunho → master
+     (PR)          (PR)
+\`\`\`
+
+### Please change this PR's target branch to \`rascunho\`
+
+**Why?**
+- \`master\` is our production branch (stable, tested code only)
+- \`rascunho\` is our staging branch (where changes are reviewed and tested together)
+- All feature branches should first merge into \`rascunho\`
+
+### How to change the target branch:
+1. Click the "Edit" button next to the PR title
+2. Change "base branch" from \`master\` to \`rascunho\`
+3. Click "Change base"
+
+### 📖 Documentation
+- [CONTRIBUTING.md](../blob/rascunho/CONTRIBUTING.md) - Full contribution guide
+- [WORKFLOW_GUIDE.md](../blob/rascunho/WORKFLOW_GUIDE.md) - Detailed workflow examples
+
+Thank you for understanding! 🙏`
+              });
+            }
+            
+            // Add helpful comment for rascunho PRs
+            if (prBase === 'rascunho' && prHead !== 'master') {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.payload.pull_request.number,
+                body: `👋 Hello @${prAuthor}! Thank you for your contribution!
+
+✅ **This PR correctly targets \`rascunho\` - our staging branch.**
+
+### Next Steps:
+1. ✅ CI/CD checks will run automatically
+2. 🔍 Code review will be performed
+3. 💬 Address any review comments
+4. ✅ After approval, this will be merged into \`rascunho\`
+5. 🚀 Changes in \`rascunho\` will later be promoted to \`master\`
+
+### Checklist:
+- [ ] Tests pass locally
+- [ ] Documentation updated (if needed)
+- [ ] Commit messages follow [semantic format](../blob/rascunho/CONTRIBUTING.md#commit-guidelines)
+
+Thank you for following our workflow! 🙏`
+              });
+            }
+
+  check-branch-name:
+    name: Validate Branch Naming
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check branch name convention
+        env:
+          PR_HEAD: ${{ github.head_ref }}
+        run: |
+          echo "Checking branch name: ${PR_HEAD}"
+          
+          # Skip check for rascunho and release branches
+          if [[ "${PR_HEAD}" == "rascunho" ]] || [[ "${PR_HEAD}" == "release/"* ]]; then
+            echo "✅ Branch name is valid (main branch)"
+            exit 0
+          fi
+          
+          # Check if branch name follows convention
+          if [[ "${PR_HEAD}" =~ ^(feature|bugfix|hotfix|docs|refactor|test|chore)/ ]]; then
+            echo "✅ Branch name follows convention: ${PR_HEAD}"
+            exit 0
+          fi
+          
+          # Check for copilot branches (legacy, but allowed)
+          if [[ "${PR_HEAD}" == "copilot/"* ]]; then
+            echo "⚠️  Branch name uses copilot convention (legacy)"
+            echo "Consider using: feature/, bugfix/, docs/, etc."
+            exit 0
+          fi
+          
+          # Warn about non-conventional name but don't fail
+          echo "⚠️  Branch name doesn't follow convention: ${PR_HEAD}"
+          echo ""
+          echo "Recommended prefixes:"
+          echo "  - feature/   (new features)"
+          echo "  - bugfix/    (bug fixes)"
+          echo "  - hotfix/    (urgent fixes)"
+          echo "  - docs/      (documentation)"
+          echo "  - refactor/  (code refactoring)"
+          echo "  - test/      (tests)"
+          echo "  - chore/     (maintenance)"
+          echo ""
+          echo "See CONTRIBUTING.md for details"
+          echo ""
+          echo "This is a warning, not an error. PR can proceed."

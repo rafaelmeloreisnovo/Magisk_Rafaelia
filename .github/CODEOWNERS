@@ -1,0 +1,40 @@
+# CODEOWNERS
+# Define code owners for automatic review requests
+# Each line is a file pattern followed by one or more owners.
+# Owners are automatically requested for review when someone opens a PR that modifies files matching the pattern.
+
+# Global owners (fallback for all files)
+* @rafaelmeloreisnovo
+
+# RAFAELIA Framework Core
+/native/src/core/rafaelia_*.rs @rafaelmeloreisnovo
+/tools/rafaelia/ @rafaelmeloreisnovo
+/docs/RAFAELIA_*.md @rafaelmeloreisnovo
+/docs/RAFAELIA_*.json @rafaelmeloreisnovo
+/docs/RAFAELIA_*.csv @rafaelmeloreisnovo
+
+# Native Code
+/native/ @rafaelmeloreisnovo
+
+# Build System
+/build.py @rafaelmeloreisnovo
+/scripts/ @rafaelmeloreisnovo
+
+# CI/CD Workflows
+/.github/workflows/ @rafaelmeloreisnovo
+/.github/actions/ @rafaelmeloreisnovo
+
+# Documentation
+/docs/ @rafaelmeloreisnovo
+*.md @rafaelmeloreisnovo
+
+# Configuration Files
+*.yml @rafaelmeloreisnovo
+*.yaml @rafaelmeloreisnovo
+*.json @rafaelmeloreisnovo
+*.toml @rafaelmeloreisnovo
+
+# Git Configuration
+.gitignore @rafaelmeloreisnovo
+.gitattributes @rafaelmeloreisnovo
+.gitmodules @rafaelmeloreisnovo

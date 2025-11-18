@@ -115,6 +115,21 @@ python3 build.py -v all
 
 See [COMO_OBTER_APK.md](COMO_OBTER_APK.md) or [HOW_TO_GET_APK.md](HOW_TO_GET_APK.md) for detailed instructions.
 
+## Contributing
+
+**Want to contribute?** We use a two-branch workflow for better traceability and quality control:
+
+- 📖 **[CONTRIBUTING.md](CONTRIBUTING.md)** - Complete contribution guide
+- 🔄 **[WORKFLOW_GUIDE.md](WORKFLOW_GUIDE.md)** - Detailed workflow with examples
+- 🛡️ **[BRANCH_PROTECTION.md](BRANCH_PROTECTION.md)** - Branch protection settings
+
+**Two-Branch Strategy:**
+- `master` - Production (stable, approved code only)
+- `rascunho` - Development (staging, where features are queued)
+- Feature branches → `rascunho` → `master`
+
+All contributions should be submitted as Pull Requests to the `rascunho` branch.
+
 ## Useful Links
 
 - [Installation Instruction](https://topjohnwu.github.io/Magisk/install.html)
