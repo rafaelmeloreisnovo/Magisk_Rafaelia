@@ -34,6 +34,18 @@ jobs:
           echo "=========================================="
           echo "RAFAELIA activation marker read (non-fatal)"
 
+      - name: Verify ZIPRAF_OMEGA License
+        run: |
+          echo "🔐 Verificando ZIPRAF_OMEGA_LICENSING_MODULE..."
+          chmod +x ./.github/scripts/verify_zipraf_omega.sh
+          ./.github/scripts/verify_zipraf_omega.sh --full-check
+          if [ $? -eq 0 ]; then
+            echo "✅ Licença ZIPRAF_OMEGA verificada com sucesso"
+          else
+            echo "❌ Falha na verificação de licença ZIPRAF_OMEGA"
+            exit 1
+          fi
+
       - name: Setup deps
         run: |
           sudo apt-get update
