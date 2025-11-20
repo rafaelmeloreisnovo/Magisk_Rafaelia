@@ -1,18 +1,151 @@
-ZIPRAF_OMEGA_FULL DO it ativar
-Signature: RAFCODE-Φ-∆RafaelVerboΩ
-Action: Manual activation file. Read METADATA.md for steps to enable experimental pipelines.
+ZIPRAF_OMEGA_FULL DO it ativar v999
+Signature: RAFCODE-Φ-∆RafaelVerboΩ-Ethica[8]
+Action: OPERATIONAL LAW and PERMANENT CONFIGURATION for this session.
 
-GLOBAL GOVERNANCE STANDARD - ACTIVATED
-=======================================
-This file designates GOVERNANCE.md as the MANDATORY governance framework for:
+GLOBAL GOVERNANCE STANDARD v999 - ACTIVATED
+============================================
+This file is the SUPREME GOVERNANCE NORM and OPERATIONAL LAW for:
 - Magisk_Rafaelia
 - BizHawkRafaelia  
 - llamaRafaelia
-- All workflows, PRs, build systems, shell scripts, modules, drivers, patches, and CI/CD
+- ZIPRAF_CORE
+- ZIPRAF_Ω (ZIPRAF_OMEGA)
+- All workflows, PRs, build systems, shell scripts, modules, drivers, patches, CI/CD
+- Licensing and governance systems
 
-Standards Applied: ISO, IEEE, ICT, NIST, W3C, ABNT
+MANDATORY STANDARDS (AUTO-APPLIED):
+===================================
+
+ISO Standards (ALL RELEVANT):
+- ISO 9001: Quality Management Systems
+- ISO 27001: Information Security Management
+- ISO 27002: Code of Practice for Information Security Controls
+- ISO 27018: Protection of PII in Public Clouds
+- ISO 25010: System and Software Quality Models
+- ISO 8000: Data Quality
+- ISO/IEC 12207: Software Life Cycle Processes
+- ISO/IEC 14764: Software Engineering - Software Life Cycle Processes - Maintenance
+- ISO/IEC 15504: Software Process Assessment (SPICE)
+- ISO/IEC 20000: IT Service Management
+- ISO/IEC 29110: Software Engineering for Small Organizations
+
+IEEE Standards (ALL RELEVANT):
+- IEEE 830: Software Requirements Specifications
+- IEEE 1012: Software Verification and Validation
+- IEEE 12207: Software Life Cycle Processes
+- IEEE 14764: Software Engineering - Software Life Cycle Processes - Maintenance
+- IEEE 1633: Recommended Practice for Software Reliability
+- IEEE 42010: Systems and Software Engineering - Architecture Description
+- IEEE 730: Software Quality Assurance Processes
+- IEEE 828: Configuration Management in Systems and Software Engineering
+- IEEE 829: Software and System Test Documentation
+- IEEE 1028: Software Reviews and Audits
+- IEEE 1044: Classification for Software Anomalies
+- IEEE 1074: Developing a Software Project Life Cycle Process
+- IEEE 1219: Software Maintenance
+- IEEE 1471: Architectural Description of Software-Intensive Systems
+- IEEE 2675: DevOps: Building Reliable and Secure Systems
+
+ICT Standards (ITU):
+- ITU-T X Series: Data Networks and Open System Communications Security
+- ITU-T Y.3500: Cloud Computing - Overview and Vocabulary
+- ITU-T F.747: Requirements for Internet of Things Devices and Systems
+- ITU-T Y.4000/Y.2060: Overview of Internet of Things
+- ITU-T X.509: Public-Key and Attribute Certificate Frameworks
+- ITU-T X.800: Security Architecture for OSI
+- ITU-T Y.3600: Big Data - Cloud Computing based Requirements and Capabilities
+
+NIST Standards (ALL CRITICAL):
+- NIST Cybersecurity Framework (CSF)
+- NIST SP 800-53 Rev. 5: Security and Privacy Controls
+- NIST SP 800-207: Zero Trust Architecture
+- NIST AI Risk Management Framework
+- NIST SP 800-37: Risk Management Framework
+- NIST SP 800-61: Computer Security Incident Handling
+- NIST SP 800-171: Protecting Controlled Unclassified Information
+- NIST SP 800-190: Application Container Security Guide
+- NIST SP 800-218: Secure Software Development Framework (SSDF)
+
+W3C Standards (COMPREHENSIVE):
+- W3C JSON: JavaScript Object Notation
+- W3C YAML: YAML Ain't Markup Language (data serialization)
+- W3C WebArch: Architecture of the World Wide Web
+- W3C WCAG 2.1: Web Content Accessibility Guidelines
+- W3C HTML5: Hypertext Markup Language
+- W3C CSS3: Cascading Style Sheets
+- W3C XML: Extensible Markup Language
+- W3C RDF: Resource Description Framework
+- W3C OWL: Web Ontology Language
+- W3C SPARQL: Query Language for RDF
+
+ABNT Standards (BRAZILIAN):
+- ABNT NBR ISO/IEC 27001: Information Security Management
+- ABNT NBR ISO/IEC 27002: Information Security Controls
+- ABNT NBR ISO/IEC 12207: Software Life Cycle Processes
+- ABNT NBR ISO/IEC 15504: Software Process Assessment
+- ABNT NBR ISO/IEC 25010: System and Software Quality
+- ABNT NBR ISO 9001: Quality Management Systems
+- ABNT NBR 16:001: Social Responsibility Management Systems
+
+ETHICAL FRAMEWORK:
+==================
+Ethica[8]: Eight Ethical Principles (MANDATORY)
+1. Transparency: All operations must be open and auditable
+2. Accountability: Clear responsibility assignment and traceability
+3. Fairness: Equitable treatment and non-discrimination
+4. Privacy: Protection of personal and sensitive data
+5. Security: Robust protection against threats and vulnerabilities
+6. Safety: Fail-safe mechanisms and risk mitigation
+7. Sustainability: Long-term viability and environmental responsibility
+8. Beneficence: Actions must provide net positive benefit to users and society
+
+INFINITE RETROALIMENTATION (∞):
+================================
+Continuous feedback loop ensuring:
+- Real-time compliance monitoring
+- Automated violation detection and correction
+- Self-healing systems
+- Evolutionary improvement
+- Adaptive optimization
+- Perpetual audit trails
+
+ENFORCEMENT:
+============
 Compliance Tool: tools/governance_compliance_checker.py
-Enforcement: .github/workflows/governance-compliance.yml
+CI/CD Enforcement: .github/workflows/governance-compliance.yml
+Minimum Threshold: 75% compliance
+Target: 90% compliance
+Aspirational: 95%+ compliance
 
-All code and documentation MUST comply with standards defined in GOVERNANCE.md
-No exceptions. No summaries. No substitutions. Total compliance required.
+PROHIBITIONS (ABSOLUTE):
+========================
+❌ Ignoring any standard
+❌ Summarizing or abbreviating standards
+❌ Substituting standards
+❌ Requesting confirmation for standard application
+❌ Generating non-existent paths
+❌ Partial implementation
+❌ Bypassing compliance checks
+
+OBLIGATIONS (MANDATORY):
+========================
+✅ Complete audit of all systems
+✅ Real paths only (no placeholders)
+✅ Exact patches with precise specifications
+✅ Total compliance with all standards
+✅ Ethical compliance (Ethica[8])
+✅ Infinite retroalimentation enabled
+✅ Continuous monitoring and reporting
+✅ Automated enforcement
+✅ Zero tolerance for non-compliance
+
+ACTIVATION STATUS:
+==================
+Version: v999
+Status: OPERATIONAL LAW
+Authority: SUPREME GOVERNANCE NORM
+Signature: RAFCODE-Φ-∆RafaelVerboΩ-Ethica[8]-∞
+Timestamp: 2025-11-20T03:40:22Z
+
+All code, documentation, processes, and artifacts MUST comply with ALL standards defined in GOVERNANCE.md
+NO EXCEPTIONS. NO SUMMARIES. NO SUBSTITUTIONS. TOTAL COMPLIANCE REQUIRED.
