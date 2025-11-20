@@ -1,12 +1,24 @@
 name: RAFAELIA Activation
-description: Activates RAFAELIA by reading ativar.txt from multiple locations
+description: Activates RAFAELIA by reading ativar.txt from multiple locations. Requires bash to be available on the runner (e.g., Git Bash on Windows).
 runs:
   using: "composite"
   steps:
+    - name: Check for bash availability
+      shell: bash
+      run: |
+        if ! command -v bash >/dev/null 2>&1; then
+          echo "Error: bash is required for this action but was not found on the runner."
+          exit 1
+        fi
+        echo "Bash is available on the runner"
+
     - name: Prepare logs directory
       shell: bash
       run: |
-        mkdir -p out/logs
+        if ! mkdir -p out/logs; then
+          echo "Error: Failed to create logs directory at out/logs"
+          exit 1
+        fi
         echo "Logs directory created for ativar excerpt"
 
     - name: Activate RAFAELIA (ativar.txt)
@@ -38,8 +50,23 @@ runs:
         fi
 
         if [ "$ATIVAR_FOUND" = true ]; then
-          cat "$ATIVAR_PATH"
-          head -n "$EXCERPT_LINES" "$ATIVAR_PATH" > out/logs/ativar_excerpt.txt
+          # Check if file is readable
+          if [ ! -r "$ATIVAR_PATH" ]; then
+            echo "Error: Found ativar.txt at '$ATIVAR_PATH' but it is not readable (check file permissions)"
+            exit 1
+          fi
+
+          # Read and display the file
+          if ! cat "$ATIVAR_PATH"; then
+            echo "Error: Failed to read ativar.txt from '$ATIVAR_PATH'"
+            exit 1
+          fi
+
+          # Create excerpt for logs
+          if ! head -n "$EXCERPT_LINES" "$ATIVAR_PATH" > out/logs/ativar_excerpt.txt; then
+            echo "Error: Failed to create excerpt file at out/logs/ativar_excerpt.txt"
+            exit 1
+          fi
         else
           echo "No ativar.txt file found (checked ZIPRAF_OMEGA_FULL/ativar.txt, ativar.txt, and legacy path)"
           echo "No ativar.txt file found" > out/logs/ativar_excerpt.txt
