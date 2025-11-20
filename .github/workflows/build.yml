@@ -2,14 +2,14 @@ name: Magisk Build (with enhanced logging)
 
 on:
   push:
-    branches: [master]  # Updated to use master branch
+    branches: [main, develop, master]  # Support main and develop branches (two-branch strategy)
     paths:
       - "app/**"
       - "native/**"
       - "build.py"
       - ".github/workflows/build.yml"
   pull_request:
-    branches: [master]  # Support PRs to master branch
+    branches: [main, develop, master]  # Support PRs to main and develop branches
   workflow_dispatch:
 
 permissions:
@@ -28,7 +28,13 @@ jobs:
             purpose: "default-ci"
             skip-condition: false
           - runner: macos-14
-            purpose: "manual-macos"
+            purpose: "macos-build"
+            skip-condition: true
+          - runner: macos-13
+            purpose: "macos-legacy"
+            skip-condition: true
+          - runner: windows-latest
+            purpose: "windows-build"
             skip-condition: true
     if: >-
       ${{

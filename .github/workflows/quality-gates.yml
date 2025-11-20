@@ -5,9 +5,9 @@ name: Quality Gates
 
 on:
   pull_request:
-    branches: [master]
+    branches: [main, develop, master]
   push:
-    branches: [master]
+    branches: [main, develop, master]
 
 permissions:
   contents: read
@@ -28,10 +28,10 @@ jobs:
         run: |
           TARGET="${{ github.base_ref || github.ref_name }}"
           
-          if [[ "$TARGET" == "master" || "$TARGET" == "refs/heads/master" ]]; then
+          if [[ "$TARGET" == "main" || "$TARGET" == "refs/heads/main" || "$TARGET" == "master" || "$TARGET" == "refs/heads/master" ]]; then
             echo "is_main=true" >> $GITHUB_OUTPUT
             echo "strictness=high" >> $GITHUB_OUTPUT
-            echo "🔒 High strictness for master branch"
+            echo "🔒 High strictness for main/master branch"
           else
             echo "is_main=false" >> $GITHUB_OUTPUT
             echo "strictness=normal" >> $GITHUB_OUTPUT
@@ -246,7 +246,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           
           if [ "${{ needs.determine-strictness.outputs.is_main }}" == "true" ]; then
-            echo "🔒 **High quality standards enforced for master branch**" >> $GITHUB_STEP_SUMMARY
+            echo "🔒 **High quality standards enforced for main/master branch**" >> $GITHUB_STEP_SUMMARY
           else
             echo "🔓 **Normal quality checks for other branches**" >> $GITHUB_STEP_SUMMARY
           fi
