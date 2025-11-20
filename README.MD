@@ -41,6 +41,29 @@ Popular languages / Idiomas populares:
 
 ---
 
+## 🏛️ Global Governance Framework
+
+**Magisk_Rafaelia** operates under a comprehensive **Global Governance Framework** ensuring compliance with international standards:
+
+[![Governance](https://img.shields.io/badge/Governance-Active-brightgreen)](GOVERNANCE.md)
+[![Standards](https://img.shields.io/badge/Standards-ISO%20|%20IEEE%20|%20NIST%20|%20W3C%20|%20ABNT-blue)](GOVERNANCE.md)
+
+**Standards Applied:**
+- **ISO/IEC** 27001, 9126, 25010 - Security & Quality
+- **IEEE** 730, 828, 829, 1012 - Software Engineering
+- **NIST** SP 800-53, CSF - Cybersecurity
+- **W3C** - Web Standards & Accessibility
+- **ABNT** NBR ISO/IEC - Brazilian Standards
+
+**Documentation:**
+- 📋 [**GOVERNANCE.md**](GOVERNANCE.md) - Complete framework specification
+- 📊 [**GOVERNANCE_AUDIT.md**](GOVERNANCE_AUDIT.md) - Implementation audit report
+- 🔧 [**Compliance Checker**](tools/governance_compliance_checker.py) - Automated validation tool
+
+**Activation:** ZIPRAF_OMEGA_FULL (see `ativar.txt`)
+
+---
+
 ## 🚀 Quick Start
 
 **Want the APK?**

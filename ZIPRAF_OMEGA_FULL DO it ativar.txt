@@ -1,3 +1,18 @@
 ZIPRAF_OMEGA_FULL DO it ativar
 Signature: RAFCODE-Φ-∆RafaelVerboΩ
 Action: Manual activation file. Read METADATA.md for steps to enable experimental pipelines.
+
+GLOBAL GOVERNANCE STANDARD - ACTIVATED
+=======================================
+This file designates GOVERNANCE.md as the MANDATORY governance framework for:
+- Magisk_Rafaelia
+- BizHawkRafaelia  
+- llamaRafaelia
+- All workflows, PRs, build systems, shell scripts, modules, drivers, patches, and CI/CD
+
+Standards Applied: ISO, IEEE, ICT, NIST, W3C, ABNT
+Compliance Tool: tools/governance_compliance_checker.py
+Enforcement: .github/workflows/governance-compliance.yml
+
+All code and documentation MUST comply with standards defined in GOVERNANCE.md
+No exceptions. No summaries. No substitutions. Total compliance required.
