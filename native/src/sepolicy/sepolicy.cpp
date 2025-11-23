@@ -1,5 +1,5 @@
 /*
- * include <base.hpp> include "include/sepolicy.hpp" Invert is adding rules for auditdeny; in other cases, invert is removing rules
+ * include <base.hpp> include "include/sepolicy.hpp" Invert is adding rules for auditdeny; in other cases, invert is removing rules Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

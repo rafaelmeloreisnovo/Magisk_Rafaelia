@@ -1,4 +1,4 @@
-//! SAFETY: magiskinit is single threaded Shut down first 3 fds
+//! logging.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

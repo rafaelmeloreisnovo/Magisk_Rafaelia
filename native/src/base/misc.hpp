@@ -1,5 +1,5 @@
 /*
- * pragma once include <pthread.h> include <string>
+ * pragma once include <pthread.h> include <string> Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

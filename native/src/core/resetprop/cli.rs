@@ -1,4 +1,4 @@
-//! [derive(FromArgs, Default)] [argh(switch, short = 'v')] [argh(switch, short = 'w', long = none)]
+//! cli.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

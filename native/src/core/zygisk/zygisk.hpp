@@ -1,5 +1,5 @@
 /*
- * pragma once include <jni.h> include <core.hpp>
+ * pragma once include <jni.h> include <core.hpp> Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

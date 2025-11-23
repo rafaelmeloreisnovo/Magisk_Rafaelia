@@ -1,4 +1,4 @@
-//! [unsafe(no_mangle)] Only close client if it is the same file so we don't accidentally close a re-used file descriptor.
+//! mod.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

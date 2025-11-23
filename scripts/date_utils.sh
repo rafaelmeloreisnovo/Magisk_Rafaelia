@@ -1,5 +1,5 @@
 #!/bin/bash
-# scripts/date_utils.sh Portable date helpers for Linux (GNU date) and macOS/BSD (date). Uses gdate if available, falls back to date and Python3 for parsing/relative ops.
+# scripts/date_utils.sh Portable date helpers for Linux (GNU date) and macOS/BSD (date). Uses gdate if available, falls back to date and Python3 for parsing/relative ops. Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

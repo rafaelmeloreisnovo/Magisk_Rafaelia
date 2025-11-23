@@ -1,5 +1,5 @@
 /*
- * pragma once include <base.hpp> define HEADER_FILE     "header"
+ * pragma once include <base.hpp> define HEADER_FILE     "header" Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

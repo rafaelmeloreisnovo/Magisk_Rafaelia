@@ -1,4 +1,4 @@
-//! This file hosts shared build script logic
+//! codegen.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

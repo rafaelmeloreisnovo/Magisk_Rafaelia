@@ -1,4 +1,4 @@
-//! [path = "../include/consts.rs"] [cfg(not(feature = "no-main"))] [cxx::bridge]
+//! lib.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

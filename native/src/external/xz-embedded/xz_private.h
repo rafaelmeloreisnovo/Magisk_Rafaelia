@@ -1,5 +1,5 @@
 /*
- * Private includes and definitions Author: Lasse Collin <lasse.collin@tukaani.org> This file has been put into the public domain.
+ * Private includes and definitions Author: Lasse Collin <lasse.collin@tukaani.org> This file has been put into the public domain. Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

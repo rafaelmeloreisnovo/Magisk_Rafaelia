@@ -1,4 +1,4 @@
-//! SAFETY: sqlite3 always returns UTF-8 strings
+//! db.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

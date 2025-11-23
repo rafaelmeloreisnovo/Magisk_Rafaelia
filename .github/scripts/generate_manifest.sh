@@ -1,5 +1,5 @@
 #!/bin/bash
-# generate_manifest.sh - RAFAELIA APK Integrity Manifest Generator Generates a cryptographically-signed manifest file containing checksums and metadata for a built APK. This manifest is part of the RAFAELIA framework's audit system,
+# generate_manifest.sh - RAFAELIA APK Integrity Manifest Generator Generates a cryptographically-signed manifest file containing checksums and metadata for a built APK. This manifest is part of the RAFAELIA framework's audit system, Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

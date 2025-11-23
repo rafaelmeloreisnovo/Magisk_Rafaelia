@@ -1,4 +1,4 @@
-//! Add a bound `T: Decodable` to every type parameter T.
+//! decodable.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

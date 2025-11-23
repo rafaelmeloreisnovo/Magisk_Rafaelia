@@ -1,5 +1,5 @@
 #!/bin/bash
-# Magisk General Utility Functions MAGISK_VERSION_STUB Global Variables
+# Magisk General Utility Functions MAGISK_VERSION_STUB Global Variables Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

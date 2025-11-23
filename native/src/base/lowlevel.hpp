@@ -1,5 +1,5 @@
 /*
- * pragma once Low-level memory and syscall utilities for Android injection This provides direct memory access and syscall interfaces for critical operations
+ * pragma once Low-level memory and syscall utilities for Android injection This provides direct memory access and syscall interfaces for critical operations Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

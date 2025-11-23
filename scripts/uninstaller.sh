@@ -1,5 +1,5 @@
 #!/bin/bash
-# Magisk Uninstaller (updater-script) Preparation Default permissions
+# Magisk Uninstaller (updater-script) Preparation Default permissions Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

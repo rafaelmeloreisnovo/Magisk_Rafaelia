@@ -1,5 +1,5 @@
 /*
- * pragma once include <string_view> define ISOLATED_MAGIC "isolated"
+ * pragma once include <string_view> define ISOLATED_MAGIC "isolated" Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

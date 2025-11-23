@@ -1,4 +1,4 @@
-//! Error handling throughout the Rust codebase in Magisk: All errors should be logged and consumed as soon as possible and converted into LoggedError. For `Result` with errors that implement the `Display` trait, use the `?` operator to
+//! result.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

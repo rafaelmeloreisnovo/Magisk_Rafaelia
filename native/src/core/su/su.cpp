@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 - 2025, John Wu (@topjohnwu) Copyright 2015, Pierre-Hugues Husson <phh@phh.me> Copyright 2010, Adam Shanks (@ChainsDD)
+ * Copyright 2017 - 2025, John Wu (@topjohnwu) Copyright 2015, Pierre-Hugues Husson <phh@phh.me> Copyright 2010, Adam Shanks (@ChainsDD) Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

@@ -1,5 +1,5 @@
 #!/bin/bash
-# update_binary.sh - Part of Magisk_Rafaelia
+# update_binary.sh - Part of Magisk_Rafaelia Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

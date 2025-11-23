@@ -1,4 +1,4 @@
-//! Has to be pub so all symbols in that crate is included [path = "../include/consts.rs"] [cxx::bridge]
+//! lib.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

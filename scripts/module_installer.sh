@@ -1,5 +1,5 @@
 #!/bin/bash
-# Initialization echo before loading util_functions Load util_functions.sh
+# Initialization echo before loading util_functions Load util_functions.sh Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

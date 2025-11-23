@@ -1,5 +1,5 @@
 /*
- * ═══════════════════════════════════════════════════════════════════════════ RAFAELIA ECC BUFFER - Header File ═══════════════════════════════════════════════════════════════════════════
+ * ═══════════════════════════════════════════════════════════════════════════ RAFAELIA ECC BUFFER - Header File ═══════════════════════════════════════════════════════════════════════════ Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

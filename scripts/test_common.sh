@@ -1,5 +1,5 @@
 #!/bin/bash
-# Make sure paths are consistent
+# Make sure paths are consistent Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

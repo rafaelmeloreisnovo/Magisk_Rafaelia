@@ -1,5 +1,5 @@
 /*
- * Low-level injection utilities for Zygisk This file demonstrates using the low-level APIs for Android process injection. It provides direct memory manipulation and hooking capabilities.
+ * Low-level injection utilities for Zygisk This file demonstrates using the low-level APIs for Android process injection. It provides direct memory manipulation and hooking capabilities. Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

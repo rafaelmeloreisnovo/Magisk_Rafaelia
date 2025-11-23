@@ -1,4 +1,4 @@
-//! [path = "../../out/generated/flags.rs"]
+//! consts.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

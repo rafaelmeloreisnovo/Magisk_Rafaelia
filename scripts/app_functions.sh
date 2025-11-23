@@ -1,5 +1,5 @@
 #!/bin/bash
-# Magisk app internal scripts $2 = command $1 = version string
+# Magisk app internal scripts $2 = command $1 = version string Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

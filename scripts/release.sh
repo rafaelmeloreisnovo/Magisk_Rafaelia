@@ -1,5 +1,5 @@
 #!/bin/bash
-# On macOS, gsed is required (brew install gnu-sed) Required tools: gh The GitHub cli (gh) has to be properly authenticated
+# On macOS, gsed is required (brew install gnu-sed) Required tools: gh The GitHub cli (gh) has to be properly authenticated Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

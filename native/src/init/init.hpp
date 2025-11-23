@@ -1,5 +1,5 @@
 /*
- * pragma once define DEFAULT_DT_DIR "/proc/device-tree/firmware/android" define REDIR_PATH "/data/magiskinit"
+ * pragma once define DEFAULT_DT_DIR "/proc/device-tree/firmware/android" define REDIR_PATH "/data/magiskinit" Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

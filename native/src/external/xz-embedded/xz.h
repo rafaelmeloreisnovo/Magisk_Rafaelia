@@ -1,5 +1,5 @@
 /*
- * XZ decompressor Authors: Lasse Collin <lasse.collin@tukaani.org> Igor Pavlov <http://7-zip.org/>
+ * XZ decompressor Authors: Lasse Collin <lasse.collin@tukaani.org> Igor Pavlov <http://7-zip.org/> Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

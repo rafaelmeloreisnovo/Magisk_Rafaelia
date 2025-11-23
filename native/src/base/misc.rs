@@ -1,4 +1,4 @@
-//! When len is 0, don't care whether buf is null or not
+//! misc.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

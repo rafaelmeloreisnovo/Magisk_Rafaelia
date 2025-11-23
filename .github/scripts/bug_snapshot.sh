@@ -1,5 +1,5 @@
 #!/bin/bash
-# bug_snapshot.sh - Android Device Debugging Snapshot Collector Collects comprehensive debugging artifacts from an Android emulator or physical device to assist with CI triage and bug investigation. This script gathers logs, crash dumps,
+# bug_snapshot.sh - Android Device Debugging Snapshot Collector Collects comprehensive debugging artifacts from an Android emulator or physical device to assist with CI triage and bug investigation. This script gathers logs, crash dumps, Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

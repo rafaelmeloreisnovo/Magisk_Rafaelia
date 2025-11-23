@@ -1,5 +1,5 @@
 /*
- * Architecture-specific inline assembly utilities This provides direct CPU-level operations for critical Android injection code. Includes: cache operations, barriers, atomic operations, register access.
+ * Architecture-specific inline assembly utilities This provides direct CPU-level operations for critical Android injection code. Includes: cache operations, barriers, atomic operations, register access. Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

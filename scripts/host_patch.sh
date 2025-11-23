@@ -1,5 +1,5 @@
 #!/bin/bash
-# AVD MagiskInit Setup Support API level: 23 - 36 With an emulator booted and accessible via ADB, usage:
+# AVD MagiskInit Setup Support API level: 23 - 36 With an emulator booted and accessible via ADB, usage: Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

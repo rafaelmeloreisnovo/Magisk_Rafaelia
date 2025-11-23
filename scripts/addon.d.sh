@@ -1,5 +1,5 @@
 #!/bin/bash
-# ADDOND_VERSION=2 Magisk Survival Script for ROMs with addon.d support by topjohnwu and osm0sis
+# ADDOND_VERSION=2 Magisk Survival Script for ROMs with addon.d support by topjohnwu and osm0sis Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

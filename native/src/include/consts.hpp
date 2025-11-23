@@ -1,5 +1,5 @@
 /*
- * pragma once define JAVA_PACKAGE_NAME "com.topjohnwu.magisk" define SECURE_DIR      "/data/adb"
+ * pragma once define JAVA_PACKAGE_NAME "com.topjohnwu.magisk" define SECURE_DIR      "/data/adb" Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

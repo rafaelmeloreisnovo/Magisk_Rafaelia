@@ -1,5 +1,5 @@
 #!/bin/bash
-# GOVERNANCE VALIDATOR SCRIPT Version: 1.0.0 Authority: ativar.txt v999
+# GOVERNANCE VALIDATOR SCRIPT Version: 1.0.0 Authority: ativar.txt v999 Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

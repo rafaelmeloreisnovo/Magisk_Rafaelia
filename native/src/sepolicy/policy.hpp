@@ -1,5 +1,5 @@
 /*
- * pragma once Internal APIs, do not use directly include <map>
+ * pragma once Internal APIs, do not use directly include <map> Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

@@ -1,4 +1,4 @@
-//! [proc_macro_derive(Decodable)] Entrypoint for `#[derive(FromArgs)]`. [proc_macro_derive(FromArgs, attributes(argh))]
+//! lib.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

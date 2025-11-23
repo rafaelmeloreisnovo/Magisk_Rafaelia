@@ -1,4 +1,4 @@
-//! Don't use the declaration from the libc crate as request should be u32 not i32
+//! pts.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

@@ -1,5 +1,5 @@
 #!/bin/bash
-# rafaelia_rollback.sh - RAFAELIA System Rollback Helper Provides a safe mechanism to rollback to a previous system state using verified backup images. This script is part of the RAFAELIA framework's audit and recovery
+# rafaelia_rollback.sh - RAFAELIA System Rollback Helper Provides a safe mechanism to rollback to a previous system state using verified backup images. This script is part of the RAFAELIA framework's audit and recovery Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

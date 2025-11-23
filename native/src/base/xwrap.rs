@@ -1,4 +1,4 @@
-//! Functions in this file are only for exporting to C++, DO NOT USE IN RUST
+//! xwrap.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

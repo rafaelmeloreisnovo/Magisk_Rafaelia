@@ -1,5 +1,5 @@
 #!/bin/bash
-# Magisk Boot Image Patcher Usage: boot_patch.sh <bootimage> The following environment variables can configure the installation:
+# Magisk Boot Image Patcher Usage: boot_patch.sh <bootimage> The following environment variables can configure the installation: Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

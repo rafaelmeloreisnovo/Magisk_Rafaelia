@@ -1,5 +1,5 @@
 /*
- * pragma once include <functional> include <rust/cxx.h>
+ * pragma once include <functional> include <rust/cxx.h> Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

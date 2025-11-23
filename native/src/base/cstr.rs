@@ -1,4 +1,4 @@
-//! Utf8CStr types are UTF-8 validated and null terminated strings. Several Utf8CStr types:
+//! cstr.rs - Part of Magisk_Rafaelia
 //!
 //! Part of Magisk_Rafaelia
 //! RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

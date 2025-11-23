@@ -1,5 +1,5 @@
 #!/bin/bash
-# avd.sh - Part of Magisk_Rafaelia
+# avd.sh - Part of Magisk_Rafaelia Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

@@ -1,5 +1,5 @@
 /*
- * define ASSUME_RAM 128 define HAVE_BSWAP_16 1 define HAVE_BSWAP_32 1
+ * define ASSUME_RAM 128 define HAVE_BSWAP_16 1 define HAVE_BSWAP_32 1 Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

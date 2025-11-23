@@ -1,5 +1,5 @@
 /*
- * Low-level C API header for Android root injection This header provides C function declarations for low-level operations. For C++ code, use lowlevel.hpp instead.
+ * Low-level C API header for Android root injection This header provides C function declarations for low-level operations. For C++ code, use lowlevel.hpp instead. Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
  *
  * Part of Magisk_Rafaelia
  * RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

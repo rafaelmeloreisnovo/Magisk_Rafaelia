@@ -1,5 +1,5 @@
 #!/bin/bash
-# Magisk Flash Script (updater-script) Preparation Default permissions
+# Magisk Flash Script (updater-script) Preparation Default permissions Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:

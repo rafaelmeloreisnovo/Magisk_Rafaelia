@@ -1,5 +1,5 @@
 #!/bin/bash
-# AVD Magisk Setup Support API level: 23 - 36 For developing Magisk, just use:
+# AVD Magisk Setup Support API level: 23 - 36 For developing Magisk, just use: Part of Magisk_Rafaelia RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
 #
 # Part of Magisk_Rafaelia
 # RAFAELIA PHILOSOPHY / FILOSOFIA RAFAELIA:
