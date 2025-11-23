@@ -23,8 +23,26 @@ Philosophy: VAZIO → VERBO → CHEIO → RETRO
 
 from rafaelia.core.tt_cross import TTCrossApproximation
 from rafaelia.core.tt_update import TTLocalUpdate
+from rafaelia.core.matrix_ops import (
+    MatrixOperations,
+    TensorTrainMatrix,
+    AdaptiveMatrixOperations,
+)
+from rafaelia.core.authorship import (
+    RafaeliaAuthorship,
+    Author,
+    Publication,
+    LegalFramework,
+)
 
 __all__ = [
     'TTCrossApproximation',
     'TTLocalUpdate',
+    'MatrixOperations',
+    'TensorTrainMatrix',
+    'AdaptiveMatrixOperations',
+    'RafaeliaAuthorship',
+    'Author',
+    'Publication',
+    'LegalFramework',
 ]
