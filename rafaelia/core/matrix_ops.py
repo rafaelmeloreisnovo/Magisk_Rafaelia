@@ -626,9 +626,224 @@ class AdaptiveMatrixOperations(MatrixOperations):
         }
 
 
+class FractalMatrixOptimizer:
+    """
+    Fractal-based matrix optimization for memory efficiency.
+    
+    Applies fractal patterns to matrix storage and access for improved
+    cache locality and compression potential.
+    
+    Enhancements:
+    1. Hilbert curve matrix traversal for better cache utilization
+    2. Fractal compression for sparse matrices
+    3. Self-similar block decomposition
+    4. Entropy-aware storage optimization
+    """
+    
+    def __init__(self, matrix_ops: Optional[MatrixOperations] = None):
+        """
+        Initialize fractal optimizer.
+        
+        Args:
+            matrix_ops: Matrix operations engine (created if None)
+        """
+        self.matrix_ops = matrix_ops or MatrixOperations()
+        self.xp = self.matrix_ops.xp
+    
+    def fractal_block_decomposition(self, matrix: np.ndarray, 
+                                     block_size: int = 8) -> List[np.ndarray]:
+        """
+        Decompose matrix into self-similar fractal blocks.
+        
+        Uses recursive subdivision similar to quadtree decomposition
+        for efficient sparse matrix representation.
+        
+        Args:
+            matrix: Input matrix (m × n)
+            block_size: Minimum block size for decomposition
+            
+        Returns:
+            List of non-zero blocks with position metadata
+        """
+        m, n = matrix.shape
+        blocks = []
+        
+        def decompose_recursive(mat: np.ndarray, offset_i: int, offset_j: int):
+            """Recursively decompose matrix into blocks."""
+            h, w = mat.shape
+            
+            # Base case: small enough or nearly zero
+            if h <= block_size or w <= block_size:
+                if self.xp.any(self.xp.abs(mat) > self.matrix_ops.eps):
+                    blocks.append({
+                        'data': mat,
+                        'position': (offset_i, offset_j),
+                        'size': (h, w),
+                        'sparsity': float(self.xp.sum(self.xp.abs(mat) < self.matrix_ops.eps)) / mat.size
+                    })
+                return
+            
+            # Recursive case: divide into quadrants
+            mid_h, mid_w = h // 2, w // 2
+            
+            quadrants = [
+                (mat[:mid_h, :mid_w], offset_i, offset_j),  # Top-left
+                (mat[:mid_h, mid_w:], offset_i, offset_j + mid_w),  # Top-right
+                (mat[mid_h:, :mid_w], offset_i + mid_h, offset_j),  # Bottom-left
+                (mat[mid_h:, mid_w:], offset_i + mid_h, offset_j + mid_w)  # Bottom-right
+            ]
+            
+            for quad, off_i, off_j in quadrants:
+                if self.xp.any(self.xp.abs(quad) > self.matrix_ops.eps):
+                    decompose_recursive(quad, off_i, off_j)
+        
+        decompose_recursive(matrix, 0, 0)
+        return blocks
+    
+    def hilbert_reorder_matrix(self, matrix: np.ndarray) -> np.ndarray:
+        """
+        Reorder matrix elements using Hilbert curve for cache efficiency.
+        
+        Maps 2D matrix to 1D array following Hilbert curve path,
+        improving spatial locality for cache-friendly access.
+        
+        Args:
+            matrix: Input matrix (must be square, size = 2^n × 2^n)
+            
+        Returns:
+            Reordered matrix with same shape
+        """
+        m, n = matrix.shape
+        
+        if m != n or (m & (m - 1)) != 0:
+            # Not square or not power of 2, pad to next power of 2
+            size = 1 << (max(m, n) - 1).bit_length()
+            padded = self.xp.zeros((size, size), dtype=matrix.dtype)
+            padded[:m, :n] = matrix
+            matrix_to_reorder = padded
+        else:
+            matrix_to_reorder = matrix
+            size = m
+        
+        order = int(self.xp.log2(size))
+        
+        # Create Hilbert curve ordering
+        flat = matrix_to_reorder.flatten()
+        reordered_flat = self.xp.zeros_like(flat)
+        
+        # Map positions using Hilbert curve
+        for linear_idx in range(size * size):
+            # Convert linear index to Hilbert curve position
+            x, y = self._hilbert_d2xy(order, linear_idx)
+            matrix_idx = y * size + x
+            reordered_flat[linear_idx] = flat[matrix_idx]
+        
+        # Reshape and extract original size
+        reordered = reordered_flat.reshape(size, size)
+        return reordered[:m, :n]
+    
+    def _hilbert_d2xy(self, n: int, d: int) -> Tuple[int, int]:
+        """
+        Convert distance along Hilbert curve to (x, y) coordinates.
+        
+        Args:
+            n: Order of curve (size = 2^n)
+            d: Distance along curve
+            
+        Returns:
+            Tuple of (x, y) coordinates
+        """
+        x = y = 0
+        s = 1
+        size = 1 << n
+        
+        while s < size:
+            rx = 1 & (d // 2)
+            ry = 1 & (d ^ rx)
+            
+            if ry == 0:
+                if rx == 1:
+                    x = s - 1 - x
+                    y = s - 1 - y
+                x, y = y, x
+            
+            x += s * rx
+            y += s * ry
+            d //= 4
+            s *= 2
+        
+        return x, y
+    
+    def calculate_matrix_entropy(self, matrix: np.ndarray) -> float:
+        """
+        Calculate Shannon entropy of matrix elements.
+        
+        H = -Σ p(x) log₂ p(x)
+        
+        Args:
+            matrix: Input matrix
+            
+        Returns:
+            Entropy in bits
+        """
+        flat = matrix.flatten()
+        
+        if len(flat) == 0:
+            return 0.0
+        
+        # Quantize to reasonable precision to count frequencies
+        quantized = self.xp.round(flat * 1000).astype(int)
+        
+        # Count frequencies
+        unique, counts = self.xp.unique(quantized, return_counts=True)
+        probabilities = counts / len(flat)
+        
+        # Calculate entropy
+        entropy = -self.xp.sum(probabilities * self.xp.log2(probabilities + 1e-10))
+        
+        return float(entropy)
+    
+    def compress_sparse_fractal(self, matrix: np.ndarray,
+                                 tolerance: float = 1e-10) -> dict:
+        """
+        Compress sparse matrix using fractal block decomposition.
+        
+        Args:
+            matrix: Input matrix
+            tolerance: Threshold for considering values as zero
+            
+        Returns:
+            Dictionary with compressed representation
+        """
+        # Decompose into fractal blocks
+        blocks = self.fractal_block_decomposition(matrix, block_size=8)
+        
+        # Filter blocks by sparsity
+        significant_blocks = [
+            b for b in blocks 
+            if b['sparsity'] < 0.95  # Keep blocks with >5% non-zero
+        ]
+        
+        # Calculate compression ratio
+        original_size = matrix.size * matrix.itemsize
+        compressed_size = sum(b['data'].size * b['data'].itemsize 
+                            for b in significant_blocks)
+        
+        compression_ratio = original_size / compressed_size if compressed_size > 0 else float('inf')
+        
+        return {
+            'blocks': significant_blocks,
+            'original_shape': matrix.shape,
+            'num_blocks': len(significant_blocks),
+            'compression_ratio': compression_ratio,
+            'entropy': self.calculate_matrix_entropy(matrix)
+        }
+
+
 # Export public interface
 __all__ = [
     'MatrixOperations',
     'TensorTrainMatrix',
     'AdaptiveMatrixOperations',
+    'FractalMatrixOptimizer',
 ]
