@@ -21,9 +21,9 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 
 
-# ============================================================================
-# CONFIGURATION
-# ============================================================================
+# File size limits (in bytes)
+MAX_FILE_SIZE_SCAN = 5 * 1024 * 1024  # 5MB for vulnerability scanning
+MAX_FILE_SIZE_READ = 10 * 1024 * 1024  # 10MB for general file reading
 
 logger = logging.getLogger('security_hardening')
 logging.basicConfig(
@@ -149,7 +149,7 @@ class SecureCoding:
     """
     
     @staticmethod
-    def safe_file_read(filepath: Path, max_size: int = 10 * 1024 * 1024) -> str:
+    def safe_file_read(filepath: Path, max_size: int = MAX_FILE_SIZE_READ) -> str:
         """
         Safely read file with size limit
         
@@ -352,7 +352,7 @@ class VulnerabilityScanner:
             try:
                 # Check file size first to avoid memory exhaustion
                 file_size = py_file.stat().st_size
-                max_size = 5 * 1024 * 1024  # 5MB limit
+                max_size = MAX_FILE_SIZE_SCAN  # 5MB limit
                 
                 if file_size > max_size:
                     logger.warning(f"Skipping large file {py_file}: {file_size} bytes")
@@ -403,7 +403,7 @@ class VulnerabilityScanner:
             try:
                 # Check file size first to avoid memory exhaustion
                 file_size = py_file.stat().st_size
-                max_size = 5 * 1024 * 1024  # 5MB limit
+                max_size = MAX_FILE_SIZE_SCAN  # 5MB limit
                 
                 if file_size > max_size:
                     logger.warning(f"Skipping large file {py_file}: {file_size} bytes")

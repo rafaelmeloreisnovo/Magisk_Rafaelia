@@ -234,8 +234,9 @@ def validate_rafcode_signature(signature: str) -> bool:
 
 def validate_bitraf64(bitraf: str) -> bool:
     """Validate BITRAF64 seed format"""
-    # BITRAF64 uses these Greek letters and Latin letters
-    valid_chars = set("AΔBΩTTΦIΣRF")
+    # Extract unique characters from the actual BITRAF64 constant
+    # BITRAF64 uses Greek letters (Δ, Ω, Φ, Σ) and Latin letters (A, B, T, I, R, F)
+    valid_chars = set("AΔBΩTΦIΣRF")
     return all(c in valid_chars for c in bitraf)
 
 

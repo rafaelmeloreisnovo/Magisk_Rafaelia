@@ -82,8 +82,13 @@ jobs:
         run: |
           echo "Running compliance_checker.py..."
           chmod +x compliance_checker.py
-          python3 compliance_checker.py -o compliance_report.json
-        continue-on-error: true
+          python3 compliance_checker.py -o compliance_report.json || echo "COMPLIANCE_FAILED=true" >> $GITHUB_ENV
+      
+      - name: Check compliance result
+        if: env.COMPLIANCE_FAILED == 'true'
+        run: |
+          echo "⚠️ Compliance check failed. Review compliance_report.json artifact."
+          echo "This is informational - workflow continues for report generation."
 
       - name: Run file integrity checks
         run: |

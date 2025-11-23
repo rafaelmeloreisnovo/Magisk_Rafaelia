@@ -107,7 +107,10 @@ class GarbageCollectionOptimizer:
         
         # Calculate improvement as percentage increase in threshold
         # Higher threshold = less frequent collections = better performance
-        improvement = ((after[0] - before[0]) / before[0]) * 100
+        if before[0] > 0:
+            improvement = ((after[0] - before[0]) / before[0]) * 100
+        else:
+            improvement = 100.0  # If before was 0, any threshold is infinite improvement
         
         result = OptimizationResult(
             category="garbage_collection",
