@@ -14,6 +14,9 @@ on:
   schedule:
     - cron: '0 3 * * 2'  # Weekly on Tuesdays at 3 AM UTC
 
+permissions:
+  contents: read
+
 jobs:
   ieee-830-requirements:
     name: IEEE 830 - Software Requirements
@@ -138,8 +141,12 @@ jobs:
       - name: Verify Architectural Concerns
         run: |
           echo "🏗️  IEEE 42010: Verifying architectural concerns..."
-          if grep -i "architecture\|component\|module\|layer" RAFAELIA*.md docs/*.md 2>/dev/null; then
-            echo "✅ Architectural concepts documented"
+          if [ -f "RAFAELIA_CORE.md" ] || [ -f "docs/RAFAELIA_FRAMEWORK.md" ]; then
+            if grep -qi "architecture\|component\|module\|layer" RAFAELIA*.md 2>/dev/null || grep -qi "architecture\|component\|module\|layer" docs/*.md 2>/dev/null; then
+              echo "✅ Architectural concepts documented"
+            fi
+          else
+            echo "ℹ️  Architecture documentation recommended"
           fi
 
   ieee-7000-ethics:

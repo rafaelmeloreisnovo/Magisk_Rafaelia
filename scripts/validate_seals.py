@@ -158,7 +158,7 @@ class SealValidator:
                     content = f.read()
                     if 'Rafael' in content:
                         return True, "Author identity preserved"
-            except:
+            except (IOError, UnicodeDecodeError):
                 pass
         
         return False, "Author attribution required"

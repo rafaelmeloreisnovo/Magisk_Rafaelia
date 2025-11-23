@@ -13,6 +13,9 @@ on:
   schedule:
     - cron: '0 2 * * 1'  # Weekly on Mondays at 2 AM UTC
 
+permissions:
+  contents: read
+
 jobs:
   iso-9001-quality:
     name: ISO 9001 - Quality Management
@@ -64,7 +67,7 @@ jobs:
       - name: Check Quality Objectives
         run: |
           echo "📋 ISO 9001: Quality objectives documented"
-          if grep -q "quality\|Quality\|QUALITY" README.MD RAFAELIA_CORE.md; then
+          if grep -qi "quality" README.MD RAFAELIA_CORE.md; then
             echo "✅ Quality objectives referenced"
           else
             echo "⚠️  Quality objectives should be documented"

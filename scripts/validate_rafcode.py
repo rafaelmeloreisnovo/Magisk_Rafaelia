@@ -101,7 +101,7 @@ class RAFCODEValidator:
         
         # Exclude certain directories
         exclude_dirs = {'.git', 'node_modules', '__pycache__', '.pytest_cache', 
-                       'build', 'dist', 'out', '.gradle', '.idea'}
+                       'build', 'dist', 'out', '.gradle', '.idea', '.github'}
         
         for pattern in SCAN_PATTERNS:
             for filepath in self.root_dir.glob(pattern):
@@ -147,7 +147,7 @@ class RAFCODEValidator:
                     )
                     has_full_format = True
                     
-            except Exception as e:
+            except (IOError, UnicodeDecodeError) as e:
                 self.warnings.append(f"⚠️  Error reading {filepath}: {e}")
         
         if has_full_format:
@@ -185,7 +185,7 @@ class RAFCODEValidator:
                     )
                     attribution_count += 1
                     
-            except Exception as e:
+            except (IOError, UnicodeDecodeError) as e:
                 self.warnings.append(f"⚠️  Error reading {filepath}: {e}")
         
         if attribution_count >= 2:

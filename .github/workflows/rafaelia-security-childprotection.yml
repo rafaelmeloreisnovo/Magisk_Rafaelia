@@ -15,6 +15,9 @@ on:
   schedule:
     - cron: '0 4 * * 3'  # Weekly on Wednesdays at 4 AM UTC
 
+permissions:
+  contents: read
+
 jobs:
   owasp-dependency-check:
     name: OWASP Dependency Check
@@ -61,7 +64,7 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Security Pattern Scanning
+      - name: Check Security Pattern Scanning
         run: |
           echo "🔍 SAST: Scanning for security patterns..."
           
@@ -84,6 +87,13 @@ jobs:
             echo "⚠️  Potential command injection patterns - review needed"
           else
             echo "✅ No obvious command injection patterns"
+          fi
+          
+          # Check for hardcoded secrets patterns (expanded)
+          if grep -r "password\s*=\|api_key\s*=\|secret\s*=\|token\s*=\|private_key\s*=" . --include="*.py" --include="*.java" --include="*.js" --exclude-dir=tests --exclude-dir=docs 2>/dev/null; then
+            echo "⚠️  Potential hardcoded credentials found - review needed"
+          else
+            echo "✅ No obvious hardcoded credentials"
           fi
 
       - name: Check Cryptography Usage
