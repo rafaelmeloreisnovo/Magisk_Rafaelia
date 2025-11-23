@@ -19,7 +19,8 @@ This is the **quickest and easiest** way for users who don't want to compile loc
 5. Extract the downloaded ZIP file
 6. Inside you'll find:
    - `app-release.apk` - Signed release APK
-   - `app-debug.apk` - Debug APK
+   - `app-debug.apk` - Signed debug APK
+   - `app-unsigned.apk` - **UNSIGNED APK** (for self-signing)
    - Compiled native binaries
    - RAFAELIA manifest
 
@@ -140,8 +141,9 @@ The `.github/workflows/build.yml` file already contains:
 After building or downloading, you'll have:
 
 ### APKs:
-- **app-release.apk**: Version for distribution (requires own keystore)
-- **app-debug.apk**: Version for development (no signature verification)
+- **app-release.apk**: Version for distribution (signed with production or debug keystore)
+- **app-debug.apk**: Version for development (signed with debug keystore)
+- **app-unsigned.apk**: Version **WITHOUT SIGNATURE** - for users who want to sign with their own key
 
 ### Native Binaries:
 - `magisk` - Main Magisk binary
@@ -161,9 +163,51 @@ After building or downloading, you'll have:
 
 ---
 
-## 🔐 Signing the APK (Optional for Distribution)
+## 🔐 Signing the UNSIGNED APK
 
-If you want to distribute your own build:
+If you downloaded the **app-unsigned.apk** from artifacts, you can sign it with your own key:
+
+### Method 1: Using apksigner (Recommended)
+
+1. **Generate your keystore (if you don't have one):**
+```bash
+keytool -genkey -v -keystore my-key.jks \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -alias my-alias
+```
+
+2. **Sign the unsigned APK:**
+```bash
+# Alignment (zipalign)
+zipalign -v -p 4 app-unsigned.apk app-unsigned-aligned.apk
+
+# Signing
+apksigner sign --ks my-key.jks \
+  --ks-key-alias my-alias \
+  --out app-signed.apk \
+  app-unsigned-aligned.apk
+
+# Verify signature
+apksigner verify app-signed.apk
+```
+
+### Method 2: Using jarsigner (Classic)
+
+```bash
+# Sign
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+  -keystore my-key.jks app-unsigned.apk my-alias
+
+# Align after signing
+zipalign -v -p 4 app-unsigned.apk app-signed.apk
+
+# Verify
+jarsigner -verify -verbose -certs app-signed.apk
+```
+
+## 🔐 Signing the APK During Build (For Distribution)
+
+If you want to build and sign automatically:
 
 1. **Generate a keystore:**
 ```bash

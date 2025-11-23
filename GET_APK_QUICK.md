@@ -5,7 +5,10 @@
 1. Go to [Actions](../../actions/workflows/build.yml?query=is%3Asuccess)
 2. Click latest successful build → Download artifacts at bottom
 
-✅ **Done!** Extract ZIP and install `app-debug.apk`
+✅ **Done!** Extract ZIP and you'll find:
+- `app-debug.apk` - For testing (signed with debug key)
+- `app-release.apk` - For distribution (signed)
+- `app-unsigned.apk` - **UNSIGNED** (sign it yourself!)
 
 ---
 

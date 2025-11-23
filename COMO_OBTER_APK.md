@@ -19,7 +19,8 @@ Esta é a forma **mais rápida e fácil** para usuários que não querem compila
 5. Extraia o arquivo ZIP baixado
 6. Dentro você encontrará:
    - `app-release.apk` - APK release assinado
-   - `app-debug.apk` - APK debug
+   - `app-debug.apk` - APK debug assinado
+   - `app-unsigned.apk` - APK **SEM ASSINATURA** (para assinar você mesmo)
    - Binários nativos compilados
    - Manifesto RAFAELIA
 
@@ -140,8 +141,9 @@ O arquivo `.github/workflows/build.yml` já contém:
 Após compilar ou baixar, você terá:
 
 ### APKs:
-- **app-release.apk**: Versão para distribuição (requer keystore próprio)
-- **app-debug.apk**: Versão para desenvolvimento (não verificar assinatura)
+- **app-release.apk**: Versão para distribuição (assinado com keystore de produção ou debug)
+- **app-debug.apk**: Versão para desenvolvimento (assinado com keystore de debug)
+- **app-unsigned.apk**: Versão **SEM ASSINATURA** - para usuários que querem assinar com sua própria chave
 
 ### Binários Nativos:
 - `magisk` - Binário principal do Magisk
@@ -161,9 +163,51 @@ Após compilar ou baixar, você terá:
 
 ---
 
-## 🔐 Assinando o APK (Opcional para Distribuição)
+## 🔐 Assinando o APK SEM ASSINATURA
 
-Se você quer distribuir seu próprio build:
+Se você baixou o **app-unsigned.apk** dos artifacts, você pode assiná-lo com sua própria chave:
+
+### Método 1: Usando apksigner (Recomendado)
+
+1. **Gere sua keystore (se ainda não tiver):**
+```bash
+keytool -genkey -v -keystore minha-chave.jks \
+  -keyalg RSA -keysize 2048 -validity 10000 \
+  -alias minha-alias
+```
+
+2. **Assine o APK não assinado:**
+```bash
+# Alinhamento (zipalign)
+zipalign -v -p 4 app-unsigned.apk app-unsigned-aligned.apk
+
+# Assinatura
+apksigner sign --ks minha-chave.jks \
+  --ks-key-alias minha-alias \
+  --out app-signed.apk \
+  app-unsigned-aligned.apk
+
+# Verificar assinatura
+apksigner verify app-signed.apk
+```
+
+### Método 2: Usando jarsigner (Clássico)
+
+```bash
+# Assinar
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+  -keystore minha-chave.jks app-unsigned.apk minha-alias
+
+# Alinhar após assinar
+zipalign -v -p 4 app-unsigned.apk app-signed.apk
+
+# Verificar
+jarsigner -verify -verbose -certs app-signed.apk
+```
+
+## 🔐 Assinando o APK Durante a Compilação (Para Distribuição)
+
+Se você quer compilar e assinar automaticamente:
 
 1. **Gere uma keystore:**
 ```bash
