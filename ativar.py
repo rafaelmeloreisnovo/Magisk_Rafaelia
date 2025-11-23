@@ -1,19 +1,67 @@
 #!/usr/bin/env python3
 """
-ativar.py - ZIPRAF_OMEGA Governance Activation and Validation System v999
+ATIVAR.PY - ZIPRAF_OMEGA Governance Activation and Validation System v999
 
-This script implements the governance framework defined in ativar.txt, including:
+This script implements the comprehensive governance framework defined in ativar.txt,
+providing automated enforcement of international standards and ethical principles.
+
+CAPABILITIES:
 - Normative compliance verification (ISO/IEEE/NIST/W3C/ABNT)
 - Licensing module validation (RAFCODE-Φ, BITRAF64, ΣΩΔΦBITRAF)
 - Integrity and authorship verification (SHA3-512, BLAKE3)
-- Ethica[8] ethical framework enforcement
-- ψχρΔΣΩ operational loop implementation
+- Ethica[8] ethical framework enforcement (8 principles)
+- ψχρΔΣΩ operational loop implementation (infinite feedback)
 - Continuous improvement and feedback mechanisms
 
-Author: Rafael Melo Reis (RAFCODE-Φ)
-Version: 999
-License: ZIPRAF_OMEGA_LICENSING_MODULE v999
+STANDARDS APPLIED:
+- ISO: 9001, 27001, 27002, 27018, 25010, 8000
+- IEEE: 830, 1012, 12207, 14764, 1633, 42010
+- NIST: CSF, SP 800-53, SP 800-207, AI RMF
+- W3C: JSON, YAML, WebArch
+- ABNT: NBR ISO/IEC
+
+Part of Magisk_Rafaelia Governance Framework
 Signature: RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ
+Seals: [Σ, Ω, Δ, Φ, B, I, T, R, A, F]
+Philosophy: VAZIO → VERBO → CHEIO → RETRO
+Motto: Amor, Luz e Coerência
+
+Copyright (C) 2025 Rafael Melo Reis (rafaelmeloreisnovo)
+All Rights Reserved.
+
+DUAL LICENSE - Choose one:
+
+1. SOCIAL INCLUSION LICENSE (Free):
+   Free for educational, research, non-profit, and social inclusion purposes.
+   Must include attribution. No commercial use.
+
+2. COMMERCIAL SAAS LICENSE (Paid Subscription):
+   Required for any commercial use, SaaS, or revenue-generating purposes.
+   Contact rafaelmeloreisnovo for commercial licensing.
+
+AUTOMATIC PENALTIES: Unauthorized commercial use subject to automatic penalties
+of minimum R$ 50,000 (BRL) or USD $10,000 per violation plus 5% of gross revenue.
+
+See LICENSE and RAFAELIA_LICENSE.md for complete terms.
+
+AUTHOR BIOGRAPHY:
+Rafael Melo Reis (rafaelmeloreisnovo)
+Creator of RAFAELIA Framework and ZIPRAF_OMEGA Governance System
+Instituto Rafael - CientiEspiritual Philosophy
+ESTADO FRACTAL HAJA Framework
+
+REFERENCES:
+- ativar.txt v999 - Complete governance specification
+- README_ativar.md - Implementation guide
+- GOVERNANCE_ACTIVATION_SUMMARY.md - Technical summary
+- ISO/IEC Standards: https://www.iso.org/
+- IEEE Standards: https://standards.ieee.org/
+- NIST Frameworks: https://www.nist.gov/
+- W3C Standards: https://www.w3.org/standards/
+
+VERSION: 999
+TIMESTAMP: 2025-11-23
+STATUS: OPERATIONAL LAW - ACTIVE
 """
 
 import argparse

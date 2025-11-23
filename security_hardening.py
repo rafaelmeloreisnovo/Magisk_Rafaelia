@@ -1,15 +1,88 @@
 #!/usr/bin/env python3
 """
-security_hardening.py - Security Hardening and Vulnerability Mitigation
+SECURITY_HARDENING.PY - Security Hardening and Vulnerability Mitigation
 
-This script provides security hardening capabilities:
-- Input validation utilities
-- Secure coding patterns
-- Vulnerability scanning helpers
-- Zero Trust architecture components
+Comprehensive security toolkit implementing OWASP and NIST best practices for
+application security, vulnerability scanning, and Zero Trust architecture.
 
-Part of ZIPRAF_OMEGA Governance Framework v999
-Implements: NIST SP 800-53, NIST SP 800-207 (Zero Trust)
+CAPABILITIES:
+- Input validation utilities (OWASP-compliant)
+- Secure coding patterns library
+- Zero Trust architecture validator (NIST SP 800-207)
+- Vulnerability scanning (credentials, SQL injection)
+- Path traversal protection (URL-decoded)
+- Security best practices guide
+
+INPUT VALIDATION:
+- String sanitization (control character removal, length limits)
+- Path validation (directory traversal prevention with URL decode)
+- Email format validation (RFC-compliant)
+- Alphanumeric validation (with/without spaces)
+
+SECURE CODING PATTERNS:
+- Safe file I/O (size limits, atomic writes with backup)
+- Cryptographically secure random generation
+- Secure hashing (SHA3-256)
+- Atomic file operations
+
+ZERO TRUST VALIDATOR:
+- Authorization policy framework
+- Context-aware access control
+- Continuous authentication and authorization
+- Comprehensive audit logging
+
+VULNERABILITY SCANNING:
+- Hardcoded credential detection (passwords, API keys, tokens)
+- SQL injection pattern detection (string concatenation)
+- File size limits (5MB/10MB) to prevent DoS
+- Pattern-based security analysis
+
+Part of Magisk_Rafaelia Governance Framework
+ZIPRAF_OMEGA v999 Security Module
+Signature: RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ
+Philosophy: VAZIO → VERBO → CHEIO → RETRO
+Motto: Amor, Luz e Coerência
+
+Copyright (C) 2025 Rafael Melo Reis (rafaelmeloreisnovo)
+All Rights Reserved.
+
+DUAL LICENSE - Choose one:
+
+1. SOCIAL INCLUSION LICENSE (Free):
+   Free for educational, research, non-profit, and social inclusion purposes.
+   Must include attribution. No commercial use.
+
+2. COMMERCIAL SAAS LICENSE (Paid Subscription):
+   Required for any commercial use, SaaS, or revenue-generating purposes.
+   Contact rafaelmeloreisnovo for commercial licensing.
+
+AUTOMATIC PENALTIES: Unauthorized commercial use subject to automatic penalties
+of minimum R$ 50,000 (BRL) or USD $10,000 per violation plus 5% of gross revenue.
+
+See LICENSE and RAFAELIA_LICENSE.md for complete terms.
+
+AUTHOR BIOGRAPHY:
+Rafael Melo Reis (rafaelmeloreisnovo)
+Creator of RAFAELIA Framework and ZIPRAF_OMEGA Governance System
+Instituto Rafael - CientiEspiritual Philosophy
+ESTADO FRACTAL HAJA Framework
+
+REFERENCES:
+- OWASP Top 10: https://owasp.org/www-project-top-ten/
+- NIST SP 800-53: Security and Privacy Controls
+- NIST SP 800-207: Zero Trust Architecture
+- CWE Top 25: https://cwe.mitre.org/top25/
+- CERT Secure Coding Standards
+- ISO/IEC 27002: Code of Practice for Information Security Controls
+
+USAGE:
+    ./security_hardening.py scan        # Run vulnerability scan
+    ./security_hardening.py guide       # Display security best practices
+    ./security_hardening.py validate    # Test Zero Trust validator
+
+VERSION: 999
+TIMESTAMP: 2025-11-23
+STATUS: OPERATIONAL
 """
 
 import os

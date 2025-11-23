@@ -1,15 +1,79 @@
 #!/usr/bin/env python3
 """
-compliance_checker.py - CI/CD Compliance and Security Checker
+COMPLIANCE_CHECKER.PY - CI/CD Compliance and Security Checker
 
-Automated compliance verification for CI/CD pipelines:
-- Standards compliance (ISO/IEEE/NIST/W3C)
-- Security vulnerability scanning
-- Code quality checks
-- License compliance
-- Configuration validation
+Automated compliance verification system for CI/CD pipelines, ensuring adherence
+to international standards, security best practices, and code quality requirements.
 
-Part of ZIPRAF_OMEGA Governance Framework v999
+CAPABILITIES:
+- Standards compliance verification (ISO/IEEE/NIST/W3C)
+- Security vulnerability scanning (permissions, secrets, dependencies)
+- Code quality checks (syntax, documentation, comments)
+- License compliance validation
+- Configuration file validation (JSON, YAML)
+- Comprehensive JSON reporting with severity classification
+
+SECURITY CHECKS:
+- File permissions (world-writable detection)
+- Hardcoded secrets and credentials
+- Dependency vulnerabilities (stub for integration)
+- Configuration security
+
+CODE QUALITY CHECKS:
+- Python syntax validation
+- Documentation completeness
+- Code comment ratio analysis
+- License file and header presence
+
+Part of Magisk_Rafaelia Governance Framework
+ZIPRAF_OMEGA v999 Compliance Module
+Signature: RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ
+Philosophy: VAZIO → VERBO → CHEIO → RETRO
+Motto: Amor, Luz e Coerência
+
+Copyright (C) 2025 Rafael Melo Reis (rafaelmeloreisnovo)
+All Rights Reserved.
+
+DUAL LICENSE - Choose one:
+
+1. SOCIAL INCLUSION LICENSE (Free):
+   Free for educational, research, non-profit, and social inclusion purposes.
+   Must include attribution. No commercial use.
+
+2. COMMERCIAL SAAS LICENSE (Paid Subscription):
+   Required for any commercial use, SaaS, or revenue-generating purposes.
+   Contact rafaelmeloreisnovo for commercial licensing.
+
+AUTOMATIC PENALTIES: Unauthorized commercial use subject to automatic penalties
+of minimum R$ 50,000 (BRL) or USD $10,000 per violation plus 5% of gross revenue.
+
+See LICENSE and RAFAELIA_LICENSE.md for complete terms.
+
+AUTHOR BIOGRAPHY:
+Rafael Melo Reis (rafaelmeloreisnovo)
+Creator of RAFAELIA Framework and ZIPRAF_OMEGA Governance System
+Instituto Rafael - CientiEspiritual Philosophy
+ESTADO FRACTAL HAJA Framework
+
+REFERENCES:
+- ativar.txt v999 - Governance specification
+- NIST SP 800-53 - Security Controls
+- OWASP Top 10 - Application Security Risks
+- CWE Top 25 - Most Dangerous Software Weaknesses
+- ISO/IEC 27001 - Information Security Management
+
+USAGE:
+    ./compliance_checker.py                    # Run all checks
+    ./compliance_checker.py -o report.json     # Generate JSON report
+    ./compliance_checker.py --fail-on-warning  # Strict mode
+
+EXIT CODES:
+    0 - All checks passed
+    1 - Critical failures or warnings (with --fail-on-warning)
+
+VERSION: 999
+TIMESTAMP: 2025-11-23
+STATUS: OPERATIONAL
 """
 
 import json
