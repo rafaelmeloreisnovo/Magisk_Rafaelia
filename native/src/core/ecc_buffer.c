@@ -1,56 +1,34 @@
 /*
- * ═══════════════════════════════════════════════════════════════════════════
- * RAFAELIA ECC BUFFER - Error Correcting Code Buffer Parity System
- * ═══════════════════════════════════════════════════════════════════════════
+ * Original Magisk Copyright:
+ * Copyright 2017 - 2025, John Wu (@topjohnwu)
  *
- * Implements Hamming codes and Reed-Solomon error correction for buffer
- * integrity and reliability in memory operations.
+ * RAFAELIA Framework Additions:
+ * Copyright 2025, Rafael Melo Reis (rafaelmeloreisnovo)
+ * Instituto Rafael - CientiEspiritual Philosophy
  *
- * MATHEMATICAL FOUNDATION:
- * - Hamming(7,4): Single error correction, double error detection
- * - Reed-Solomon: Multiple error correction over GF(256)
- * - Parity bits: P = log₂(n) + 1 for n data bits
- * - Syndrome decoding: S = H·r where H is parity-check matrix
+ * This file is part of Magisk_Rafaelia, a derivative work of Magisk.
+ * 
+ * Magisk_Rafaelia is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * FEATURES:
- * 1. Single-bit error correction (SEC)
- * 2. Double-bit error detection (DED)
- * 3. Multi-bit error correction via Reed-Solomon
- * 4. Buffer integrity validation
- * 5. Automatic error recovery
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
  *
- * Part of RAFAELIA Framework - Memory Reliability Suite
- * Signature: RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩARKRE-VERBOΩ
- * Philosophy: VAZIO → VERBO → CHEIO → RETRO (Empty → Action → Full → Feedback)
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
- * Copyright (C) 2025 Rafael Melo Reis (rafaelmeloreisnovo)
- * All Rights Reserved.
- *
- * DUAL LICENSE - Choose one:
- *
- * 1. SOCIAL INCLUSION LICENSE (Free):
- *    Free for educational, research, non-profit, and social inclusion purposes.
- *    Must include attribution. No commercial use.
- *
- * 2. COMMERCIAL SAAS LICENSE (Paid Subscription):
- *    Required for any commercial use, SaaS, or revenue-generating purposes.
- *    Contact rafaelmeloreisnovo for commercial licensing.
- *
- * AUTOMATIC PENALTIES: Unauthorized commercial use subject to automatic
- * penalties of minimum R$ 50,000 (BRL) or USD $10,000 per violation plus 5%
- * of gross revenue.
- *
- * See LICENSE and RAFAELIA_LICENSE.md for complete terms.
- *
- * REFERENCES:
- * - Hamming, R. W. (1950). "Error detecting and error correcting codes"
- * - Reed, I. S.; Solomon, G. (1960). "Polynomial Codes Over Certain Finite Fields"
- * - Lin, S.; Costello, D. J. (2004). "Error Control Coding", 2nd Edition
- *
- * VERSION: 1.0.0
- * TIMESTAMP: 2025-11-23
- * STATUS: OPERATIONAL
- * ═══════════════════════════════════════════════════════════════════════════
+ * ---
+ * RAFAELIA PHILOSOPHY (Aspirational Commentary - Not Part of License):
+ * 
+ * Sacred Cycle: VAZIO → VERBO → CHEIO → RETRO (EMPTY → ACTION → FULL → FEEDBACK)
+ * Motto: "Amor, Luz e Coerência" (Love, Light and Coherence)
+ * Ethica[8]: Transparency, Accountability, Fairness, Privacy, Security,
+ *            Reliability, Safety, Sustainability
+ * ---
  */
 
 #include <stdint.h>
