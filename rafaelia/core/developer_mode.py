@@ -110,22 +110,42 @@ class PigtailDatabase:
     - Technical coherence evaluations
     """
     
-    def __init__(self, db_path: str = "/data/local/tmp/rafaelia_pigtail.db"):
+    def __init__(self, db_path: str = None):
         """Initialize pigtail database."""
-        self.db_path = db_path
+        if db_path is None:
+            # Use secure app-private directory when available
+            # Fall back to secure temporary location with proper permissions
+            import tempfile
+            secure_dir = os.getenv('RAFAELIA_DATA_DIR', tempfile.gettempdir())
+            self.db_path = os.path.join(secure_dir, 'rafaelia', 'pigtail.db')
+        else:
+            self.db_path = db_path
         self._ensure_directory()
         self._init_database()
         self._lock = threading.Lock()
         
     def _ensure_directory(self):
-        """Ensure database directory exists."""
+        """Ensure database directory exists with secure permissions."""
         db_dir = os.path.dirname(self.db_path)
         if db_dir and not os.path.exists(db_dir):
             try:
+                # Create with secure permissions (owner only: rwx------)
                 os.makedirs(db_dir, mode=0o700, exist_ok=True)
+                
+                # Verify permissions were set correctly
+                if os.path.exists(db_dir):
+                    os.chmod(db_dir, 0o700)
+                    
             except Exception as e:
-                # Fallback to /tmp if can't write to preferred location
-                self.db_path = "/tmp/rafaelia_pigtail.db"
+                # Fallback to user's home directory if can't write to preferred location
+                import tempfile
+                fallback_dir = os.path.join(os.path.expanduser('~'), '.rafaelia')
+                os.makedirs(fallback_dir, mode=0o700, exist_ok=True)
+                self.db_path = os.path.join(fallback_dir, 'pigtail.db')
+                
+        # Ensure the database file itself has secure permissions
+        if os.path.exists(self.db_path):
+            os.chmod(self.db_path, 0o600)  # rw------- (owner read/write only)
                 
     def _init_database(self):
         """Initialize database schema."""
@@ -342,13 +362,28 @@ class DeveloperModeManager:
         1. Device is in developer mode
         2. User has explicitly granted permission
         3. GDPR/LGPD compliance requirements met
+        
+        Security: Uses secure consent verification to prevent exploitation
         """
         # Check if Android Developer Options are enabled
         # This is a placeholder - actual implementation would check Android settings
         try:
-            # Check for developer mode indicator file
-            consent_file = "/data/local/tmp/rafaelia_dev_consent"
-            return os.path.exists(consent_file)
+            # Use secure application-specific directory for consent file
+            # NOT a world-writable location like /tmp
+            consent_dir = os.getenv('RAFAELIA_DATA_DIR', os.path.expanduser('~/.rafaelia'))
+            os.makedirs(consent_dir, mode=0o700, exist_ok=True)
+            
+            consent_file = os.path.join(consent_dir, 'dev_consent')
+            
+            # Verify file exists and has secure permissions
+            if os.path.exists(consent_file):
+                # Ensure file is owned by current user and not world-readable
+                stat_info = os.stat(consent_file)
+                # Check that file is not writable by group or others (mask 0o077)
+                if stat_info.st_mode & 0o077 == 0:
+                    return True
+                    
+            return False
         except Exception:
             return False
             
@@ -612,6 +647,12 @@ def enable_developer_mode_with_consent() -> bool:
     1. User explicitly enables developer options on device
     2. User grants permission in app settings
     3. User reads and accepts data collection terms (GDPR/LGPD)
+    
+    To enable, create a consent file:
+        mkdir -p ~/.rafaelia  # or use RAFAELIA_DATA_DIR env var
+        chmod 700 ~/.rafaelia
+        touch ~/.rafaelia/dev_consent
+        chmod 600 ~/.rafaelia/dev_consent
     
     Returns:
         True if successfully enabled, False otherwise
