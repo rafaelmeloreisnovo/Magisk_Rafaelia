@@ -152,14 +152,17 @@ jobs:
           ./gradlew apk:assembleUnsigned 2>&1 | tee ../out/logs/build_unsigned.log
           cd ..
           
-          # Copy the unsigned APK to out directory
-          if [ -f "app/apk/build/outputs/apk/unsigned/apk-unsigned.apk" ]; then
-            cp app/apk/build/outputs/apk/unsigned/apk-unsigned.apk out/app-unsigned.apk
-            echo "✅ Unsigned APK copied to out/app-unsigned.apk"
+          # Find and copy the unsigned APK to out directory
+          UNSIGNED_APK=$(find app/apk/build/outputs/apk/unsigned -name "*.apk" -type f 2>/dev/null | head -n 1)
+          
+          if [ -n "$UNSIGNED_APK" ] && [ -f "$UNSIGNED_APK" ]; then
+            cp "$UNSIGNED_APK" out/app-unsigned.apk
+            echo "✅ Unsigned APK copied from $UNSIGNED_APK to out/app-unsigned.apk"
+            ls -lh out/app-unsigned.apk
           else
             echo "⚠️ Unsigned APK not found in expected location"
-            echo "Searching for unsigned APK..."
-            find app/apk/build/outputs -name "*unsigned*.apk" -o -name "*Unsigned*.apk" || true
+            echo "Searching for unsigned APK in build outputs..."
+            find app/apk/build/outputs -type f -name "*.apk" | grep -i unsigned || true
           fi
         continue-on-error: false
 

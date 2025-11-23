@@ -194,12 +194,13 @@ apksigner verify app-signed.apk
 ### Method 2: Using jarsigner (Classic)
 
 ```bash
-# Sign
+# Sign (modifies APK in-place)
 jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
   -keystore my-key.jks app-unsigned.apk my-alias
 
-# Align after signing
-zipalign -v -p 4 app-unsigned.apk app-signed.apk
+# Align after signing (creates new aligned version)
+cp app-unsigned.apk app-unsigned-signed.apk
+zipalign -v -p 4 app-unsigned-signed.apk app-signed.apk
 
 # Verify
 jarsigner -verify -verbose -certs app-signed.apk
