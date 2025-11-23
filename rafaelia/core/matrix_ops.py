@@ -774,7 +774,8 @@ class FractalMatrixOptimizer:
         
         return x, y
     
-    def calculate_matrix_entropy(self, matrix: np.ndarray) -> float:
+    def calculate_matrix_entropy(self, matrix: np.ndarray, 
+                                  quantization_bits: int = 10) -> float:
         """
         Calculate Shannon entropy of matrix elements.
         
@@ -782,6 +783,7 @@ class FractalMatrixOptimizer:
         
         Args:
             matrix: Input matrix
+            quantization_bits: Number of bits for quantization (default: 10)
             
         Returns:
             Entropy in bits
@@ -791,8 +793,14 @@ class FractalMatrixOptimizer:
         if len(flat) == 0:
             return 0.0
         
-        # Quantize to reasonable precision to count frequencies
-        quantized = self.xp.round(flat * 1000).astype(int)
+        # Adaptive quantization based on data range and precision
+        data_range = self.xp.max(flat) - self.xp.min(flat)
+        if data_range > 0:
+            quantization_factor = (1 << quantization_bits) / data_range
+        else:
+            quantization_factor = 1.0
+        
+        quantized = self.xp.round(flat * quantization_factor).astype(int)
         
         # Count frequencies
         unique, counts = self.xp.unique(quantized, return_counts=True)

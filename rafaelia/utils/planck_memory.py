@@ -168,8 +168,9 @@ class PlanckMemoryPool:
         if self.strategy != AllocationStrategy.BUDDY_SYSTEM:
             return
         
-        # Calculate maximum order (log2 of size)
-        max_order = int(np.log2(self.size))
+        # Calculate maximum order (log2 of size, rounded up for non-power-of-2)
+        import math
+        max_order = int(math.ceil(math.log2(self.size)))
         
         # Free lists for each order
         self.buddy_free_lists: Dict[int, List[MemoryBlock]] = {

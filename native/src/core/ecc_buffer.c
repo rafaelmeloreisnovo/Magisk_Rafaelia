@@ -154,6 +154,16 @@ static uint8_t hamming_calc_parity(const uint8_t *data, size_t data_size, int pa
     return parity & 1;
 }
 
+/* Portable bit counting function */
+static int popcount_portable(unsigned int n) {
+    int count = 0;
+    while (n) {
+        count += n & 1;
+        n >>= 1;
+    }
+    return count;
+}
+
 /**
  * Calculate syndrome for error detection/correction.
  *
@@ -342,7 +352,7 @@ ecc_status_t ecc_buffer_decode(ecc_buffer_t *buf) {
         
         if (syndrome <= total_bits) {
             /* Map syndrome to bit position */
-            int bit_pos = syndrome - __builtin_popcount(syndrome - 1) - 1;
+            int bit_pos = syndrome - popcount_portable(syndrome - 1) - 1;
             
             if (bit_pos >= 0 && bit_pos < (int)(buf->data_size * 8)) {
                 /* Flip the erroneous bit in data */
