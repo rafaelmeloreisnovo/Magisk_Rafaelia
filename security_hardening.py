@@ -84,17 +84,21 @@ class InputValidator:
         Raises:
             ValueError: If path is invalid or attempts traversal
         """
-        # Convert to Path object
-        path = Path(path_str).resolve()
+        # Normalize and resolve path to handle encoded traversals
+        import urllib.parse
         
-        # Check for directory traversal attempts
-        if '..' in path_str:
-            raise ValueError("Directory traversal detected")
+        # Decode URL encoding to catch encoded traversal attempts
+        decoded_path = urllib.parse.unquote(path_str)
+        
+        # Normalize and resolve to absolute path
+        path = Path(os.path.normpath(decoded_path)).resolve()
         
         # If base_dir provided, ensure path is within it
+        # This is the primary security check - resolved path must be within base
         if base_dir:
             base_dir = base_dir.resolve()
             try:
+                # This will raise ValueError if path is not relative to base_dir
                 path.relative_to(base_dir)
             except ValueError:
                 raise ValueError(f"Path must be within {base_dir}")
@@ -346,6 +350,14 @@ class VulnerabilityScanner:
                 continue
             
             try:
+                # Check file size first to avoid memory exhaustion
+                file_size = py_file.stat().st_size
+                max_size = 5 * 1024 * 1024  # 5MB limit
+                
+                if file_size > max_size:
+                    logger.warning(f"Skipping large file {py_file}: {file_size} bytes")
+                    continue
+                
                 content = py_file.read_text(encoding='utf-8')
                 
                 for pattern, cred_type in patterns:
@@ -389,6 +401,14 @@ class VulnerabilityScanner:
                 continue
             
             try:
+                # Check file size first to avoid memory exhaustion
+                file_size = py_file.stat().st_size
+                max_size = 5 * 1024 * 1024  # 5MB limit
+                
+                if file_size > max_size:
+                    logger.warning(f"Skipping large file {py_file}: {file_size} bytes")
+                    continue
+                
                 content = py_file.read_text(encoding='utf-8')
                 
                 for pattern in sql_patterns:

@@ -105,7 +105,9 @@ class GarbageCollectionOptimizer:
         
         after = gc.get_threshold()
         
-        improvement = ((before[0] / after[0]) - 1) * 100
+        # Calculate improvement as percentage increase in threshold
+        # Higher threshold = less frequent collections = better performance
+        improvement = ((after[0] - before[0]) / before[0]) * 100
         
         result = OptimizationResult(
             category="garbage_collection",
