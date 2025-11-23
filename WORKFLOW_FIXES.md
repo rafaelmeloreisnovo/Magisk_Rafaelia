@@ -42,13 +42,13 @@ This document describes the fixes applied to the GitHub Actions workflow YAML fi
 
 **File**: `.github/workflows/ci.yml`
 
-**Problem**: Using `android-actions/setup-sdk@v2` which is deprecated or doesn't exist in the marketplace.
+**Problem**: Using `android-actions/setup-sdk@v2` which doesn't exist in the GitHub Actions marketplace.
 
 **Solution**: Updated to `android-actions/setup-android@v3` in 2 locations:
 - Line 123: "Install Android SDK & tools" step in android-build job
 - Line 217: "Setup emulator & tools" step in android-instrumented job
 
-**Additional Changes**: Changed parameter name from `components:` to `packages:` to match the new action's API.
+Also changed the required parameter name from `components:` to `packages:` to match the new action's API.
 
 **Impact**: Ensures Android SDK installation works correctly in CI/CD pipeline.
 
