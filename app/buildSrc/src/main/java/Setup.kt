@@ -236,6 +236,12 @@ fun Project.setupAppCommon() {
             release {
                 signingConfig = config
             }
+            // Create unsigned build type for users who want to sign themselves
+            create("unsigned") {
+                initWith(getByName("release"))
+                signingConfig = null
+                matchingFallbacks += listOf("release", "debug")
+            }
         }
 
         lint {

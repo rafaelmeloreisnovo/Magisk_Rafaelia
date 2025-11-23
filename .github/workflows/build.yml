@@ -144,6 +144,25 @@ jobs:
           ./build.py -v all 2>&1 | tee out/logs/build_debug.log
         continue-on-error: false
 
+      - name: Build unsigned APK (capture output)
+        run: |
+          set -o pipefail
+          echo "Building unsigned APK variant..."
+          cd app
+          ./gradlew apk:assembleUnsigned 2>&1 | tee ../out/logs/build_unsigned.log
+          cd ..
+          
+          # Copy the unsigned APK to out directory
+          if [ -f "app/apk/build/outputs/apk/unsigned/apk-unsigned.apk" ]; then
+            cp app/apk/build/outputs/apk/unsigned/apk-unsigned.apk out/app-unsigned.apk
+            echo "✅ Unsigned APK copied to out/app-unsigned.apk"
+          else
+            echo "⚠️ Unsigned APK not found in expected location"
+            echo "Searching for unsigned APK..."
+            find app/apk/build/outputs -name "*unsigned*.apk" -o -name "*Unsigned*.apk" || true
+          fi
+        continue-on-error: false
+
       - name: Verify APKs were generated
         run: |
           echo "Verifying APK generation..."
@@ -165,7 +184,15 @@ jobs:
             MISSING_APKS=$((MISSING_APKS + 1))
           fi
           
-          if [ $MISSING_APKS -eq 2 ]; then
+          if [ -f "out/app-unsigned.apk" ]; then
+            echo "✅ Unsigned APK found: out/app-unsigned.apk"
+            ls -lh out/app-unsigned.apk
+          else
+            echo "⚠️ Unsigned APK not found"
+            MISSING_APKS=$((MISSING_APKS + 1))
+          fi
+          
+          if [ $MISSING_APKS -eq 3 ]; then
             echo "❌ ERROR: No APKs were generated!"
             echo "Contents of out/ directory:"
             ls -la out/ || echo "out/ directory does not exist"
@@ -245,6 +272,15 @@ jobs:
           compression-level: 0
           retention-days: 7
 
+      - name: Upload APK (unsigned) if present
+        if: ${{ hashFiles('out/app-unsigned.apk') != '' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}-app-unsigned.apk
+          path: out/app-unsigned.apk
+          compression-level: 0
+          retention-days: 7
+
       - name: Upload mapping and native debug symbols (if exists)
         uses: actions/upload-artifact@v4
         if: always()
@@ -274,6 +310,13 @@ jobs:
             echo "- ✅ **Debug APK**: Generated ($SIZE)" >> $GITHUB_STEP_SUMMARY
           else
             echo "- ❌ **Debug APK**: Not generated" >> $GITHUB_STEP_SUMMARY
+          fi
+          
+          if [ -f "out/app-unsigned.apk" ]; then
+            SIZE=$(ls -lh out/app-unsigned.apk | awk '{print $5}')
+            echo "- ✅ **Unsigned APK**: Generated ($SIZE)" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "- ❌ **Unsigned APK**: Not generated" >> $GITHUB_STEP_SUMMARY
           fi
           
           echo "" >> $GITHUB_STEP_SUMMARY
