@@ -18,7 +18,7 @@ import os
 import subprocess
 import sys
 from dataclasses import dataclass, asdict
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import List, Dict, Any, Tuple
 
@@ -104,7 +104,7 @@ class SecurityChecker:
             severity=severity,
             message=f"File permissions check: {len(issues)} issues found" if issues else "All file permissions secure",
             details={"issues": issues},
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
     
     def check_hardcoded_secrets(self) -> ComplianceCheck:
@@ -152,7 +152,7 @@ class SecurityChecker:
             severity=severity,
             message=f"Found {len(issues)} potential hardcoded secrets" if issues else "No hardcoded secrets detected",
             details={"potential_secrets": issues[:10]},  # Limit to first 10
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
     
     def check_dependency_vulnerabilities(self) -> ComplianceCheck:
@@ -179,7 +179,7 @@ class SecurityChecker:
                 "has_requirements": has_requirements,
                 "recommendation": "Use 'safety check' for Python dependencies"
             },
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
 
 
@@ -221,7 +221,7 @@ class CodeQualityChecker:
             severity=severity,
             message=f"Python syntax check: {len(issues)} errors found" if issues else "All Python syntax valid",
             details={"syntax_errors": issues},
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
     
     def check_documentation(self) -> ComplianceCheck:
@@ -249,7 +249,7 @@ class CodeQualityChecker:
             severity=severity,
             message=f"Documentation check: {len(missing)} files missing" if missing else "Required documentation present",
             details={"missing_docs": missing},
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
     
     def check_code_comments(self) -> ComplianceCheck:
@@ -297,7 +297,7 @@ class CodeQualityChecker:
             severity=severity,
             message=f"Code comments: {comment_ratio:.1f}% of lines",
             details=stats,
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
 
 
@@ -332,7 +332,7 @@ class LicenseChecker:
             severity=severity,
             message=f"License file found: {found}" if found else "No LICENSE file found",
             details={"license_file": found},
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
     
     def check_license_headers(self) -> ComplianceCheck:
@@ -371,7 +371,7 @@ class LicenseChecker:
                 "files_checked": files_checked,
                 "files_with_headers": files_with_headers
             },
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
 
 
@@ -408,7 +408,7 @@ class ConfigurationValidator:
             severity=severity,
             message=f"Governance files: {len(missing)} missing" if missing else "All governance files present",
             details={"missing_files": missing},
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
     
     def check_json_validity(self) -> ComplianceCheck:
@@ -438,7 +438,7 @@ class ConfigurationValidator:
             severity=severity,
             message=f"JSON validation: {len(issues)} errors found" if issues else "All JSON files valid",
             details={"json_errors": issues},
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
 
 
@@ -543,7 +543,7 @@ class ComplianceChecker:
         
         # Create report
         report = ComplianceReport(
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             repository=str(self.repo_path),
             branch=git_info['branch'],
             commit=git_info['commit'],

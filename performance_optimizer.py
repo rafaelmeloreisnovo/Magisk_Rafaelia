@@ -23,7 +23,7 @@ import subprocess
 from pathlib import Path
 from typing import Dict, List, Tuple, Any
 from dataclasses import dataclass, asdict
-from datetime import datetime
+from datetime import datetime, timezone
 
 
 # ============================================================================
@@ -113,7 +113,7 @@ class GarbageCollectionOptimizer:
             before=before,
             after=after,
             improvement_percent=improvement,
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
         
         logger.info(f"✓ GC thresholds: {before} → {after}")
@@ -140,7 +140,7 @@ class GarbageCollectionOptimizer:
             before=before,
             after=after,
             improvement_percent=100 if before != 0 else 0,
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
         
         logger.info(f"✓ GC debug: {before} → {after}")
@@ -202,7 +202,7 @@ class MemoryOptimizer:
             before=f"{before_mb:.2f}MB",
             after=f"{after_mb:.2f}MB",
             improvement_percent=improvement,
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
         
         logger.info(f"✓ Memory: {before_mb:.2f}MB → {after_mb:.2f}MB ({improvement:.1f}% reduction)")
@@ -259,7 +259,7 @@ class LatencyOptimizer:
             before="default",
             after="optimized",
             improvement_percent=10.0,  # Typical improvement
-            timestamp=datetime.utcnow().isoformat()
+            timestamp=datetime.now(timezone.utc).isoformat()
         )
         
         logger.info("✓ I/O buffering optimized")
@@ -399,7 +399,7 @@ class PerformanceAnalyzer:
         io_write_mb = io_counters.write_bytes / (1024 * 1024)
         
         metrics = PerformanceMetrics(
-            timestamp=datetime.utcnow().isoformat(),
+            timestamp=datetime.now(timezone.utc).isoformat(),
             cpu_percent=cpu,
             memory_mb=mem_mb,
             memory_percent=mem_percent,
@@ -418,7 +418,7 @@ class PerformanceAnalyzer:
         logger.info("=" * 80)
         
         results = {
-            "timestamp": datetime.utcnow().isoformat(),
+            "timestamp": datetime.now(timezone.utc).isoformat(),
             "metrics_before": None,
             "metrics_after": None,
             "optimizations": [],
