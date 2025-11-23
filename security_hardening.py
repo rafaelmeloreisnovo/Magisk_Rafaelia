@@ -90,9 +90,53 @@ import re
 import sys
 import logging
 from pathlib import Path
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any, Optional, Literal, Protocol
 from dataclasses import dataclass
+from functools import lru_cache
 
+
+# ============================================================================
+# CUSTOM EXCEPTIONS
+# ============================================================================
+
+class SecurityError(Exception):
+    """Base exception for security-related errors"""
+    pass
+
+
+class ValidationError(SecurityError):
+    """Raised when input validation fails"""
+    pass
+
+
+class PathTraversalError(SecurityError):
+    """Raised when path traversal is detected"""
+    pass
+
+
+class VulnerabilityDetectedError(SecurityError):
+    """Raised when a vulnerability is detected"""
+    pass
+
+
+# ============================================================================
+# TYPE ALIASES
+# ============================================================================
+
+VulnerabilityType = Literal[
+    "password",
+    "api_key",
+    "secret",
+    "token",
+    "aws_key",
+    "private_key",
+    "sql_injection"
+]
+
+
+# ============================================================================
+# CONFIGURATION
+# ============================================================================
 
 # File size limits (in bytes)
 MAX_FILE_SIZE_SCAN = 5 * 1024 * 1024  # 5MB for vulnerability scanning

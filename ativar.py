@@ -73,8 +73,54 @@ import sys
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
+from functools import lru_cache
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Tuple, Union, Protocol, Literal
+
+
+# ============================================================================
+# CUSTOM EXCEPTIONS
+# ============================================================================
+
+class GovernanceError(Exception):
+    """Base exception for governance framework errors"""
+    pass
+
+
+class IntegrityError(GovernanceError):
+    """Raised when integrity check fails"""
+    pass
+
+
+class LicensingError(GovernanceError):
+    """Raised when licensing validation fails"""
+    pass
+
+
+class EthicalViolation(GovernanceError):
+    """Raised when ethical principles are violated"""
+    pass
+
+
+class ComplianceError(GovernanceError):
+    """Raised when standards compliance check fails"""
+    pass
+
+
+# ============================================================================
+# TYPE ALIASES AND PROTOCOLS
+# ============================================================================
+
+HashAlgorithm = Literal["SHA3-512", "BLAKE3"]
+SeverityLevel = Literal["INFO", "WARNING", "CRITICAL"]
+ValidationStatus = Literal["PASS", "FAIL", "WARNING", "SKIP"]
+
+
+class Validator(Protocol):
+    """Protocol for validation operations"""
+    def validate(self, context: Dict[str, Any]) -> bool:
+        """Validate given context"""
+        ...
 
 
 # ============================================================================
@@ -145,8 +191,25 @@ class ValidationResult(Enum):
 
 @dataclass
 class IntegrityCheck:
-    """Integrity verification result"""
-    algorithm: str
+    """
+    Integrity verification result with timestamp and validation status.
+    
+    Attributes:
+        algorithm: Hash algorithm used (SHA3-512 or BLAKE3)
+        expected_hash: Expected hash value, if known
+        actual_hash: Computed hash value
+        valid: Whether the integrity check passed
+        timestamp: ISO 8601 timestamp of the check
+    
+    Example:
+        >>> check = IntegrityCheck(
+        ...     algorithm="SHA3-512",
+        ...     expected_hash="abc123...",
+        ...     actual_hash="abc123...",
+        ...     valid=True
+        ... )
+    """
+    algorithm: HashAlgorithm
     expected_hash: Optional[str]
     actual_hash: Optional[str]
     valid: bool
@@ -155,16 +218,58 @@ class IntegrityCheck:
 
 @dataclass
 class EthicaValidation:
-    """Ethica[8] validation result"""
+    """
+    Ethica[8] validation result for ethical principle compliance.
+    
+    Attributes:
+        principle: Name of the ethical principle being validated
+        compliant: Whether the principle is satisfied
+        reason: Explanation of the validation result
+        severity: Impact level of non-compliance
+    
+    Example:
+        >>> validation = EthicaValidation(
+        ...     principle="Transparency",
+        ...     compliant=True,
+        ...     reason="Documentation and logging present",
+        ...     severity="INFO"
+        ... )
+    """
     principle: str
     compliant: bool
     reason: str
-    severity: str  # INFO, WARNING, CRITICAL
+    severity: SeverityLevel
 
 
 @dataclass
 class LoopState:
-    """ψχρΔΣΩ loop operational state"""
+    """
+    ψχρΔΣΩ loop operational state snapshot.
+    
+    Represents one complete cycle of the infinite feedback loop for
+    continuous improvement and ethical alignment.
+    
+    Attributes:
+        ψ: Memory/Read phase - Current state and history
+        χ: Feedback phase - Learnings from previous cycles
+        ρ: Expansion phase - Enhanced understanding and capabilities
+        Δ: Validation phase - Standards and requirements check
+        Σ: Execution phase - Implementation of validated operations
+        Ω: Ethical alignment phase - Ethica[8] compliance verification
+        cycle: Cycle number (incrementing from 0)
+        timestamp: ISO 8601 timestamp of the cycle
+    
+    Example:
+        >>> state = LoopState(
+        ...     ψ={"state": "active"},
+        ...     χ={"learnings": []},
+        ...     ρ={"expanded": True},
+        ...     Δ={"valid": True},
+        ...     Σ={"executed": True},
+        ...     Ω={"aligned": True},
+        ...     cycle=1
+        ... )
+    """
     ψ: Any  # Memory (read)
     χ: Any  # Feedback
     ρ: Any  # Expansion
@@ -200,19 +305,61 @@ logger = setup_logging()
 # HASH VERIFICATION UTILITIES
 # ============================================================================
 
+@lru_cache(maxsize=128)
 def calculate_sha3_512(data: bytes) -> str:
-    """Calculate SHA3-512 hash of data"""
-    h = hashlib.sha3_512()
-    h.update(data)
-    return h.hexdigest()
+    """
+    Calculate SHA3-512 hash of data with caching for performance.
+    
+    Args:
+        data: Byte data to hash
+        
+    Returns:
+        Hexadecimal string representation of the hash
+        
+    Raises:
+        ValueError: If data is empty
+        
+    Example:
+        >>> hash_value = calculate_sha3_512(b"test data")
+        >>> len(hash_value)
+        128
+    """
+    if not data:
+        raise ValueError("Cannot hash empty data")
+    
+    hash_obj = hashlib.sha3_512()
+    hash_obj.update(data)
+    return hash_obj.hexdigest()
 
 
+@lru_cache(maxsize=128)
 def calculate_blake3(data: bytes) -> str:
     """
-    Calculate BLAKE3 hash of data
-    Note: BLAKE3 requires external library (blake3-py)
-    This is a stub that will use SHA3 as fallback if blake3 is unavailable
+    Calculate BLAKE3 hash of data with fallback to SHA3-512.
+    
+    Attempts to use BLAKE3 for high-performance hashing, falling back to
+    SHA3-512 if the blake3 library is not available.
+    
+    Args:
+        data: Byte data to hash
+        
+    Returns:
+        Hexadecimal string representation of the hash
+        
+    Raises:
+        ValueError: If data is empty
+        
+    Example:
+        >>> hash_value = calculate_blake3(b"test data")
+        >>> len(hash_value) > 0
+        True
+        
+    Note:
+        BLAKE3 requires the blake3-py package: pip install blake3
     """
+    if not data:
+        raise ValueError("Cannot hash empty data")
+    
     try:
         import blake3
         return blake3.blake3(data).hexdigest()
@@ -226,46 +373,75 @@ def verify_file_integrity(
     expected_sha3: Optional[str] = None,
     expected_blake3: Optional[str] = None
 ) -> IntegrityCheck:
-    """Verify file integrity using SHA3-512 and/or BLAKE3"""
+    """
+    Verify file integrity using SHA3-512 and/or BLAKE3 cryptographic hashing.
+    
+    Computes file hashes and compares them against expected values to detect
+    tampering or corruption. Supports both SHA3-512 and BLAKE3 algorithms.
+    
+    Args:
+        filepath: Path to the file to verify
+        expected_sha3: Expected SHA3-512 hash (optional)
+        expected_blake3: Expected BLAKE3 hash (optional)
+        
+    Returns:
+        IntegrityCheck object with verification results
+        
+    Raises:
+        IntegrityError: If file doesn't exist or cannot be read
+        
+    Example:
+        >>> from pathlib import Path
+        >>> result = verify_file_integrity(
+        ...     Path("example.txt"),
+        ...     expected_sha3="abc123..."
+        ... )
+        >>> result.valid
+        True
+        
+    Note:
+        If no expected hashes provided, computes actual hash without validation.
+        Returns the first verification result if multiple hashes checked.
+    """
     if not filepath.exists():
-        return IntegrityCheck(
-            algorithm="N/A",
-            expected_hash=None,
-            actual_hash=None,
-            valid=False
-        )
+        raise IntegrityError(f"File not found: {filepath}")
     
-    with open(filepath, 'rb') as f:
-        data = f.read()
+    try:
+        with open(filepath, 'rb') as file_handle:
+            file_data = file_handle.read()
+    except (IOError, OSError) as error:
+        raise IntegrityError(f"Cannot read file {filepath}: {error}") from error
     
-    checks = []
+    integrity_checks = []
     
     if expected_sha3:
-        actual = calculate_sha3_512(data)
-        checks.append(IntegrityCheck(
+        actual_hash = calculate_sha3_512(file_data)
+        integrity_checks.append(IntegrityCheck(
             algorithm="SHA3-512",
             expected_hash=expected_sha3,
-            actual_hash=actual,
-            valid=(actual == expected_sha3)
+            actual_hash=actual_hash,
+            valid=(actual_hash == expected_sha3)
         ))
     
     if expected_blake3:
-        actual = calculate_blake3(data)
-        checks.append(IntegrityCheck(
+        actual_hash = calculate_blake3(file_data)
+        integrity_checks.append(IntegrityCheck(
             algorithm="BLAKE3",
             expected_hash=expected_blake3,
-            actual_hash=actual,
-            valid=(actual == expected_blake3)
+            actual_hash=actual_hash,
+            valid=(actual_hash == expected_blake3)
         ))
     
     # Return first check or create a basic one if no hashes provided
-    if checks:
-        return checks[0]
+    if integrity_checks:
+        return integrity_checks[0]
     
+    # No expectation provided, compute hash for reference
+    actual_hash = calculate_sha3_512(file_data)
     return IntegrityCheck(
         algorithm="SHA3-512",
         expected_hash=None,
-        actual_hash=calculate_sha3_512(data),
+        actual_hash=actual_hash,
         valid=True  # No expectation, so it's valid
     )
 
@@ -275,42 +451,109 @@ def verify_file_integrity(
 # ============================================================================
 
 def validate_rafcode_signature(signature: str) -> bool:
-    """Validate RAFCODE-Φ signature format"""
+    """
+    Validate RAFCODE-Φ signature format for authenticity.
+    
+    Checks that the signature contains all required symbolic elements
+    that identify it as a valid RAFCODE-Φ signature.
+    
+    Args:
+        signature: Signature string to validate
+        
+    Returns:
+        True if signature is valid, False otherwise
+        
+    Example:
+        >>> sig = "RAFCODE-Φ-∆RafaelVerboΩ-𓂀ΔΦΩ"
+        >>> validate_rafcode_signature(sig)
+        True
+        
+    Note:
+        Required symbols: Φ (Phi), Δ (Delta), Ω (Omega), 𓂀 (Egyptian hieroglyph)
+    """
     required_symbols = ["Φ", "Δ", "Ω", "𓂀"]
     return all(symbol in signature for symbol in required_symbols)
 
 
-def validate_bitraf64(bitraf: str) -> bool:
-    """Validate BITRAF64 seed format"""
+def validate_bitraf64(bitraf_seed: str) -> bool:
+    """
+    Validate BITRAF64 seed format for licensing compliance.
+    
+    Checks that the seed contains only valid characters from the BITRAF64
+    character set (Greek letters and Latin letters).
+    
+    Args:
+        bitraf_seed: BITRAF64 seed string to validate
+        
+    Returns:
+        True if seed format is valid, False otherwise
+        
+    Example:
+        >>> seed = "AΔBΩTΦIΣRF"
+        >>> validate_bitraf64(seed)
+        True
+        
+    Note:
+        Valid characters: A, Δ (Delta), B, Ω (Omega), T, Φ (Phi), 
+                         I, Σ (Sigma), R, F
+    """
     # Extract unique characters from the actual BITRAF64 constant
     # BITRAF64 uses Greek letters (Δ, Ω, Φ, Σ) and Latin letters (A, B, T, I, R, F)
-    valid_chars = set("AΔBΩTΦIΣRF")
-    return all(c in valid_chars for c in bitraf)
+    valid_characters = set("AΔBΩTΦIΣRF")
+    return all(char in valid_characters for char in bitraf_seed)
 
 
 def check_licensing_compliance() -> Tuple[bool, List[str]]:
     """
-    Check compliance with ZIPRAF_OMEGA_LICENSING_MODULE v999
+    Check compliance with ZIPRAF_OMEGA_LICENSING_MODULE v999.
+    
+    Performs comprehensive validation of the licensing module including
+    signature verification, seed validation, and seal integrity.
     
     Returns:
-        Tuple of (compliant, list of issues)
+        Tuple of (is_compliant, list_of_issues)
+        - is_compliant: True if all checks pass
+        - list_of_issues: List of compliance issues found (empty if compliant)
+        
+    Raises:
+        LicensingError: If critical licensing validation fails
+        
+    Example:
+        >>> compliant, issues = check_licensing_compliance()
+        >>> if not compliant:
+        ...     print(f"Issues found: {issues}")
+        
+    Note:
+        Validates:
+        - RAFCODE-Φ signature format
+        - BITRAF64 seed characters
+        - Seal set completeness
     """
-    issues = []
+    compliance_issues = []
     
-    # Verify signature
+    # Verify signature format
     if not validate_rafcode_signature(SIGNATURE):
-        issues.append("Invalid RAFCODE-Φ signature format")
+        compliance_issues.append("Invalid RAFCODE-Φ signature format")
     
-    # Verify BITRAF64
+    # Verify BITRAF64 seed
     if not validate_bitraf64(BITRAF64):
-        issues.append("Invalid BITRAF64 seed format")
+        compliance_issues.append("Invalid BITRAF64 seed format")
     
     # Verify seals are complete
-    required_seals = {"Σ", "Ω", "Δ", "Φ", "B", "I", "T", "R", "A", "F"}
-    if set(SEALS) != required_seals:
-        issues.append("Incomplete seal set")
+    required_seal_set = {"Σ", "Ω", "Δ", "Φ", "B", "I", "T", "R", "A", "F"}
+    actual_seal_set = set(SEALS)
     
-    return (len(issues) == 0, issues)
+    if actual_seal_set != required_seal_set:
+        missing_seals = required_seal_set - actual_seal_set
+        extra_seals = actual_seal_set - required_seal_set
+        
+        if missing_seals:
+            compliance_issues.append(f"Missing seals: {missing_seals}")
+        if extra_seals:
+            compliance_issues.append(f"Unexpected seals: {extra_seals}")
+    
+    is_compliant = len(compliance_issues) == 0
+    return (is_compliant, compliance_issues)
 
 
 # ============================================================================

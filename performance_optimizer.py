@@ -83,9 +83,41 @@ import logging
 import psutil
 import subprocess
 from pathlib import Path
-from typing import Dict, List, Tuple, Any
+from typing import Dict, List, Tuple, Any, Optional, Literal
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
+from functools import lru_cache
+
+
+# ============================================================================
+# CUSTOM EXCEPTIONS
+# ============================================================================
+
+class PerformanceError(Exception):
+    """Base exception for performance optimization errors"""
+    pass
+
+
+class GarbageCollectionError(PerformanceError):
+    """Raised when GC optimization fails"""
+    pass
+
+
+class MemoryError(PerformanceError):
+    """Raised when memory operation fails"""
+    pass
+
+
+# ============================================================================
+# TYPE ALIASES
+# ============================================================================
+
+OptimizationCategory = Literal[
+    "garbage_collection",
+    "memory_footprint",
+    "latency",
+    "redundancy"
+]
 
 
 # ============================================================================
@@ -105,7 +137,34 @@ logging.basicConfig(
 
 @dataclass
 class PerformanceMetrics:
-    """Performance measurement results"""
+    """
+    Performance measurement results snapshot.
+    
+    Captures system resource usage and performance metrics at a point in time
+    for analysis and optimization tracking.
+    
+    Attributes:
+        timestamp: ISO 8601 timestamp of measurement
+        cpu_percent: CPU usage percentage
+        memory_mb: Memory usage in megabytes
+        memory_percent: Memory usage as percentage of total
+        gc_collections: Dictionary of GC generation: collection count
+        gc_time_ms: Time taken for GC collection in milliseconds
+        io_read_mb: Total I/O read in megabytes
+        io_write_mb: Total I/O write in megabytes
+        
+    Example:
+        >>> metrics = PerformanceMetrics(
+        ...     timestamp="2025-11-23T12:00:00Z",
+        ...     cpu_percent=45.2,
+        ...     memory_mb=512.5,
+        ...     memory_percent=25.3,
+        ...     gc_collections={0: 100, 1: 10, 2: 1},
+        ...     gc_time_ms=15.5,
+        ...     io_read_mb=1024.0,
+        ...     io_write_mb=512.0
+        ... )
+    """
     timestamp: str
     cpu_percent: float
     memory_mb: float
@@ -118,8 +177,31 @@ class PerformanceMetrics:
 
 @dataclass
 class OptimizationResult:
-    """Optimization operation result"""
-    category: str
+    """
+    Optimization operation result with before/after comparison.
+    
+    Records the outcome of a specific optimization operation including
+    the state before and after, and the measured improvement.
+    
+    Attributes:
+        category: Type of optimization performed
+        description: Human-readable description of the optimization
+        before: State before optimization
+        after: State after optimization
+        improvement_percent: Percentage improvement achieved
+        timestamp: ISO 8601 timestamp of optimization
+        
+    Example:
+        >>> result = OptimizationResult(
+        ...     category="garbage_collection",
+        ...     description="Optimized GC thresholds",
+        ...     before=(700, 10, 10),
+        ...     after=(1000, 15, 15),
+        ...     improvement_percent=42.86,
+        ...     timestamp="2025-11-23T12:00:00Z"
+        ... )
+    """
+    category: OptimizationCategory
     description: str
     before: Any
     after: Any

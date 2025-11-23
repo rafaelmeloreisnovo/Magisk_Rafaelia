@@ -84,7 +84,35 @@ import sys
 from dataclasses import dataclass, asdict
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional, Literal, Protocol
+
+
+# ============================================================================
+# CUSTOM EXCEPTIONS
+# ============================================================================
+
+class ComplianceError(Exception):
+    """Base exception for compliance checking errors"""
+    pass
+
+
+class SecurityCheckError(ComplianceError):
+    """Raised when security check encounters an error"""
+    pass
+
+
+class CodeQualityError(ComplianceError):
+    """Raised when code quality check encounters an error"""
+    pass
+
+
+# ============================================================================
+# TYPE ALIASES
+# ============================================================================
+
+SeverityLevel = Literal["INFO", "WARNING", "CRITICAL"]
+ComplianceStatus = Literal["PASS", "FAIL", "WARNING"]
+CheckCategory = Literal["security", "code_quality", "license", "configuration"]
 
 
 # ============================================================================
@@ -104,11 +132,32 @@ logging.basicConfig(
 
 @dataclass
 class ComplianceCheck:
-    """Individual compliance check result"""
-    category: str
+    """
+    Individual compliance check result with detailed information.
+    
+    Attributes:
+        category: Category of the check (security, code_quality, license, configuration)
+        check_name: Unique identifier for the check
+        passed: Whether the check passed
+        severity: Impact level (INFO, WARNING, CRITICAL)
+        message: Human-readable description of the result
+        details: Additional information and context
+        timestamp: ISO 8601 timestamp of the check
+        
+    Example:
+        >>> check = ComplianceCheck(
+        ...     category="security",
+        ...     check_name="file_permissions",
+        ...     passed=True,
+        ...     severity="INFO",
+        ...     message="All file permissions secure",
+        ...     details={}
+        ... )
+    """
+    category: CheckCategory
     check_name: str
     passed: bool
-    severity: str  # INFO, WARNING, CRITICAL
+    severity: SeverityLevel
     message: str
     details: Dict[str, Any]
     timestamp: str
@@ -116,7 +165,35 @@ class ComplianceCheck:
 
 @dataclass
 class ComplianceReport:
-    """Overall compliance report"""
+    """
+    Overall compliance report aggregating all check results.
+    
+    Attributes:
+        timestamp: ISO 8601 timestamp of report generation
+        repository: Repository path that was checked
+        branch: Git branch name
+        commit: Git commit hash (short)
+        checks: List of all compliance check results
+        total_checks: Total number of checks performed
+        passed_checks: Number of checks that passed
+        failed_checks: Number of checks that failed
+        critical_failures: Number of critical failures
+        overall_status: Overall compliance status (PASS, FAIL, WARNING)
+        
+    Example:
+        >>> report = ComplianceReport(
+        ...     timestamp="2025-11-23T12:00:00Z",
+        ...     repository="/path/to/repo",
+        ...     branch="main",
+        ...     commit="abc123",
+        ...     checks=[],
+        ...     total_checks=10,
+        ...     passed_checks=9,
+        ...     failed_checks=1,
+        ...     critical_failures=0,
+        ...     overall_status="WARNING"
+        ... )
+    """
     timestamp: str
     repository: str
     branch: str
@@ -126,7 +203,7 @@ class ComplianceReport:
     passed_checks: int
     failed_checks: int
     critical_failures: int
-    overall_status: str  # PASS, FAIL, WARNING
+    overall_status: ComplianceStatus
 
 
 # ============================================================================
