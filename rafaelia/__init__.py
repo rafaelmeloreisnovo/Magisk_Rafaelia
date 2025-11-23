@@ -6,7 +6,8 @@ Copyright (C) 2025 Rafael Melo Reis (rafaelmeloreisnovo)
 All Rights Reserved
 
 This package provides a comprehensive Tensor Train (TT) decomposition suite
-with cross-approximation, local updates, and RAFAELIA manifest integration.
+with cross-approximation, local updates, RAFAELIA manifest integration,
+and ZIPRAF_OMEGA v999 governance framework.
 
 Licensed under Dual License:
 - Free for social inclusion (education, research, non-profit)
@@ -24,7 +25,7 @@ __author__ = "Rafael Melo Reis (rafaelmeloreisnovo)"
 __copyright__ = "Copyright (C) 2025 Rafael Melo Reis"
 __license__ = "Dual License - See RAFAELIA_LICENSE.md"
 __institution__ = "Instituto Rafael"
-__framework__ = "ESTADO FRACTAL HAJA"
+__framework__ = "ESTADO FRACTAL HAJA & ZIPRAF_OMEGA v999"
 __philosophy__ = "CientiEspiritual"
 
 # Core TT algorithms
@@ -37,6 +38,14 @@ from rafaelia.utils.acceleration import TTAccelerator
 
 # Integration/Orchestration
 from rafaelia.integration.engine import RAFAELIAEngine
+
+# Governance Framework (ZIPRAF_OMEGA v999)
+# Import governance submodule for comprehensive compliance and ethical framework
+try:
+    from rafaelia import governance
+    __governance_available__ = True
+except ImportError:
+    __governance_available__ = False
 
 __all__ = [
     # Core algorithms
@@ -51,6 +60,9 @@ __all__ = [
     # Integration
     'RAFAELIAEngine',
     
+    # Governance
+    'governance',
+    
     # Metadata
     '__version__',
     '__author__',
@@ -59,4 +71,6 @@ __all__ = [
     '__institution__',
     '__framework__',
     '__philosophy__',
+    '__governance_available__',
 ]
+
