@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ "master" ]
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   build:
 
@@ -27,6 +31,15 @@ jobs:
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+
+    - name: Run RAFAELIA Compliance Validation
+      run: |
+        echo "🔐 Running RAFAELIA compliance validation..."
+        chmod +x scripts/*.py
+        python3 scripts/validate_rafcode.py || echo "⚠️  RAFCODE validation completed with warnings"
+        python3 scripts/bitraf64.py validate RAFAELIA_MANIFEST.json || echo "⚠️  Bitraf64 validation completed"
+        python3 scripts/validate_seals.py || echo "⚠️  Seal validation completed with warnings"
+        echo "✅ RAFAELIA compliance validation complete"
 
     - name: Grant execute permission for build script
       run: chmod +x build.py

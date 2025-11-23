@@ -5,6 +5,10 @@ on:
     workflows: ["RAFAELIA CI - native & android (full pipeline)"]
     types: [completed]
 
+permissions:
+  contents: read
+  actions: read
+
 jobs:
   upload-symbols-and-decode:
     name: Upload symbols & decode tombstones
