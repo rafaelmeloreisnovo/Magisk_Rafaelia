@@ -15,10 +15,12 @@ Copyright (C) 2025 Rafael Melo Reis (rafaelmeloreisnovo)
 import sys
 import numpy as np
 import time
+from pathlib import Path
 from typing import Tuple
 
-# Add path for imports
-sys.path.insert(0, '/home/runner/work/Magisk_Rafaelia/Magisk_Rafaelia')
+# Add repository root for imports (portable across local and CI environments)
+REPO_ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO_ROOT))
 
 # Import all new modules
 from rafaelia.core.matrix_ops import MatrixOperations, TensorTrainMatrix, AdaptiveMatrixOperations

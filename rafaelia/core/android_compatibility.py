@@ -238,7 +238,7 @@ class AndroidCompatibilityChecker:
         Check if Android version is compatible.
         
         Returns:
-            (is_compatible, warnings, errors)
+            (is_compatible, warnings, errors, recommendations)
         """
         warnings = []
         errors = []
@@ -259,14 +259,14 @@ class AndroidCompatibilityChecker:
         else:
             warnings.append(f"Unknown Android API level {api_level}, compatibility uncertain")
         
-        return True, warnings, errors
+        return True, warnings, errors, recommendations
     
     def check_kernel_version(self, kernel_str: str, api_level: int) -> Tuple[bool, List[str], List[str]]:
         """
         Check if kernel version is compatible.
         
         Returns:
-            (is_compatible, warnings, errors)
+            (is_compatible, warnings, errors, recommendations)
         """
         warnings = []
         errors = []
@@ -309,12 +309,12 @@ class AndroidCompatibilityChecker:
             errors.append(f"Could not parse kernel version '{kernel_str}': {e}")
             return False, warnings, errors
     
-    def check_device_compatibility(self, device_info: DeviceInfo) -> Tuple[bool, List[str], List[str]]:
+    def check_device_compatibility(self, device_info: DeviceInfo) -> Tuple[bool, List[str], List[str], List[str]]:
         """
         Check if device is compatible.
         
         Returns:
-            (is_compatible, warnings, errors)
+            (is_compatible, warnings, errors, recommendations)
         """
         warnings = []
         errors = []
@@ -355,7 +355,7 @@ class AndroidCompatibilityChecker:
             else:
                 warnings.append("RMX3834 works best with Android 15")
         
-        return True, warnings, errors
+        return True, warnings, errors, recommendations
     
     def check_full_compatibility(
         self,
@@ -402,9 +402,10 @@ class AndroidCompatibilityChecker:
         
         # Check device compatibility
         if device_info is not None:
-            device_compatible, warnings, errors = self.check_device_compatibility(device_info)
+            device_compatible, warnings, errors, recommendations = self.check_device_compatibility(device_info)
             all_warnings.extend(warnings)
             all_errors.extend(errors)
+            all_recommendations.extend(recommendations)
         else:
             all_warnings.append("Device info not provided, skipping device-specific checks")
         

@@ -122,7 +122,7 @@ jobs:
           # Build task (e.g., assembleRelease or assembleDebug)
           TASK="assemble${BUILD_TYPE^}"
           # Use skipSigning prop so projects that support -PskipSigning will avoid applying signingConfig
-          ./gradlew -p "$MODULE" clean "$TASK" -PskipSigning="$SKIP_SIGNING_PROP" --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
+          ./app/gradlew -p "$MODULE" clean "$TASK" -PskipSigning="$SKIP_SIGNING_PROP" --no-daemon -Dorg.gradle.jvmargs="-Xmx2g"
 
       - name: Find unsigned APK(s)
         id: find_apk
@@ -146,7 +146,7 @@ jobs:
             exit 1
           fi
           echo "Unsigned APK: $APK_FILE"
-          echo "::set-output name=apk::$APK_FILE"
+          echo "apk=$APK_FILE" >> "$GITHUB_OUTPUT"
 
       - name: Upload unsigned APK artifact
         uses: actions/upload-artifact@v4
@@ -155,6 +155,7 @@ jobs:
           path: ${{ steps.find_apk.outputs.apk }}
 
       - name: Optionally sign APK (if keystore provided)
+        id: sign_apk
         if: ${{ secrets.RELEASE_KEYSTORE_BASE64 != '' }}
         env:
           MODULE: ${{ github.event.inputs.module || 'app' }}
@@ -181,7 +182,7 @@ jobs:
           "$APKSIGNER" sign --ks "$KS" --ks-key-alias "$ALIAS" --ks-pass "pass:$STORE_PASS" --key-pass "pass:$KEY_PASS" --out "$SIGNED_APK" "$APK_PATH"
           echo "Signed APK written to $SIGNED_APK"
           # Upload signed artifact
-          echo "::set-output name=signed_apk::$SIGNED_APK"
+          echo "signed_apk=$SIGNED_APK" >> "$GITHUB_OUTPUT"
         shell: bash
 
       - name: Upload signed APK (if created)
@@ -189,4 +190,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: signed-apk
-          path: ${{ steps.build.outputs.signed_apk || steps.find_apk.outputs.apk }}
+          path: ${{ steps.sign_apk.outputs.signed_apk || steps.find_apk.outputs.apk }}

@@ -49,18 +49,22 @@ from zipfile import ZipFile
 
 
 # Terminal color output helpers
+def safe_print(text: str):
+    """Print text without crashing on limited console encodings (e.g. cp1252 on Windows CI)."""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        encoding = sys.stdout.encoding or "utf-8"
+        sys.stdout.buffer.write((text + "\n").encode(encoding, errors="replace"))
+
+
 def color_print(code, str):
     """Print colored text to terminal if colors are supported"""
     if no_color:
-        print(str)
+        safe_print(str)
     else:
         str = str.replace("\n", f"\033[0m\n{code}")
-        print(f"{code}{str}\033[0m")
-    if no_color:
-        print(str)
-    else:
-        str = str.replace("\n", f"\033[0m\n{code}")
-        print(f"{code}{str}\033[0m")
+        safe_print(f"{code}{str}\033[0m")
 
 
 def error(str):
@@ -77,7 +81,7 @@ def header(str):
 def vprint(str):
     """Print verbose output if verbose mode is enabled"""
     if args.verbose > 0:
-        print(str)
+        safe_print(str)
 
 
 # OS detection
@@ -257,10 +261,10 @@ def cmd_out(cmds: list):
     try:
         result = subprocess.run(
             cmds,
-            stdout=subprocess.PIPE,
+            stdout=subprocess.PIPE,  # keep a single stdout binding
             stderr=subprocess.PIPE,
-            shell=is_windows,
             check=True,
+            shell=is_windows,
         )
         return result.stdout.strip().decode("utf-8", errors="replace")
     except subprocess.CalledProcessError as e:
@@ -317,7 +321,49 @@ def run_ndk_build(cmds: list[str]):
     os.chdir("..")
 
 
+def validate_xz_embedded_headers():
+    """Validate xz headers and auto-restore tracked originals if local mutations are detected."""
+    checks = {
+        "native/src/external/xz-embedded/xz_private.h": (
+            "#ifndef XZ_PRIVATE_H",
+            "#define XZ_PRIVATE_H",
+            "#endif",
+        ),
+        "native/src/external/xz-embedded/xz_lzma2.h": (
+            "#ifndef XZ_LZMA2_H",
+            "#define XZ_LZMA2_H",
+            "#endif",
+        ),
+    }
+
+    def is_valid(path: Path, tokens: tuple[str, ...]) -> bool:
+        if not path.exists():
+            return False
+        content = path.read_text(encoding="utf-8", errors="ignore")
+        return all(token in content for token in tokens)
+
+    corrupted = []
+    for header, required_tokens in checks.items():
+        path = Path(header)
+        if not is_valid(path, required_tokens):
+            corrupted.append(header)
+
+    if not corrupted:
+        return
+
+    vprint(f"Detected corrupted xz headers, restoring from git index: {', '.join(corrupted)}")
+    proc = execv(["git", "checkout", "--", *corrupted])
+    if proc.returncode != 0:
+        error("Failed to restore corrupted xz headers from git index")
+
+    for header, required_tokens in checks.items():
+        path = Path(header)
+        if not is_valid(path, required_tokens):
+            error(f"Corrupted xz header detected after restore: {header}")
+
+
 def build_cpp_src(targets: set[str]):
+    validate_xz_embedded_headers()
     cmds = []
     clean = False
 

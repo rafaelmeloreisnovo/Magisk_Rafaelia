@@ -138,7 +138,7 @@ class BugHandler:
         self.strict_mode = strict_mode
         self.invariants: List[StateInvariant] = []
         self.bug_reports: List[BugReport] = []
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         
         # Statistics
         self.stats = {

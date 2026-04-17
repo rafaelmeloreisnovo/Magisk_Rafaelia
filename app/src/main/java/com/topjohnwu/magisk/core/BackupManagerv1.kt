@@ -31,7 +31,7 @@ import javax.crypto.KeyGenerator
  * - Produce and persist a manifest.json per session with metadata required for rollback and audit.
  *
  * Usage:
- *   val mgr = BackupManager(context)
+ *   val mgr = BackupManagerV1(context)
  *   val manifest = mgr.backupBootImage(bootImageFile, sessionId)
  *
  * Notes / security:
@@ -45,7 +45,7 @@ import javax.crypto.KeyGenerator
  *
  * Important: adapt paths, permissions and UI integration as needed in the app.
  */
-class BackupManager(private val context: Context) {
+class BackupManagerV1(private val context: Context) {
 
     companion object {
         private const val BACKUP_DIR_NAME = "rafaelia_backups"

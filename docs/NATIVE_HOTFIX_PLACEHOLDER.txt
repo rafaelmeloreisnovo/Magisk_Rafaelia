@@ -1,0 +1,12 @@
+NATIVE HOTFIX PLACEHOLDER
+
+Objetivo:
+- garantir geração de flags Rust mesmo sem native/out/generated/flags.rs
+- reduzir falha de bootstrap em check/CI local
+
+Comando direto:
+- cargo +nightly-2026-04-17 check -p base --manifest-path native/src/Cargo.toml
+
+Variáveis opcionais para versionamento em build script:
+- MAGISK_VERSION
+- MAGISK_VER_CODE (ou MAGISK_VERSION_CODE)

@@ -200,13 +200,14 @@ These anchors provide stable reference points for:
 use pb_rs::ConfigBuilder;
 use pb_rs::types::FileDescriptor;
 
-use crate::codegen::gen_cxx_binding;
+use crate::codegen::{gen_cxx_binding, gen_rust_flags};
 
 #[path = "../include/codegen.rs"]
 mod codegen;
 
 fn main() {
     println!("cargo:rerun-if-changed=resetprop/proto/persistent_properties.proto");
+    gen_rust_flags();
 
     gen_cxx_binding("core-rs");
 

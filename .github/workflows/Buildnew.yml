@@ -9,6 +9,8 @@ on:
 env:
   GRADLE_USER_HOME: ${{ github.workspace }}/.gradle
   CARGO_HOME: ${{ github.workspace }}/.cargo
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: "utf-8"
 
 jobs:
   setup:
@@ -18,7 +20,7 @@ jobs:
     steps:
       - name: Set build matrix
         id: set-matrix
-        run: echo "matrix={\"include\":[{\"abi\":\"arm64-v8a\",\"target\":\"aarch64-linux-android\"},{\"abi\":\"armeabi-v7a\",\"target\":\"thumbv7neon-linux-androideabi\"}]}" >> $GITHUB_OUTPUT
+        run: echo "matrix={\"include\":[{\"abi\":\"arm64-v8a\",\"target\":\"aarch64-linux-android\"},{\"abi\":\"armeabi-v7a\",\"target\":\"thumbv7neon-linux-androideabi\"},{\"abi\":\"x86\",\"target\":\"i686-linux-android\"},{\"abi\":\"x86_64\",\"target\":\"x86_64-linux-android\"},{\"abi\":\"riscv64\",\"target\":\"riscv64-linux-android\"}]}" >> $GITHUB_OUTPUT
 
   build:
     needs: setup
@@ -35,20 +37,20 @@ jobs:
           fetch-depth: 0
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
 
       - name: Set up JDK
-        uses: actions/setup-java@v3
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
           cache: gradle
 
       - name: Set up Android SDK
-        uses: android-actions/setup-android@v2
+        uses: android-actions/setup-android@v3
 
       - name: Download NDK
         run: |
@@ -66,7 +68,7 @@ jobs:
           workspaces: 'native/src'
 
       - name: Cache Gradle
-        uses: gradle/actions/setup-gradle@v3
+        uses: gradle/actions/setup-gradle@v4
 
       - name: Create build config
         run: |
@@ -79,7 +81,13 @@ jobs:
 
       - name: Setup NDK
         run: python3 build.py ndk
-        continue-on-error: true
+
+      - name: Native preflight (xz + build.py)
+        run: |
+          python3 -m py_compile build.py
+          cc -fsyntax-only native/src/external/xz-embedded/xz_crc32.c
+          cc -fsyntax-only native/src/external/xz-embedded/xz_dec_lzma2.c
+          cc -fsyntax-only native/src/external/xz-embedded/xz_dec_stream.c
 
       - name: Build native binaries
         run: python3 build.py native -r -v
@@ -96,7 +104,7 @@ jobs:
           find out -type f -name "*.so" 2>/dev/null | head -20 || echo "No shared libraries found"
 
       - name: Upload APK artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: magisk-${{ matrix.abi }}-${{ github.sha }}
@@ -106,7 +114,7 @@ jobs:
           retention-days: 30
 
       - name: Upload build logs on failure
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: build-logs-${{ matrix.abi }}
@@ -120,7 +128,7 @@ jobs:
     if: always()
     steps:
       - name: Download all artifacts
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
 
       - name: List downloaded artifacts
         run: |

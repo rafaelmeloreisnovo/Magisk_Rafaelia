@@ -54,6 +54,14 @@ object KeyStoreWrapper {
         return kg.generateKey()
     }
 
+
+
+    /**
+     * Backward-compatible API used by BackupManager.
+     */
+    @JvmStatic
+    fun getHmacKey(context: Context, alias: String = "rafaelia_hmac_key"): SecretKey =
+        getOrCreateKey(context, alias)
     /**
      * Compute HMAC-SHA256 raw bytes.
      */

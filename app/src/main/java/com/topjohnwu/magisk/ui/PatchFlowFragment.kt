@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
@@ -20,15 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.FileOutputStream
-import java.io.InputStream
 
-/**
- * PatchFlowFragment
- *
- * - Provides a minimal UI flow to pick a boot image (SAF/intent) and run BackupManager.backupFromStream
- * - Emits structured logs to JSONLogger for observability
- * - Shows simple progress UI hooks (you should replace placeholders with real layout IDs)
- */
 class PatchFlowFragment : Fragment() {
 
     private val REQUEST_CODE_PICK = 1234
@@ -36,13 +29,20 @@ class PatchFlowFragment : Fragment() {
     private lateinit var statusText: TextView
     private lateinit var progressBar: ProgressBar
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        // Replace with your real layout inflation
-        val root = inflater.inflate(android.R.layout.simple_list_item_1, container, false)
-        pickButton = Button(requireContext()).apply { text = "Select boot image" }
-        statusText = TextView(requireContext())
-        progressBar = ProgressBar(requireContext(), null, android.R.attr.progressBarStyleHorizontal)
-        (root as ViewGroup).addView(pickButton)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
+        val context = requireContext()
+        val root = LinearLayout(context).apply {
+            orientation = LinearLayout.VERTICAL
+            setPadding(32, 32, 32, 32)
+        }
+
+        pickButton = Button(context).apply { text = "Select boot image" }
+        statusText = TextView(context)
+        progressBar = ProgressBar(context, null, android.R.attr.progressBarStyleHorizontal).apply {
+            visibility = View.GONE
+        }
+
+        root.addView(pickButton)
         root.addView(statusText)
         root.addView(progressBar)
         pickButton.setOnClickListener { openFilePicker() }
@@ -65,55 +65,46 @@ class PatchFlowFragment : Fragment() {
             if (uri != null) {
                 lifecycleScope.launch { handleUri(uri) }
             } else {
-                JSONLogger.error("PatchFlowFragment", "picker_no_uri", null, emptyMap())
-                Toast.makeText(requireContext(), "No file selected", Toast.LENGTH_SHORT).show()
+                context?.let { Toast.makeText(it, "No file selected", Toast.LENGTH_SHORT).show() }
             }
         }
     }
 
     private suspend fun handleUri(uri: Uri) {
+        val fragmentContext = context ?: return
         val sessionId = generateSessionId()
-        JSONLogger.info("PatchFlowFragment", "file_selected", sessionId, mapOf("uri" to uri.toString()))
         showProgress(true, "Preparing backup...")
+
         val ok = withContext(Dispatchers.IO) {
             try {
-                // Copy URI to temp file within app cache and pass InputStream to BackupManager
-                val tmp = File(requireContext().cacheDir, "rafaelia-${sessionId}.img")
-                requireContext().contentResolver.openInputStream(uri)?.use { ins ->
+                val tmp = File(fragmentContext.cacheDir, "rafaelia-$sessionId.img")
+                fragmentContext.contentResolver.openInputStream(uri)?.use { ins ->
                     FileOutputStream(tmp).use { out ->
                         val buf = ByteArray(32 * 1024)
                         var read: Int
                         while (ins.read(buf).also { read = it } != -1) out.write(buf, 0, read)
                         out.fd.sync()
                     }
-                } ?: run {
-                    JSONLogger.error("PatchFlowFragment", "uri_open_fail", sessionId, mapOf("uri" to uri.toString()))
-                    return@withContext false
-                }
-                // Call backup
-                val bm = BackupManager.getInstance(requireContext())
+                } ?: return@withContext false
+
+                val bm = BackupManager.getInstance(fragmentContext)
                 val manifestPath = bm.backupBootImage(source = tmp, sessionIdIn = sessionId)
-                if (manifestPath == null) {
-                    JSONLogger.error("PatchFlowFragment", "backup_call_failed", sessionId, mapOf("tmp" to tmp.absolutePath))
-                    tmp.delete()
-                    return@withContext false
-                }
-                JSONLogger.info("PatchFlowFragment", "backup_call_success", sessionId, mapOf("manifest" to manifestPath))
                 tmp.delete()
-                return@withContext true
+                manifestPath != null
             } catch (t: Throwable) {
                 JSONLogger.error("PatchFlowFragment", "backup_unexpected", sessionId, mapOf("error" to t.toString()))
-                return@withContext false
+                false
             }
         }
+
+        if (!isAdded) return
         showProgress(false)
+        val currentContext = context ?: return
         if (ok) {
-            JSONLogger.info("PatchFlowFragment", "ui_backup_success", sessionId, emptyMap())
-            Toast.makeText(requireContext(), "Backup finished", Toast.LENGTH_SHORT).show()
+            Toast.makeText(currentContext, "Backup finished", Toast.LENGTH_SHORT).show()
             onBackupSuccess(sessionId)
         } else {
-            JSONLogger.error("PatchFlowFragment", "ui_backup_failure", sessionId, emptyMap())
-            Toast.makeText(requireContext(), "Backup failed — check logs", Toast.LENGTH_LONG).show()
+            Toast.makeText(currentContext, "Backup failed — check logs", Toast.LENGTH_LONG).show()
             onBackupFailure(sessionId)
         }
     }
@@ -129,7 +120,6 @@ class PatchFlowFragment : Fragment() {
         return sb.toString()
     }
 
-    // Hooks to integrate with host activity or tests
     protected open fun onBackupSuccess(sessionId: String) {}
     protected open fun onBackupFailure(sessionId: String) {}
 }

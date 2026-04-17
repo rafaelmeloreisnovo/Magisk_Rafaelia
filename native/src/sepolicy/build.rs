@@ -197,11 +197,12 @@ These anchors provide stable reference points for:
 */
 
 
-use crate::codegen::gen_cxx_binding;
+use crate::codegen::{gen_cxx_binding, gen_rust_flags};
 
 #[path = "../include/codegen.rs"]
 mod codegen;
 
 fn main() {
+    gen_rust_flags();
     gen_cxx_binding("policy-rs");
 }

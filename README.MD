@@ -29,6 +29,9 @@ This cognitive-optimized approach:
 
 📚 [**View All Languages / Ver Todos os Idiomas**](docs/LANGUAGES.md) 
 
+📘 **Engineering documentation hub**: [docs/README.md](docs/README.md)  
+🧭 **Build/Release/CI source of truth**: [docs/ENGINEERING_PLAYBOOK.md](docs/ENGINEERING_PLAYBOOK.md)
+
 Popular languages / Idiomas populares:
 - 🇬🇧 [English](docs/languages/en/README.md)
 - 🇧🇷 [Português (Brasil)](docs/languages/pt-BR/README.md)

@@ -16,6 +16,9 @@ jobs:
   build:
     name: Build Magisk artifacts
     runs-on: macos-15
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
     strategy:
       fail-fast: false
     steps:
@@ -28,6 +31,13 @@ jobs:
         uses: ./.github/actions/setup
         with:
           is-asset-build: true
+
+      - name: Native preflight (xz + build.py)
+        run: |
+          python3 -m py_compile build.py
+          cc -fsyntax-only native/src/external/xz-embedded/xz_crc32.c
+          cc -fsyntax-only native/src/external/xz-embedded/xz_dec_lzma2.c
+          cc -fsyntax-only native/src/external/xz-embedded/xz_dec_stream.c
 
       - name: Build release
         run: ./build.py -vr all
@@ -55,6 +65,9 @@ jobs:
   test-build:
     name: Test building on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
     strategy:
       fail-fast: false
       matrix:
@@ -67,6 +80,9 @@ jobs:
 
       - name: Setup environment
         uses: ./.github/actions/setup
+
+      - name: Python build preflight
+        run: python -m py_compile build.py
 
       - name: Test build
         run: python build.py -v -c .github/ci.prop all

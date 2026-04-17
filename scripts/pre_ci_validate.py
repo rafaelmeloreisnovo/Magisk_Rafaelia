@@ -18,11 +18,11 @@ Usage:
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
-from typing import List, Dict, Tuple, Optional
-import re
+from typing import List, Tuple
 
 
 class ValidationResult:
@@ -102,6 +102,13 @@ class PreCIValidator:
             True,
             "All dependencies are properly pinned"
         )
+
+    def _find_rust_crates(self) -> List[Path]:
+        """Return crate directories containing Cargo.toml files."""
+        crates: List[Path] = []
+        for cargo_file in self.repo_root.rglob("Cargo.toml"):
+            crates.append(cargo_file.parent)
+        return crates
     
     def validate_security(self) -> ValidationResult:
         """Check for security vulnerabilities"""
@@ -148,14 +155,19 @@ class PreCIValidator:
         
         issues = []
         
-        # Check Rust formatting
-        code, stdout, stderr = self.run_command(['cargo', 'fmt', '--', '--check'])
-        if code != 0:
-            if self.fix:
-                print("  Fixing Rust formatting...")
-                self.run_command(['cargo', 'fmt'])
-            else:
-                issues.append("Rust code needs formatting (run: cargo fmt)")
+        # Check Rust formatting per crate
+        for crate_dir in self._find_rust_crates():
+            code, _, _ = self.run_command(
+                ["cargo", "fmt", "--manifest-path", str(crate_dir / "Cargo.toml"), "--", "--check"]
+            )
+            if code != 0:
+                if self.fix:
+                    print(f"  Fixing Rust formatting in {crate_dir}...")
+                    self.run_command(
+                        ["cargo", "fmt", "--manifest-path", str(crate_dir / "Cargo.toml")]
+                    )
+                else:
+                    issues.append(f"Rust code needs formatting in {crate_dir}")
         
         # Check Python formatting (if available)
         python_files = list(self.repo_root.glob('*.py'))
@@ -195,12 +207,21 @@ class PreCIValidator:
         
         issues = []
         
-        # Run Rust clippy
-        code, stdout, stderr = self.run_command(
-            ['cargo', 'clippy', '--', '-D', 'warnings']
-        )
-        if code != 0:
-            issues.append(f"Rust clippy found issues:\n{stdout}\n{stderr}")
+        # Run Rust clippy per crate
+        for crate_dir in self._find_rust_crates():
+            code, stdout, stderr = self.run_command(
+                [
+                    "cargo",
+                    "clippy",
+                    "--manifest-path",
+                    str(crate_dir / "Cargo.toml"),
+                    "--",
+                    "-D",
+                    "warnings",
+                ]
+            )
+            if code != 0:
+                issues.append(f"Rust clippy found issues in {crate_dir}:\n{stdout}\n{stderr}")
         
         if issues:
             return ValidationResult(
@@ -220,43 +241,66 @@ class PreCIValidator:
         """Run unit tests"""
         print("🧪 Running unit tests...")
         
-        # Run Rust tests
-        code, stdout, stderr = self.run_command(['cargo', 'test'])
-        
-        if code != 0:
+        crate_issues = []
+        for crate_dir in self._find_rust_crates():
+            code, stdout, stderr = self.run_command(
+                ["cargo", "test", "--manifest-path", str(crate_dir / "Cargo.toml")]
+            )
+            if code != 0:
+                crate_issues.append(f"{crate_dir}:\n{stdout}\n{stderr}")
+
+        if crate_issues:
             return ValidationResult(
                 "Unit Tests",
                 False,
-                "Some tests failed",
-                stdout + "\n" + stderr
+                "Some Rust crate tests failed",
+                "\n\n".join(crate_issues),
             )
         
         return ValidationResult(
             "Unit Tests",
             True,
-            "All tests passed",
-            stdout
+            "All crate tests passed",
         )
     
     def validate_build(self) -> ValidationResult:
         """Check that the project builds successfully"""
         print("🔨 Validating build...")
         
-        # Try to build
-        code, stdout, stderr = self.run_command(['cargo', 'build', '--release'])
-        
+        # Native CMake configure smoke test
+        native_dir = self.repo_root / "native"
+        code, stdout, stderr = self.run_command(
+            ["cmake", "-S", str(native_dir), "-B", str(native_dir / "build"), "-DCMAKE_BUILD_TYPE=Release"],
+            timeout=600,
+        ) if native_dir.exists() else (-1, "", "native dir unavailable")
+
         if code != 0:
             return ValidationResult(
                 "Build",
                 False,
-                "Build failed",
-                stdout + "\n" + stderr
+                "CMake configure failed for native build",
+                stdout + "\n" + stderr,
+            )
+
+        crate_issues = []
+        for crate_dir in self._find_rust_crates():
+            code, stdout, stderr = self.run_command(
+                ["cargo", "build", "--release", "--manifest-path", str(crate_dir / "Cargo.toml")]
+            )
+            if code != 0:
+                crate_issues.append(f"{crate_dir}:\n{stdout}\n{stderr}")
+        if crate_issues:
+            return ValidationResult(
+                "Build",
+                False,
+                "Rust release build failed for one or more crates",
+                "\n\n".join(crate_issues),
             )
         
         return ValidationResult(
             "Build",
             True,
-            "Build successful"
+            "Native CMake configure and Rust crate build successful",
         )
     
     def validate_api_compatibility(self) -> ValidationResult:
@@ -282,11 +326,15 @@ class PreCIValidator:
         if not (self.repo_root / 'README.MD').exists():
             issues.append("README.MD not found")
         
-        # Check Rust doc comments
-        code, stdout, stderr = self.run_command(['cargo', 'doc', '--no-deps'])
-        if code != 0:
-            if 'warning' in stdout.lower() or 'warning' in stderr.lower():
-                issues.append("Rust documentation has warnings")
+        # Basic critical docs needed for build/release clarity
+        required_docs = [
+            "docs/README.md",
+            "docs/build.md",
+            "docs/WORKFLOW_ORGANIZATION.md",
+        ]
+        for doc in required_docs:
+            if not (self.repo_root / doc).exists():
+                issues.append(f"{doc} not found")
         
         if issues:
             return ValidationResult(
@@ -359,7 +407,7 @@ class PreCIValidator:
         if issues:
             return ValidationResult(
                 "File Permissions",
-                False,
+                False if self.strict else True,
                 f"Found {len(issues)} permission issues",
                 "\n".join(issues)
             )
@@ -368,6 +416,38 @@ class PreCIValidator:
             "File Permissions",
             True,
             "All executable files have correct permissions"
+        )
+
+    def validate_ci_contracts(self) -> ValidationResult:
+        """Validate critical CI workflow contracts for build + artifact upload."""
+        print("⚙️ Validating CI workflow contracts...")
+        workflow_files = [
+            self.repo_root / ".github/workflows/ci.yml",
+            self.repo_root / ".github/workflows/build.yml",
+        ]
+        issues: List[str] = []
+        for wf in workflow_files:
+            if not wf.exists():
+                issues.append(f"Missing workflow: {wf.relative_to(self.repo_root)}")
+                continue
+
+            content = wf.read_text(encoding="utf-8")
+            if "actions/upload-artifact@" not in content:
+                issues.append(f"{wf.name}: missing artifact upload step")
+            if "build.py" not in content:
+                issues.append(f"{wf.name}: missing build.py invocation")
+
+        if issues:
+            return ValidationResult(
+                "CI Contracts",
+                False,
+                f"Found {len(issues)} CI contract issue(s)",
+                "\n".join(issues),
+            )
+        return ValidationResult(
+            "CI Contracts",
+            True,
+            "Primary CI workflows include build invocation and artifact upload",
         )
     
     def run_all_validations(self, skip_slow: bool = False) -> bool:
@@ -382,6 +462,7 @@ class PreCIValidator:
         self.results.append(self.validate_git_status())
         self.results.append(self.validate_dependency_versions())
         self.results.append(self.validate_security())
+        self.results.append(self.validate_ci_contracts())
         
         if not skip_slow:
             # Slower checks

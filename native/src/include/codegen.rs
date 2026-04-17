@@ -36,6 +36,7 @@ use std::fs::File;
 use std::io::Write;
 use std::path::Path;
 use std::{fs, io, process};
+use std::{env, path::PathBuf};
 
 use cxx_gen::{Include, IncludeKind, Opt};
 
@@ -78,4 +79,22 @@ pub fn gen_cxx_binding(name: &str) {
     let code = cxx_gen::generate_header_and_cc_with_path("lib.rs", &opt);
     write_if_diff(format!("{name}.cpp"), code.implementation.as_slice()).ok_or_exit();
     write_if_diff(format!("{name}.hpp"), code.header.as_slice()).ok_or_exit();
+}
+
+#[allow(dead_code)]
+pub fn gen_rust_flags() {
+    println!("cargo:rerun-if-env-changed=MAGISK_VERSION");
+    println!("cargo:rerun-if-env-changed=MAGISK_VER_CODE");
+    println!("cargo:rerun-if-env-changed=MAGISK_VERSION_CODE");
+
+    let version = env::var("MAGISK_VERSION").unwrap_or_else(|_| "dev".to_string());
+    let version_code = env::var("MAGISK_VER_CODE")
+        .or_else(|_| env::var("MAGISK_VERSION_CODE"))
+        .unwrap_or_else(|_| "30400".to_string());
+    let out_dir = PathBuf::from(env::var("OUT_DIR").ok_or_exit());
+
+    let content = format!(
+        "pub const MAGISK_VERSION: &str = \"{version}\";\npub const MAGISK_VER_CODE: i32 = {version_code};\n"
+    );
+    write_if_diff(out_dir.join("flags.rs"), content.as_bytes()).ok_or_exit();
 }

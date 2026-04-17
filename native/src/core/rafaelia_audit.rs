@@ -31,7 +31,7 @@
  * ---
  */
 
-use base::{libc, LogLevel, ResultExt, Utf8CStr, cstr};
+use base::libc;
 use std::collections::VecDeque;
 use std::fs::{File, OpenOptions, create_dir_all};
 use std::io::{Write, BufWriter};
@@ -60,29 +60,43 @@ pub struct AuditEntry {
 }
 
 impl AuditEntry {
+    fn escape_json(s: &str) -> String {
+        s.chars()
+            .flat_map(|c| match c {
+                '\\' => "\\\\".chars().collect::<Vec<_>>(),
+                '"' => "\\\"".chars().collect::<Vec<_>>(),
+                '\n' => "\\n".chars().collect::<Vec<_>>(),
+                '\r' => "\\r".chars().collect::<Vec<_>>(),
+                '\t' => "\\t".chars().collect::<Vec<_>>(),
+                c if c.is_control() => format!("\\u{:04x}", c as u32).chars().collect::<Vec<_>>(),
+                c => vec![c],
+            })
+            .collect()
+    }
+
     /// Convert audit entry to JSON line format
     pub fn to_jsonl(&self) -> String {
         let mut json = String::with_capacity(512);
         json.push('{');
         json.push_str(&format!(r#""timestamp":{},"#, self.timestamp));
-        json.push_str(&format!(r#""session_id":"{}","#, self.session_id));
-        json.push_str(&format!(r#""primitive":"{}","#, self.primitive));
-        json.push_str(&format!(r#""context":"{}","#, self.context));
-        json.push_str(&format!(r#""action":"{}","#, self.action));
-        json.push_str(&format!(r#""state_id":"{}","#, self.state_id));
+        json.push_str(&format!(r#""session_id":"{}","#, Self::escape_json(&self.session_id)));
+        json.push_str(&format!(r#""primitive":"{}","#, Self::escape_json(&self.primitive)));
+        json.push_str(&format!(r#""context":"{}","#, Self::escape_json(&self.context)));
+        json.push_str(&format!(r#""action":"{}","#, Self::escape_json(&self.action)));
+        json.push_str(&format!(r#""state_id":"{}","#, Self::escape_json(&self.state_id)));
         
         if let Some(ref hash) = self.input_hash {
-            json.push_str(&format!(r#""input_hash":"{}","#, hash));
+            json.push_str(&format!(r#""input_hash":"{}","#, Self::escape_json(hash)));
         }
         if let Some(ref hash) = self.output_hash {
-            json.push_str(&format!(r#""output_hash":"{}","#, hash));
+            json.push_str(&format!(r#""output_hash":"{}","#, Self::escape_json(hash)));
         }
         
         json.push_str(&format!(r#""duration_ms":{},"#, self.duration_ms));
         json.push_str(&format!(r#""success":{},"#, self.success));
         
         if let Some(ref msg) = self.error_msg {
-            json.push_str(&format!(r#""error_msg":"{}","#, msg.replace('"', "\\\"")));
+            json.push_str(&format!(r#""error_msg":"{}","#, Self::escape_json(msg)));
         }
         
         // Remove trailing comma if exists
@@ -249,7 +263,7 @@ impl AuditSystem {
             timestamp,
             primitive: primitive.to_string(),
             context: context.to_string(),
-            state_snapshot: Vec::new(), // Placeholder for actual state
+            state_snapshot: self.session_id.clone().into_bytes(),
             audit_index,
         };
         
@@ -280,7 +294,25 @@ impl AuditSystem {
         };
         
         if let Some(point) = rollback_point {
-            // Log rollback operation
+            if point.state_snapshot.is_empty() {
+                self.log_operation(
+                    &point.primitive,
+                    &point.context,
+                    "PERFORM_ROLLBACK",
+                    0,
+                    false,
+                    Some(format!("Rollback point {} has no snapshot", point_id)),
+                )?;
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::InvalidData,
+                    format!("Rollback point has no snapshot: {}", point_id),
+                ));
+            }
+
+            if let Ok(mut history) = self.audit_history.lock() {
+                history.truncate(point.audit_index);
+            }
+
             self.log_operation(
                 &point.primitive,
                 &point.context,
@@ -289,7 +321,7 @@ impl AuditSystem {
                 true,
                 Some(format!("Rollback to point: {}", point_id)),
             )?;
-            
+
             Ok(())
         } else {
             Err(std::io::Error::new(

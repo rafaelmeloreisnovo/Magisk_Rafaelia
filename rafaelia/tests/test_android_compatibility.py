@@ -192,7 +192,7 @@ class TestAndroidCompatibilityChecker(unittest.TestCase):
             kernel_version=KernelVersion.parse("5.15.178")
         )
         
-        is_compat, warnings, errors = self.checker.check_device_compatibility(device)
+        is_compat, warnings, errors, recommendations = self.checker.check_device_compatibility(device)
         self.assertTrue(is_compat)
         self.assertEqual(len(errors), 0)
     

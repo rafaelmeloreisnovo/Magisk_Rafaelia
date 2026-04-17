@@ -10,6 +10,9 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    env:
+      PYTHONUTF8: "1"
+      PYTHONIOENCODING: "utf-8"
 
     steps:
     - uses: actions/checkout@v4
@@ -34,6 +37,13 @@ jobs:
     - name: Setup Magisk NDK
       run: python3 build.py ndk
       continue-on-error: false
+
+    - name: Native preflight (xz + build.py)
+      run: |
+        python3 -m py_compile build.py
+        cc -fsyntax-only native/src/external/xz-embedded/xz_crc32.c
+        cc -fsyntax-only native/src/external/xz-embedded/xz_dec_lzma2.c
+        cc -fsyntax-only native/src/external/xz-embedded/xz_dec_stream.c
     
     - name: Build with build.py (debug)
       id: build

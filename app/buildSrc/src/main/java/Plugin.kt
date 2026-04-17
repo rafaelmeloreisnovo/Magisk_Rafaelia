@@ -52,8 +52,15 @@ class MagiskPlugin : Plugin<Project> {
         if (config.exists())
             config.inputStream().use { props.load(it) }
 
-        val repo = FileRepository(rootFile(".git"))
-        val refId = repo.refDatabase.exactRef("HEAD").objectId
-        commitHash = repo.newObjectReader().abbreviate(refId, 8).name()
+        val gitDir = rootFile(".git")
+        commitHash = if (gitDir.exists()) {
+            FileRepository(gitDir).use { repo ->
+                val ref = repo.refDatabase.exactRef("HEAD")
+                val refId = ref?.objectId
+                if (refId != null) repo.newObjectReader().abbreviate(refId, 8).name() else "nogit"
+            }
+        } else {
+            "nogit"
+        }
     }
 }

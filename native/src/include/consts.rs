@@ -34,14 +34,11 @@
 #![allow(dead_code)]
 use base::const_format::concatcp;
 
-#[path = "../../out/generated/flags.rs"]
-mod flags;
-
 pub const POST_FS_DATA_WAIT_TIME: i32 = 40;
 pub const APPLET_NAMES: &[&str] = &["su", "resetprop"];
 
 // versions
-pub use flags::*;
+include!(concat!(env!("OUT_DIR"), "/flags.rs"));
 pub const MAGISK_FULL_VER: &str = concatcp!(MAGISK_VERSION, "(", MAGISK_VER_CODE, ")");
 
 pub const APP_PACKAGE_NAME: &str = "com.topjohnwu.magisk";

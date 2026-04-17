@@ -40,6 +40,8 @@ use crate::ffi::{
 use crate::logging::setup_logfile;
 use crate::module::disable_modules;
 use crate::mount::{clean_mounts, setup_preinit_dir};
+use crate::rafaelia_audit::{init_global_audit, log_global_operation};
+use crate::rafaelia_telemetry::{get_global_snapshot, init_global_telemetry, start_global_telemetry};
 use crate::resetprop::get_prop;
 use crate::selinux::restorecon;
 use base::const_format::concatcp;
@@ -50,6 +52,7 @@ use std::io::BufReader;
 use std::os::unix::net::UnixStream;
 use std::process::{Command, Stdio};
 use std::sync::atomic::Ordering;
+use std::time::{SystemTime, UNIX_EPOCH};
 
 bitflags! {
     #[derive(Default)]
@@ -62,6 +65,35 @@ bitflags! {
 }
 
 impl MagiskD {
+    fn init_rafaelia_observability(&self) {
+        if let Err(e) = init_global_audit() {
+            error!("* RAFAELIA audit init failed: {}", e);
+        }
+        if let Err(e) = init_global_telemetry(1000) {
+            error!("* RAFAELIA telemetry init failed: {}", e);
+            return;
+        }
+        if let Err(e) = start_global_telemetry() {
+            error!("* RAFAELIA telemetry start failed: {}", e);
+        }
+    }
+
+    fn log_rafaelia_stage(&self, action: &str, started_at: u64, success: bool, error_msg: Option<String>) {
+        let finished = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis() as u64;
+        let duration_ms = finished.saturating_sub(started_at);
+        log_global_operation(
+            "bootstages",
+            "magiskd",
+            action,
+            duration_ms,
+            success,
+            error_msg,
+        );
+    }
+
     fn setup_magisk_env(&self) -> bool {
         info!("* Initializing Magisk environment");
 
@@ -142,6 +174,11 @@ impl MagiskD {
     fn post_fs_data(&self) -> bool {
         setup_logfile();
         info!("** post-fs-data mode running");
+        self.init_rafaelia_observability();
+        let started_at = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis() as u64;
 
         self.preserve_stub_apk();
 
@@ -152,6 +189,12 @@ impl MagiskD {
                 secure_dir.mkdir(0o700).log_ok();
             } else {
                 error!("* {} is not present, abort", SECURE_DIR);
+                self.log_rafaelia_stage(
+                    "POST_FS_DATA",
+                    started_at,
+                    false,
+                    Some(format!("{} missing", SECURE_DIR)),
+                );
                 return true;
             }
         }
@@ -160,6 +203,12 @@ impl MagiskD {
 
         if !self.setup_magisk_env() {
             error!("* Magisk environment incomplete, abort");
+            self.log_rafaelia_stage(
+                "POST_FS_DATA",
+                started_at,
+                false,
+                Some("Magisk environment incomplete".to_string()),
+            );
             return true;
         }
 
@@ -178,6 +227,12 @@ impl MagiskD {
             // Disable all modules and zygisk so next boot will be clean
             disable_modules();
             self.set_db_setting(DbEntryKey::ZygiskConfig, 0).log_ok();
+            self.log_rafaelia_stage(
+                "POST_FS_DATA",
+                started_at,
+                false,
+                Some("Safe mode triggered".to_string()),
+            );
             return true;
         }
 
@@ -189,6 +244,7 @@ impl MagiskD {
         initialize_denylist();
         self.handle_modules();
         clean_mounts();
+        self.log_rafaelia_stage("POST_FS_DATA", started_at, true, None);
 
         false
     }
@@ -196,16 +252,25 @@ impl MagiskD {
     fn late_start(&self) {
         setup_logfile();
         info!("** late_start service mode running");
+        let started_at = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis() as u64;
 
         exec_common_scripts(cstr!("service"));
         if let Some(module_list) = self.module_list.get() {
             exec_module_scripts(cstr!("service"), module_list);
         }
+        self.log_rafaelia_stage("LATE_START", started_at, true, None);
     }
 
     fn boot_complete(&self) {
         setup_logfile();
         info!("** boot-complete triggered");
+        let started_at = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_default()
+            .as_millis() as u64;
 
         // Reset the bootloop counter once we have boot-complete
         self.set_db_setting(DbEntryKey::BootloopCount, 0).log_ok();
@@ -221,6 +286,18 @@ impl MagiskD {
         if self.zygisk_enabled.load(Ordering::Relaxed) {
             self.zygisk.lock().unwrap().reset(true);
         }
+
+        if let Some(snapshot) = get_global_snapshot() {
+            log_global_operation(
+                "telemetry",
+                "boot_complete",
+                "SNAPSHOT",
+                0,
+                true,
+                Some(snapshot.to_json()),
+            );
+        }
+        self.log_rafaelia_stage("BOOT_COMPLETE", started_at, true, None);
     }
 
     pub fn boot_stage_handler(&self, client: UnixStream, code: RequestCode) {

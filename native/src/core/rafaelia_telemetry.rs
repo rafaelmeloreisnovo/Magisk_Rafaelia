@@ -157,6 +157,11 @@ struct NetStats {
 impl TelemetryCollector {
     /// Create a new telemetry collector
     pub fn new(interval_ms: u64) -> Self {
+        let interval_ms = if interval_ms == 0 {
+            DEFAULT_COLLECT_INTERVAL_MS
+        } else {
+            interval_ms
+        };
         TelemetryCollector {
             interval_ms,
             metrics_history: Arc::new(Mutex::new(VecDeque::with_capacity(MAX_METRICS_HISTORY))),

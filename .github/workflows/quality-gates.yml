@@ -85,6 +85,18 @@ jobs:
             done
           fi
 
+  dependency-audit:
+    name: Dependency Baseline Audit
+    needs: determine-strictness
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Run dependency baseline audit
+        run: python3 .github/scripts/dependency_audit.py
+
   documentation-check:
     name: Documentation Check
     needs: determine-strictness

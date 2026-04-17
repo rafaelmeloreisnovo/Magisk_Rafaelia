@@ -123,12 +123,12 @@ except ImportError:
 
 # Import RAFAELIA modules (relative imports work when in package)
 try:
-    from .RAFAELIA_TT_CROSS_FULL import TTCrossApproximation
-    from .RAFAELIA_TT_UPDATE_FULL import TTLocalUpdate
+    from ..RAFAELIA_TT_CROSS_FULL import TTCrossApproximation
+    from ..RAFAELIA_TT_UPDATE_FULL import TTLocalUpdate
 except ImportError:
     # Fallback for standalone execution
     import sys
-    sys.path.insert(0, os.path.dirname(__file__))
+    sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
     from RAFAELIA_TT_CROSS_FULL import TTCrossApproximation
     from RAFAELIA_TT_UPDATE_FULL import TTLocalUpdate
 
