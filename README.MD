@@ -80,79 +80,45 @@ Some highlight features:
 
 ## RAFAELIA Framework
 
-**Magisk_Rafaelia** includes the comprehensive **RAFAELIA Framework** for advanced auditing, monitoring, and security:
+**Magisk_Rafaelia / PCR_Rafaelia_Code_seed** is a Magisk-derived repository with an added RAFAELIA documentation, audit, telemetry, tooling, and governance layer. The repository contains code for Magisk boot/init/root/SELinux/modules, Zygisk/NativeBridge hooks, low-level memory/syscall helpers, Rust RAFAELIA audit and telemetry modules, and root-oriented operational scripts.
 
-- **1008 State Matrix**: Complete operational state coverage (56 primitives × 18 contexts)
-- **Full Audit System**: SHA3/Blake3 verified logging with rollback support ✓ **IMPLEMENTED**
-- **Real-time Telemetry**: CPU, memory, I/O monitoring with anomaly detection ✓ **IMPLEMENTED**
-- **Security Hardening**: SELinux, seccomp, eBPF integration
-- **Ethical Computing**: Transparency, accountability, and safety guarantees
-- **Baremetal Optimization**: Hardware-specific SIMD, cache, and assembly optimizations ✓ **NEW**
+This README intentionally separates observed code from unproven claims:
 
-### 🚀 Quick Start
+- **CÓDIGO_EXISTENTE:** Rust audit logging exists in `native/src/core/rafaelia_audit.rs`; Rust telemetry exists in `native/src/core/rafaelia_telemetry.rs`; boot-stage integration calls these modules in `native/src/core/bootstages.rs`; Zygisk/NativeBridge code exists under `native/src/core/zygisk/`; low-level syscall/memory helpers exist in `native/src/base/lowlevel.c` and `native/src/core/zygisk/lowlevel_inject.cpp`.
+- **DOCUMENTAÇÃO_EXISTENTE:** RAFAELIA state matrix, primitives, framework, audit, telemetry, governance, and build documents exist under `docs/` and repository root files such as `BUILD_SUCCESS.md`.
+- **RELATÓRIO_EXISTENTE:** `BUILD_SUCCESS.md` records a previous native multi-ABI build and an APK build limitation caused by network access; it must be treated as historical until current CI/build logs confirm it again.
+- **DOCUMENTADO_NÃO_ACOPLADO / TOKEN_VAZIO:** Claims such as SHA3/Blake3 audit verification, anomaly detection, performance gains, RAFAELIA-specific seccomp/eBPF integration, and runtime enforcement of the 56 × 18 state matrix require direct code/test/log evidence before being promoted.
 
-**Activate RAFAELIA** (requires root):
-```bash
-adb push tools/rafaelia /data/local/tmp/
-adb shell
-su
-cd /data/local/tmp/rafaelia
-./activate_rafaelia.sh activate
-```
+### Safety notice for root/Magisk operations
 
-See [Activation Guide](docs/ACTIVATION_GUIDE.md) for detailed instructions.
+The RAFAELIA activation and integrity scripts are designed for a rooted Android/Magisk environment and reference paths such as `/data/adb`, `/data/adb/magisk`, and `/data/local/tmp/rafaelia`. Boot patching, uninstall, addon.d, module, Zygisk, and `/data/adb` operations can change device boot behavior or Magisk state. Do **not** run root scripts, boot patching scripts, uninstallers, or module operations on a production/personal device unless you understand the impact, have backups, and are using a controlled test environment.
 
-### RAFAELIA Documentation
+### Conservative audit documentation
 
-#### 📚 Start Here
-- **[RAFAELIA Index](docs/RAFAELIA_INDEX.md)** - ✓ **Complete navigation guide** to all documentation
-- **[Activation Guide](docs/ACTIVATION_GUIDE.md)** - ✓ Enable RAFAELIA features (practical start)
+Start with these documents for traceable, non-marketing status:
 
-#### 🏛️ Meta-Architecture (Theoretical Foundation)
-- **[Meta-Architecture](docs/RAFAELIA_META_ARCHITECTURE.md)** - ✓ **NEW!** 30 holistic analyses
-  - Livro I: Hardware as Metaphor (ICE, 4-64 bit spectrum, DSP, ADC)
-  - Livro II: Data Nexus (Interleaving, Permutation, Fractal Geometry)
-  - Livro III: Software Abstraction (Yin-Yang model, CLIMEX, PLIMEX)
-- **[Toolkit Analysis](docs/RAFAELIA_TOOLKIT_ANALYSIS.md)** - ✓ **NEW!** retro_feed.py, bootctl, futility
+- [RAFAELIA Architecture Audit](docs/RAFAELIA_ARCHITECTURE_AUDIT.md) — architecture map, evidence labels, confirmed/unproven claims, and limits.
+- [RAFAELIA Zygisk and Low-Level Audit](docs/RAFAELIA_ZYGISK_LOWLEVEL_AUDIT.md) — NativeBridge, Zygisk hooks, module callbacks, low-level syscalls, memory protection, and hook risks.
+- [RAFAELIA Boot and Telemetry Audit](docs/RAFAELIA_BOOT_TELEMETRY_AUDIT.md) — boot stages, audit/telemetry JSONL, `/proc` collection, and script safety review.
+- [RAFAELIA Android Impact Model](docs/RAFAELIA_ANDROID_IMPACT_MODEL.md) — cautious impact estimates and a before/after measurement plan.
+- [RAFAELIA Governance and Privacy Audit](docs/RAFAELIA_GOVERNANCE_AND_PRIVACY.md) — anti-inference policy, privacy paths, `TOKEN_VAZIO` list, and root/Magisk risks.
+- [RAFAELIA Documentation Status](docs/RAFAELIA_DOCUMENTATION_STATUS.md) — files read, documentation updated, pending validation.
+- [RAFAELIA Traceability Matrix](docs/RAFAELIA_TRACEABILITY_MATRIX.md) — claim-by-claim map: `ID | Claim | Tipo | Caminho | Evidência | Status | Lacuna | Próximo teste`.
 
-#### 🎯 Baremetal & Optimization (NEW!)
-- **[Baremetal Architecture Analysis](BAREMETAL_ARCHITECTURE_ANALYSIS.md)** - ✓ **NEW!** Pre-CI validation & transformation strategy
-- **[Hardware Optimization Guide](HARDWARE_OPTIMIZATION_GUIDE.md)** - ✓ **NEW!** SIMD, cache, assembly optimizations
-- **[Implementation Summary](BAREMETAL_IMPLEMENTATION_SUMMARY.md)** - ✓ **NEW!** Complete status & roadmap
+### Existing RAFAELIA documentation
 
-#### 🚀 Performance Boosters (NEW!)
-- **[Performance Boosters Guide](docs/PERFORMANCE_BOOSTERS.md)** - ✓ **NEW!** Complete guide to all performance boosters
-  - 16 distinct booster types (Software, Hardware, Mathematical, Cognitive)
-  - Detailed benchmarks and performance gains (up to 6x improvement)
-  - Usage examples and activation instructions
-- **[Guia de Boosters PT-BR](docs/BOOSTERS_PERFORMANCE_PT.md)** - ✓ **NEW!** Versão completa em português
+These documents remain useful as design/specification context, but each technical claim should be cross-checked against the audit matrix before being treated as implemented or validated:
 
-#### 🔧 Implementation & Operations
-- [Framework Overview](docs/RAFAELIA_FRAMEWORK.md) - Complete specification
-- [Summary](docs/RAFAELIA_SUMMARY.md) - Quick overview and features
-- [Implementation Guide](docs/RAFAELIA_IMPLEMENTATION_GUIDE.md) - Step-by-step guide
-- [State Matrix](docs/RAFAELIA_STATE_MATRIX.csv) - All 1008 states
-- [Primitives](docs/RAFAELIA_PRIMITIVES.json) - Detailed primitive specs
-- [Audit System](docs/RAFAELIA_AUDIT_SYSTEM.md) - Audit and rollback
-- [Telemetry](docs/RAFAELIA_TELEMETRY.md) - Monitoring and observability
-- [Operational Checklist](docs/RAFAELIA_CHECKLIST.md) - Daily/weekly/monthly tasks
+- [RAFAELIA Index](docs/RAFAELIA_INDEX.md)
+- [Activation Guide](docs/ACTIVATION_GUIDE.md)
+- [Framework Overview](docs/RAFAELIA_FRAMEWORK.md)
+- [State Matrix](docs/RAFAELIA_STATE_MATRIX.csv)
+- [Primitives](docs/RAFAELIA_PRIMITIVES.json)
+- [Audit System](docs/RAFAELIA_AUDIT_SYSTEM.md)
+- [Telemetry](docs/RAFAELIA_TELEMETRY.md)
+- [Operational Checklist](docs/RAFAELIA_CHECKLIST.md)
 
-### Implementation Status
-
-✅ **Core Modules** (Rust)
-- Audit system: `native/src/core/rafaelia_audit.rs`
-- Telemetry system: `native/src/core/rafaelia_telemetry.rs`
-
-✅ **Tools** (Python & Shell)
-- State validator, metrics collector, integrity checker
-- Audit analyzer, activation script
-
-🔄 **In Progress**
-- FFI bindings for C++ integration
-- Daemon integration
-- Comprehensive testing
-
-**Philosophy**: VAZIO → VERBO → CHEIO → RETRO (Empty → Action → Full → Feedback)
+**Philosophy preserved as project context:** VAZIO → VERBO → CHEIO → RETRO (Empty → Action → Full → Feedback).
 
 ## Building
 
