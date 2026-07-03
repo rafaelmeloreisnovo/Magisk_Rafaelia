@@ -45,6 +45,26 @@ jobs:
       - name: Build debug
         run: ./build.py -v all
 
+      - name: Build unsigned release APK
+        run: |
+          ./app/gradlew -p app :apk:assembleUnsigned -PconfigPath=$(pwd)/config.prop
+          mkdir -p out
+          unsigned_apk=$(find app/apk/build/outputs/apk/unsigned -type f -name "*.apk" | sort | head -n 1)
+          test -n "$unsigned_apk"
+          cp "$unsigned_apk" out/app-unsigned.apk
+
+      - name: Validate APK artifacts and ABI contract
+        run: |
+          set -euo pipefail
+          for apk in out/app-release.apk out/app-debug.apk out/app-unsigned.apk; do
+            test -s "$apk"
+            unzip -t "$apk" >/dev/null
+          done
+          for abi in armeabi-v7a arm64-v8a; do
+            unzip -l out/app-release.apk "lib/${abi}/*" | grep "libmagisk.so"
+            unzip -l out/app-unsigned.apk "lib/${abi}/*" | grep "libmagisk.so"
+          done
+
       - name: Stop gradle daemon
         run: ./app/gradlew --stop
 
@@ -54,6 +74,18 @@ jobs:
           name: ${{ github.sha }}
           path: out
           compression-level: 9
+          if-no-files-found: error
+
+      - name: Upload APKs individually
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ github.sha }}-apks
+          path: |
+            out/app-release.apk
+            out/app-debug.apk
+            out/app-unsigned.apk
+          compression-level: 9
+          if-no-files-found: error
 
       - name: Upload mapping and native debug symbols
         uses: actions/upload-artifact@v4

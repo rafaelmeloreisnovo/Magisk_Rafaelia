@@ -271,7 +271,7 @@ fun Project.setupAppCommon() {
         val signingConfig = androidApp.buildTypes.getByName(variant.buildType!!).signingConfig
         commentTask.configure {
             this.transformationRequest = transformationRequest
-            this.signingConfig = signingConfig
+            signingConfig?.let { this.signingConfig.set(it) }
             this.comment = "version=${Config.version}\n" +
                 "versionCode=${Config.versionCode}\n" +
                 "stubVersion=${Config.stubVersion}\n"
