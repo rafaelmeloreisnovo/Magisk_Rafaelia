@@ -149,6 +149,41 @@ class TestDownloadStrategy(unittest.TestCase):
         self.assertEqual(manifest["flags"], [SafetyFlag.URL_SCHEME_BLOCKED.value, SafetyFlag.MIN_MIRRORS_UNMET.value])
         self.assertEqual(manifest["state"], DownloadState.REJECTED.value)
 
+    def test_watchdog_timeout_for_prior_pipeline_phase_rolls_back(self):
+        payload = b"safe text"
+        digest = sha256_bytes([payload])
+        rollback = RollbackPlan("/snap/stable", "/srv/app", "watchdog timeout", True)
+        decision = build_download_strategy(
+            "notes.txt",
+            payload,
+            [payload],
+            [DownloadCandidate("https://good.example/notes.txt", digest, len(payload))],
+            WatchdogPolicy(timeout_seconds=1.0),
+            rollback=rollback,
+            now=10.0,
+            started_at=8.5,
+        )
+
+        self.assertEqual(decision.state, DownloadState.ROLLBACK)
+        self.assertIn(SafetyFlag.WATCHDOG_TIMEOUT, decision.flags)
+        self.assertEqual(decision.rollback, rollback)
+
+    def test_invalid_policy_rejects_without_selecting_candidate(self):
+        payload = b"safe text"
+        digest = sha256_bytes([payload])
+        decision = build_download_strategy(
+            "notes.txt",
+            payload,
+            [payload],
+            [DownloadCandidate("https://good.example/notes.txt", digest, len(payload))],
+            WatchdogPolicy(min_viable_mirrors=0),
+            now=0.0,
+        )
+
+        self.assertEqual(decision.state, DownloadState.REJECTED)
+        self.assertIn(SafetyFlag.POLICY_INVALID, decision.flags)
+        self.assertIsNone(decision.selected_url)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -50,6 +50,7 @@ class SafetyFlag(str, Enum):
     URL_SCHEME_BLOCKED = "URL_SCHEME_BLOCKED"
     WATCHDOG_TIMEOUT = "WATCHDOG_TIMEOUT"
     MIN_MIRRORS_UNMET = "MIN_MIRRORS_UNMET"
+    POLICY_INVALID = "POLICY_INVALID"
 
 
 _MAGIC_TABLE: Tuple[Tuple[bytes, ContentKind], ...] = (
@@ -183,17 +184,20 @@ def build_download_strategy(
     policy: WatchdogPolicy,
     rollback: Optional[RollbackPlan] = None,
     now: Optional[float] = None,
+    started_at: Optional[float] = None,
 ) -> StrategyDecision:
     """Validate artifact metadata and choose a primary source plus failovers.
 
-    The function is deterministic when ``now`` is supplied.  It returns
+    The function is deterministic when ``now`` is supplied. ``started_at`` can
+    be supplied by callers to make watchdog elapsed-time checks cover earlier
+    pipeline phases such as DNS, TLS, download, staging, and scan. It returns
     ``READY`` when all guardrails pass, ``FAILOVER`` when at least one candidate
     was rejected but a safe route remains, ``ROLLBACK`` when no safe route
     remains and rollback is mandatory, otherwise ``REJECTED``.
     """
 
     clock_value = time.monotonic() if now is None else now
-    started_at = clock_value
+    watchdog_started_at = clock_value if started_at is None else started_at
     kind = recognize_content(name, content_prefix)
     digest = sha256_bytes(content_chunks)
     ordered = tuple(sorted(candidates, key=lambda item: (item.priority, item.url)))
@@ -206,7 +210,14 @@ def build_download_strategy(
     if not ordered:
         _flag(flags, SafetyFlag.NO_CANDIDATES)
         reasons.append("no download candidates supplied")
-    elapsed = (time.monotonic() if now is None else clock_value) - started_at
+    if policy.timeout_seconds < 0 or policy.max_retries < 0 or policy.max_size_bytes < 0:
+        _flag(flags, SafetyFlag.POLICY_INVALID)
+        reasons.append("watchdog policy contains a negative bound")
+    if policy.min_viable_mirrors < 1:
+        _flag(flags, SafetyFlag.POLICY_INVALID)
+        reasons.append("minimum viable mirror count must be at least one")
+
+    elapsed = (time.monotonic() if now is None else clock_value) - watchdog_started_at
     if elapsed > policy.timeout_seconds:
         _flag(flags, SafetyFlag.WATCHDOG_TIMEOUT)
         reasons.append("watchdog timeout before validation completed")
@@ -239,7 +250,8 @@ def build_download_strategy(
         _flag(flags, SafetyFlag.MIN_MIRRORS_UNMET)
         reasons.append("minimum viable mirror count was not met")
 
-    if not viable or len(viable) < policy.min_viable_mirrors:
+    terminal_flags = (SafetyFlag.WATCHDOG_TIMEOUT, SafetyFlag.POLICY_INVALID)
+    if any(flag in flags for flag in terminal_flags) or not viable or len(viable) < policy.min_viable_mirrors:
         state = _terminal_state(rollback)
         return StrategyDecision(
             state=state,
