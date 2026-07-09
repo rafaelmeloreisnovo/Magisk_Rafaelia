@@ -37,6 +37,12 @@ Philosophy: VAZIO → VERBO → CHEIO → RETRO
 Motto: Haja Lux, Haja Etica
 """
 
+from __future__ import annotations
+
+import importlib
+import importlib.util
+from typing import Dict, Tuple
+
 __version__ = "1.0.0"
 __author__ = "Rafael Melo Reis (rafaelmeloreisnovo)"
 __copyright__ = "Copyright (C) 2025 Rafael Melo Reis"
@@ -45,49 +51,68 @@ __institution__ = "Instituto Rafael"
 __framework__ = "ESTADO FRACTAL HAJA & ZIPRAF_OMEGA v999"
 __philosophy__ = "CientiEspiritual"
 
-# Core TT algorithms
-from rafaelia.core.tt_cross import TTCrossApproximation
-from rafaelia.core.tt_update import TTLocalUpdate
+_LAZY_EXPORTS: Dict[str, Tuple[str, str]] = {
+    # Core algorithms
+    "TTCrossApproximation": ("rafaelia.core.tt_cross", "TTCrossApproximation"),
+    "TTLocalUpdate": ("rafaelia.core.tt_update", "TTLocalUpdate"),
+    # Utilities
+    "FibonacciSpiral": ("rafaelia.utils.spiral", "FibonacciSpiral"),
+    "GoldenRatioSampler": ("rafaelia.utils.spiral", "GoldenRatioSampler"),
+    "TTAccelerator": ("rafaelia.utils.acceleration", "TTAccelerator"),
+    # Integration
+    "RAFAELIAEngine": ("rafaelia.integration.engine", "RAFAELIAEngine"),
+    # Governance
+    "governance": ("rafaelia.governance", ""),
+}
 
-# Utilities
-from rafaelia.utils.spiral import FibonacciSpiral, GoldenRatioSampler
-from rafaelia.utils.acceleration import TTAccelerator
+_OPTIONAL_IMPORT_HINTS: Dict[str, str] = {
+    "numpy": "Install the RAFAELIA numerical dependencies before using TT algorithms.",
+}
 
-# Integration/Orchestration
-from rafaelia.integration.engine import RAFAELIAEngine
 
-# Governance Framework (ZIPRAF_OMEGA v999)
-# Import governance submodule for comprehensive compliance and ethical framework
-try:
-    from rafaelia import governance
-    __governance_available__ = True
-except ImportError:
-    __governance_available__ = False
+def _missing_optional_dependency(module_name: str) -> str:
+    for dependency, hint in _OPTIONAL_IMPORT_HINTS.items():
+        if importlib.util.find_spec(dependency) is None:
+            return f"Optional dependency '{dependency}' is unavailable. {hint}"
+    return f"Unable to import optional RAFAELIA module '{module_name}'."
+
+
+def __getattr__(name: str):
+    """Lazy-load heavy RAFAELIA exports without breaking lightweight imports."""
+
+    if name not in _LAZY_EXPORTS:
+        raise AttributeError(f"module 'rafaelia' has no attribute {name!r}")
+
+    module_name, attribute_name = _LAZY_EXPORTS[name]
+    if importlib.util.find_spec(module_name) is None:
+        raise ImportError(_missing_optional_dependency(module_name))
+    module = importlib.import_module(module_name)
+    value = module if not attribute_name else getattr(module, attribute_name)
+    globals()[name] = value
+    return value
+
+
+__governance_available__ = importlib.util.find_spec("rafaelia.governance") is not None
 
 __all__ = [
     # Core algorithms
-    'TTCrossApproximation',
-    'TTLocalUpdate',
-    
+    "TTCrossApproximation",
+    "TTLocalUpdate",
     # Utilities
-    'FibonacciSpiral',
-    'GoldenRatioSampler',
-    'TTAccelerator',
-    
+    "FibonacciSpiral",
+    "GoldenRatioSampler",
+    "TTAccelerator",
     # Integration
-    'RAFAELIAEngine',
-    
+    "RAFAELIAEngine",
     # Governance
-    'governance',
-    
+    "governance",
     # Metadata
-    '__version__',
-    '__author__',
-    '__copyright__',
-    '__license__',
-    '__institution__',
-    '__framework__',
-    '__philosophy__',
-    '__governance_available__',
+    "__version__",
+    "__author__",
+    "__copyright__",
+    "__license__",
+    "__institution__",
+    "__framework__",
+    "__philosophy__",
+    "__governance_available__",
 ]
-
