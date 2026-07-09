@@ -9,6 +9,7 @@ from governance.download_strategy import (
     DownloadCandidate,
     DownloadState,
     RollbackPlan,
+    SafetyFlag,
     WatchdogPolicy,
     build_download_strategy,
     decision_manifest,
@@ -39,6 +40,7 @@ class TestDownloadStrategy(unittest.TestCase):
         self.assertEqual(decision.state, DownloadState.READY)
         self.assertEqual(decision.selected_url, "https://a.example/manifest.json")
         self.assertEqual(decision.failover_urls, ("https://b.example/manifest.json",))
+        self.assertEqual(decision.flags, ())
         self.assertEqual(decision_manifest(decision)["sha256"], digest)
 
     def test_failover_when_primary_hash_mismatches(self):
@@ -58,6 +60,7 @@ class TestDownloadStrategy(unittest.TestCase):
 
         self.assertEqual(decision.state, DownloadState.FAILOVER)
         self.assertEqual(decision.selected_url, "https://good.example/notes.txt")
+        self.assertIn(SafetyFlag.DIGEST_MISMATCH, decision.flags)
         self.assertTrue(any("sha256 mismatch" in reason for reason in decision.reasons))
 
     def test_rollback_when_no_safe_route_remains(self):
@@ -74,7 +77,77 @@ class TestDownloadStrategy(unittest.TestCase):
 
         self.assertEqual(decision.state, DownloadState.ROLLBACK)
         self.assertEqual(decision.rollback, rollback)
+        self.assertIn(SafetyFlag.CONTENT_BLOCKED, decision.flags)
+        self.assertIn(SafetyFlag.DIGEST_MISMATCH, decision.flags)
         self.assertIsNone(decision.selected_url)
+
+    def test_rejects_insecure_scheme_even_with_valid_digest(self):
+        payload = b"safe text"
+        digest = sha256_bytes([payload])
+        decision = build_download_strategy(
+            "notes.txt",
+            payload,
+            [payload],
+            [DownloadCandidate("http://bad.example/notes.txt", digest, len(payload))],
+            WatchdogPolicy(allowed_schemes=("https",)),
+            now=0.0,
+        )
+
+        self.assertEqual(decision.state, DownloadState.REJECTED)
+        self.assertIn(SafetyFlag.URL_SCHEME_BLOCKED, decision.flags)
+        self.assertIsNone(decision.selected_url)
+
+    def test_requires_compatible_mirror_count_for_enterprise_rollout(self):
+        payload = b'{"ok": true}'
+        digest = sha256_bytes([payload])
+        rollback = RollbackPlan("/snap/stable", "/srv/app", "mirror quorum failure", True)
+        decision = build_download_strategy(
+            "manifest.json",
+            payload,
+            [payload],
+            [
+                DownloadCandidate(
+                    "https://arm.example/manifest.json",
+                    digest,
+                    len(payload),
+                    compatibility=("arm32", "neon"),
+                ),
+                DownloadCandidate(
+                    "https://generic.example/manifest.json",
+                    digest,
+                    len(payload),
+                    priority=2,
+                    compatibility=("generic",),
+                ),
+            ],
+            WatchdogPolicy(
+                min_viable_mirrors=2,
+                required_compatibility=("arm32", "neon"),
+            ),
+            rollback=rollback,
+            now=0.0,
+        )
+
+        self.assertEqual(decision.state, DownloadState.ROLLBACK)
+        self.assertIn(SafetyFlag.MIN_MIRRORS_UNMET, decision.flags)
+        self.assertIsNone(decision.selected_url)
+        self.assertEqual(decision.rollback, rollback)
+
+    def test_manifest_exports_stable_flags_for_audit(self):
+        payload = b"safe text"
+        digest = sha256_bytes([payload])
+        decision = build_download_strategy(
+            "notes.txt",
+            payload,
+            [payload],
+            [DownloadCandidate("http://bad.example/notes.txt", digest, len(payload))],
+            WatchdogPolicy(allowed_schemes=("https",)),
+            now=0.0,
+        )
+        manifest = decision_manifest(decision)
+
+        self.assertEqual(manifest["flags"], [SafetyFlag.URL_SCHEME_BLOCKED.value, SafetyFlag.MIN_MIRRORS_UNMET.value])
+        self.assertEqual(manifest["state"], DownloadState.REJECTED.value)
 
 
 if __name__ == "__main__":
