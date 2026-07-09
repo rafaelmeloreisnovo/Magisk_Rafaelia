@@ -22,7 +22,7 @@ abstract class AddCommentTask: DefaultTask() {
     @get:Input
     abstract val comment: Property<String>
 
-    @get:Input
+    @get:Internal
     abstract val signingConfig: Property<ApkSigningConfig>
 
     @get:InputFiles
@@ -39,15 +39,17 @@ abstract class AddCommentTask: DefaultTask() {
         val inFile = File(artifact.outputFile)
         val outFile = outFolder.file(inFile.name).get().asFile
 
-        val privateKey = signingConfig.get().getPrivateKey()
-        val signingOptions = SigningOptions.builder()
-            .setMinSdkVersion(0)
-            .setV1SigningEnabled(true)
-            .setV2SigningEnabled(true)
-            .setKey(privateKey.privateKey)
-            .setCertificates(privateKey.certificate as X509Certificate)
-            .setValidation(SigningOptions.Validation.ASSUME_INVALID)
-            .build()
+        val signingOptions = signingConfig.orNull?.let { config ->
+            val privateKey = config.getPrivateKey()
+            SigningOptions.builder()
+                .setMinSdkVersion(0)
+                .setV1SigningEnabled(true)
+                .setV2SigningEnabled(true)
+                .setKey(privateKey.privateKey)
+                .setCertificates(privateKey.certificate as X509Certificate)
+                .setValidation(SigningOptions.Validation.ASSUME_INVALID)
+                .build()
+        }
         val options = ZFileOptions().apply {
             noTimestamps = true
             autoSortFiles = true
@@ -55,7 +57,7 @@ abstract class AddCommentTask: DefaultTask() {
         outFile.parentFile?.mkdirs()
         inFile.copyTo(outFile, overwrite = true)
         ZFiles.apk(outFile, options).use {
-            SigningExtension(signingOptions).register(it)
+            signingOptions?.let { options -> SigningExtension(options).register(it) }
             it.eocdComment = comment.get().toByteArray()
             it.get(IncrementalPackager.APP_METADATA_ENTRY_PATH)?.delete()
             it.get(IncrementalPackager.VERSION_CONTROL_INFO_ENTRY_PATH)?.delete()

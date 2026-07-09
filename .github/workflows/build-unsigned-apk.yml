@@ -117,6 +117,7 @@ jobs:
           SKIP_SIGNING_PROP: ${{ github.event.inputs.skipSigningProp || 'true' }}
         run: |
           set -euo pipefail
+          chmod +x ./app/gradlew
           echo "Module: $MODULE"
           echo "Build type: $BUILD_TYPE"
           # Build task (e.g., assembleRelease or assembleDebug)
