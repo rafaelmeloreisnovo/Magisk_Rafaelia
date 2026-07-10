@@ -1,0 +1,44 @@
+{
+  "seed_format": "RAFAELIA-Q16-DUAL-ARTIFACT-SEED-v1",
+  "author": "Rafael Melo Reis",
+  "signature": "RAFCODE-PHI / DeltaRafaelVerboOmega",
+  "created": "2026-07-10",
+  "artifacts": [
+    {
+      "role": "audit",
+      "name": "rafaelia_node",
+      "size_bytes": 5608,
+      "sha256": "9cb04542b7385081310c31e276f17e336e99e639a4367b5774282a6a5c8b8030",
+      "exit_status": 0
+    },
+    {
+      "role": "distribution",
+      "name": "rafaelia_node.stripped",
+      "size_bytes": 4352,
+      "sha256": "82bdd4b70352de3301777808023c152938398d3cf8d9ebb2d8716fbff62191ac",
+      "exit_status": 0
+    }
+  ],
+  "reduction": {
+    "bytes": 1256,
+    "percent_approx": 22.4
+  },
+  "semantic_invariants": {
+    "result_48_q16": 1516200,
+    "result_96_q16": 1517719,
+    "target_error_q16": 44,
+    "fixed_count": 7,
+    "fixed_band_q16": [1517719, 1517725],
+    "first_fixed_iteration": 90,
+    "reached_fixed_q16": 1517719
+  },
+  "validation_algorithm": [
+    "Execute the original and capture stdout and exit status.",
+    "Copy the original and remove symbols with llvm-strip or strip.",
+    "Execute the stripped artifact and capture stdout and exit status.",
+    "Compare outputs byte for byte using cmp.",
+    "Reject if either exit status is nonzero or outputs differ.",
+    "Write sizes, hashes, statuses and equivalence into a manifest."
+  ],
+  "acceptance": "original_exit==0 && stripped_exit==0 && stdout_identical && all_vectors_match"
+}
