@@ -1,0 +1,75 @@
+{
+  "seed_format": "RAFAELIA-Q16-CONTRACT-SEED-v1",
+  "author": "Rafael Melo Reis",
+  "signature": "RAFCODE-PHI / DeltaRafaelVerboOmega",
+  "created": "2026-07-10",
+  "purpose": "Minimal immutable seed for rebuilding and verifying the RAFAELIA Q16 ARM32 fixed-band experiment.",
+  "constants": {
+    "TOKEN_VAZIO": 0,
+    "Q16_SHIFT": 16,
+    "Q16_ONE": 65536,
+    "OP_GEOM_SQRT3_2": 56756,
+    "CONST_FORCE": 203333,
+    "OMEGA_TARGET": 1517675,
+    "OMEGA_TOLERANCE_Q16": 64,
+    "FRAF_ITERATIONS": 96,
+    "FIXED_SCAN_RADIUS": 256
+  },
+  "transition": {
+    "integer_expression": "((int64_t)x * 56756 >> 16) + 203333",
+    "mathematical_expression": "F(x)=floor((56756*x)/65536)+203333",
+    "rounding_semantics": "arithmetic-right-shift after signed 64-bit multiplication",
+    "overflow_policy": "64-bit intermediate; result narrowed to signed 32-bit"
+  },
+  "required_vectors": {
+    "F_pow_48_of_zero": 1516200,
+    "F_pow_96_of_zero": 1517719,
+    "absolute_error_to_target": 44,
+    "fixed_band": [
+      1517719,
+      1517720,
+      1517721,
+      1517722,
+      1517723,
+      1517724,
+      1517725
+    ],
+    "fixed_count": 7,
+    "first_fixed_iteration_from_zero": 90,
+    "first_fixed_value_from_zero": 1517719
+  },
+  "observed_arm32_artifact": {
+    "name": "rafaelia_node",
+    "size_bytes": 5608,
+    "sha256": "9cb04542b7385081310c31e276f17e336e99e639a4367b5774282a6a5c8b8030",
+    "architecture": "armv7l",
+    "elf": "ELF32 little-endian ARM EABI5 PIE",
+    "interpreter": "/system/bin/linker",
+    "entrypoint": "0x5c0",
+    "exit_status": 0
+  },
+  "acceptance": {
+    "all_vectors_must_match": true,
+    "maximum_target_error_q16": 64,
+    "required_fixed_count": 7,
+    "required_exit_status": 0
+  },
+  "epistemic_boundary": {
+    "proves": [
+      "Deterministic behavior of the declared Q16 integer map.",
+      "Seven fixed integers in the declared scan window.",
+      "Convergence of the zero-seeded trajectory to 1517719 at iteration 90."
+    ],
+    "does_not_prove": [
+      "Universal physical meaning of 23.158.",
+      "Physical bare-metal execution without an operating system.",
+      "Representation-independent uniqueness of the attractor."
+    ]
+  },
+  "replication_targets": [
+    "ARMv7 Android direct syscall PIE",
+    "qemu-arm static Linux ARM EABI",
+    "hosted portable C reference",
+    "Q24 and Q32 quantization comparison"
+  ]
+}
