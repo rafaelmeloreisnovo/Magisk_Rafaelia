@@ -40,8 +40,8 @@ Mensagem de commit é metadado de proveniência; não prova execução do contra
 | C03 | índice corpus → PCR | commit `8897cda18f3af297b28420bdb2f3dd6a55248fed` |
 | C04 | índice PCR → corpus | commit `0c6b69a70ffa18b415954c170e30b5f659613d2c` |
 | C05 | quatro superfícies + quatro controles | commit `63e2293584678ccef7d99d40de6128dce20d8e3a` |
-| C06 | gate de retorno | `THIS_DELTA` |
-| C07 | pré-selagem | `PENDING` |
+| C06 | gate de retorno | commit `e80232fee38fbe62a81a609cadc62c9d9da997d6` |
+| C07 | pré-selagem | `THIS_DELTA` |
 | C08 | selagem e resíduos | `PENDING` |
 
 ## Federação
@@ -103,16 +103,13 @@ MD5       1b1d131c2601d431791d33df877c21e8  LEGACY_COMPATIBILITY_ONLY
 #### C06
 
 ```text
-local       2026-07-28T22:50:22-03:00
-utc         2026-07-29T01:50:22Z
-predecessor 8fd2bf030ab577a5db2e382dd6f43d6bb8b9b1c0be3721dda4492fdfdb6b5adf
-SHA3-256    73dff903204d7a28ec2e72339826ff40a28a94fe03169dd77a7822573202c1bd
-BLAKE3      a7885bb28fdbbb5f81025f93502bb7a97b7dba8719fdff032718e0666ec66158
-SHA-256     259797d0b4474111ab734f7d5493a2c54697613fe2bfa6a64aface5e0e70a3f6
-MD5         c828a35bbce731beb800574f9cfb6e14  LEGACY_COMPATIBILITY_ONLY
+SHA3-256  73dff903204d7a28ec2e72339826ff40a28a94fe03169dd77a7822573202c1bd
+BLAKE3    a7885bb28fdbbb5f81025f93502bb7a97b7dba8719fdff032718e0666ec66158
+SHA-256   259797d0b4474111ab734f7d5493a2c54697613fe2bfa6a64aface5e0e70a3f6
+MD5       c828a35bbce731beb800574f9cfb6e14  LEGACY_COMPATIBILITY_ONLY
 ```
 
-O primeiro envio de C06 foi bloqueado pelo filtro do conector antes de qualquer escrita. A repetição usa o mesmo escopo benigno, conteúdo reduzido e `retry=1`.
+O primeiro envio de C06 foi bloqueado pelo filtro do conector antes de qualquer escrita. A repetição usou o mesmo escopo benigno, conteúdo reduzido e `retry=1`.
 
 ## Governança
 
@@ -135,6 +132,43 @@ FREESTANDING_BUILD = TOKEN_VAZIO_NOT_EXECUTED
 MERGE              = false
 ```
 
-- **F_ok:** contrato de retorno definido.
-- **F_gap:** C07 e C08 pendentes.
-- **F_next:** pré-selagem C07.
+## Pré-selagem C07
+
+### Conferência parcial
+
+| Ciclo | Commit | Receipt SHA3-256 |
+|---:|---|---|
+| C01 | `fab7bb9e3ef9413e760a13b1af6e8a0103bed3b8` | `2c550e58a70f4681e18d529bee7ae190524ac1b6cbd6f4203486b196f6a524da` |
+| C02 | `a783878ab80d4dcc2af35cf44e41614d244ab360` | `2e1bbfc3b9e8a41f48b2c6d9bdbee37e03f69547314e9cf699369aee54c2fb7c` |
+| C03 | `8897cda18f3af297b28420bdb2f3dd6a55248fed` | `8be1751ec2003041e485e3978299161dfdab9ab4abcf89c14bc48b10c8f0d6be` |
+| C04 | `0c6b69a70ffa18b415954c170e30b5f659613d2c` | `c464f9e0475919ac8ff053ef493e5dc6668038f7746a3fe74d0943ff7c106919` |
+| C05 | `63e2293584678ccef7d99d40de6128dce20d8e3a` | `8fd2bf030ab577a5db2e382dd6f43d6bb8b9b1c0be3721dda4492fdfdb6b5adf` |
+| C06 | `e80232fee38fbe62a81a609cadc62c9d9da997d6` | `b20898d95437b2097e43bfaa118800390b2885360a776613134d63d8e8aaa229` |
+
+### Resíduos preservados
+
+```text
+PR_MERGEABILITY_RECHECK = PENDING_C08
+TBB_RUNTIME             = TOKEN_VAZIO_NOT_EXECUTED
+AVX512_RUNTIME          = TOKEN_VAZIO_NOT_EXECUTED
+FREESTANDING_BUILD      = TOKEN_VAZIO_NOT_EXECUTED
+EXTERNAL_REVIEW         = TOKEN_VAZIO
+CERTIFICATION           = NOT_CLAIMED
+MERGE                   = false
+```
+
+### Evento C07
+
+```text
+local       2026-07-28T22:54:01-03:00
+utc         2026-07-29T01:54:01Z
+predecessor b20898d95437b2097e43bfaa118800390b2885360a776613134d63d8e8aaa229
+SHA3-256    c522a5aa3273cd8750ad512ada67c2775128aa39cfac7a8063500da95efd4057
+BLAKE3      5019996c573232468a24cc9471c51a43821b17965ba8262d76cafb25bc27ec8f
+SHA-256     708c721ed206010908af62e8f7178e9d268ec24a4d431f88b29262f4837be060
+MD5         33ff91a131e4a405e81f4159b760a3d5  LEGACY_COMPATIBILITY_ONLY
+```
+
+- **F_ok:** seis receipts anteriores reconciliados.
+- **F_gap:** C08 e rechecagem dos PRs.
+- **F_next:** selagem federada C08 no corpus.
