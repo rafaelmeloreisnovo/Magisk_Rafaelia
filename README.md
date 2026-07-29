@@ -160,3 +160,43 @@ promover hipótese
 ---
 
 `APPENDING_BEYOND_ONLY · README-CUSTODY-8CYCLE-V1`
+
+
+## Índice recíproco C04 — PCR ↔ corpus
+
+| Coordenada | Valor |
+|---|---|
+| Corpus de origem | `rafaelmeloreisnovo/CONVERSATIONS_CHUNKS_PRIVATE` |
+| PR do corpus | `#27` |
+| Commit cruzado confirmado | `8897cda18f3af297b28420bdb2f3dd6a55248fed` |
+| PCR | `rafaelmeloreisnovo/PCR_Rafaelia_Code_seed` |
+| PR do PCR | `#109` |
+| Drive longitudinal | revisão `AIroW35xrT5LvzhBsnB7LW5aPxcRzOyrUPr5pn_V_fmWWCxDdapp1fxE9-X66y_m1jnZ3oHIfwXBIYeq-xEBjdWWB6nQr5Lz2DDTNjkSRFk` |
+
+```text
+PCR_Rafaelia_Code_seed
+  --IS_INDEXED_BY-->
+CONVERSATIONS_CHUNKS_PRIVATE
+
+CONVERSATIONS_CHUNKS_PRIVATE
+  --PRESERVES_SOURCE_CONTEXT_FOR-->
+PCR_Rafaelia_Code_seed
+```
+
+Essas arestas são navegacionais. Qualquer claim de equivalência binária, reprodução de runtime ou identidade semântica permanece `TOKEN_VAZIO`.
+
+### Evento C04
+
+```text
+local       2026-07-28T22:46:04-03:00
+utc         2026-07-29T01:46:04Z
+predecessor 8be1751ec2003041e485e3978299161dfdab9ab4abcf89c14bc48b10c8f0d6be
+SHA3-256    58529f92382eb5e1c7c40fd358a95cfe97a43c697e0ac0d933333b67cb417143
+BLAKE3      d3b7d347cd6f6bf6ddd6794cdc98117974ace86422d3dec9cd4427c7c1892afb
+SHA-256     4eefdbbe6b9d1e762150936fed28aea328ac82c7d1715f3754bdfcd377d6f614
+MD5         1b1d131c2601d431791d33df877c21e8  LEGACY_COMPATIBILITY_ONLY
+```
+
+- **F_ok:** índice recíproco materializado.
+- **F_gap:** commit, Drive e comentário ainda pendentes.
+- **F_next:** C05 — quatro superfícies e quatro controles no corpus.
