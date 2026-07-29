@@ -1,63 +1,88 @@
 # PCR RAFAELIA Code Seed
 
-Ponto de entrada canônico do repositório `PCR_Rafaelia_Code_seed`.
+Entrada canônica de `rafaelmeloreisnovo/PCR_Rafaelia_Code_seed`.
 
-Este README documenta custódia, governança e navegação. Ele não declara execução, benchmark, paralelismo físico ou validade acadêmica sem receipt reproduzível.
+```text
+scope             = README_ONLY
+source_branch     = master
+source_head       = a9cc6cf5a36327e7ba3e6fa814552871aea68119
+custody_branch    = docs/readme-custody-8cycle-20260728
+claim_allowed     = false
+certification     = NOT_CLAIMED
+runtime_executed  = false
+```
 
 ## Índice
 
-1. [Identidade e origem](#identidade-e-origem)
-2. [Contrato de oito ciclos](#contrato-de-oito-ciclos)
-3. [Estado observado](#estado-observado)
-4. [Relação com Conversations Chunks](#relação-com-conversations-chunks)
-5. [Camadas de execução](#camadas-de-execução)
-6. [Controles de governança](#controles-de-governança)
-7. [Limites](#limites)
-8. [Fechamento C02](#fechamento-c02)
+1. [Origem](#origem)
+2. [Oito ciclos](#oito-ciclos)
+3. [Federação](#federação)
+4. [Retorno 8 → 1](#retorno-8--1)
+5. [Governança](#governança)
+6. [Limites](#limites)
 
-## Identidade e origem
+## Origem
 
-| Campo | Valor |
-|---|---|
-| Repositório | `rafaelmeloreisnovo/PCR_Rafaelia_Code_seed` |
-| Branch canônica observada | `master` |
-| Head de origem | `a9cc6cf5a36327e7ba3e6fa814552871aea68119` |
-| Mensagem observada | `chore(seed): preserve Q16 original and stripped artifact contract` |
-| README anterior | `TOKEN_VAZIO_README_PATH` |
-| Branch desta custódia | `docs/readme-custody-8cycle-20260728` |
-| Escopo | `README_ONLY` |
-| Estado | `claim_allowed=false` |
-| Certificação | `NOT_CLAIMED` |
-
-O commit de origem é uma coordenada Git observada. Sua mensagem não prova, por si só, execução do contrato Q16.
-
-## Contrato de oito ciclos
+O README não existia em `master`; esse estado foi preservado como `TOKEN_VAZIO_README_PATH`. O head observado registrava a mensagem:
 
 ```text
-C01  canonização do corpus
-C02  entrada canônica do PCR
-C03  índice cruzado no corpus
-C04  índice cruzado no PCR
-C05  quatro superfícies + quatro controles
-C06  retorno 8 → 1
-C07  verificação pré-selagem
-C08  selagem federada e resíduos
+chore(seed): preserve Q16 original and stripped artifact contract
 ```
 
-Invariante:
+Mensagem de commit é metadado de proveniência; não prova execução do contrato Q16.
 
-\[
-C_8 \rightarrow \operatorname{verify}(C_1,\ldots,C_8) \rightarrow C_1^{novo}
-\]
+## Oito ciclos
 
-Não há retorno a C01 antes da conclusão e conferência de C08.
+| Porta | Função | Estado documental |
+|---:|---|---|
+| C01 | canonizar o corpus | confirmado no PR corpus #27 |
+| C02 | criar entrada do PCR | commit `a783878ab80d4dcc2af35cf44e41614d244ab360` |
+| C03 | índice corpus → PCR | commit `8897cda18f3af297b28420bdb2f3dd6a55248fed` |
+| C04 | índice PCR → corpus | commit `0c6b69a70ffa18b415954c170e30b5f659613d2c` |
+| C05 | quatro superfícies + quatro controles | commit `63e2293584678ccef7d99d40de6128dce20d8e3a` |
+| C06 | gate de retorno | `THIS_DELTA` |
+| C07 | pré-selagem | `PENDING` |
+| C08 | selagem e resíduos | `PENDING` |
 
-### Evento C02
+## Federação
 
-- Horário local: `2026-07-28T22:40:46-03:00`
-- Horário UTC: `2026-07-29T01:40:46Z`
-- Operação: `PCR_README_CANONICAL_ENTRY_CREATION`
-- Predecessor: `2c550e58a70f4681e18d529bee7ae190524ac1b6cbd6f4203486b196f6a524da`
+```text
+CONVERSATIONS_CHUNKS_PRIVATE
+  --PRESERVES_SOURCE_CONTEXT_FOR-->
+PCR_Rafaelia_Code_seed
+
+PCR_Rafaelia_Code_seed
+  --PROVIDES_RECONSTRUCTION_CONTRACT_TO-->
+CONVERSATIONS_CHUNKS_PRIVATE
+```
+
+Arestas documentais não implicam equivalência binária, causalidade ou execução compartilhada.
+
+## Retorno 8 → 1
+
+```text
+C8 --VERIFY(V)--> C1(next)
+
+V = integrity
+  × provenance
+  × semantic_consistency
+  × risk_review
+  × repository_heads
+  × drive_revision
+  × human_checkpoint
+  × unresolved_gap_register
+```
+
+Se um gate obrigatório estiver ausente:
+
+```text
+RETURN_TO_C01 = BLOCKED
+STATE         = TOKEN_VAZIO_RETURN_GATE
+```
+
+### Custódia dos eventos
+
+#### C02
 
 ```text
 SHA3-256  208e4795b2f124ac016d9262c68c95f6bfed2ef675373f0e8088eed452b3fb7c
@@ -66,137 +91,50 @@ SHA-256   148d99ffc5875f1c427b0c40bdca17b1d8b2f40f4e17b066d46080c85c2695d5
 MD5       968ca0f6817058b8bc50ae608f35083a  LEGACY_COMPATIBILITY_ONLY
 ```
 
-Os hashes identificam o payload C02 canonizado, não o futuro commit SHA nem a revisão do Google Docs.
-
-## Estado observado
-
-O repositório contém uma linhagem de sementes e contratos cuja interpretação deve ser feita por arquivo e commit. Nesta etapa, o único estado promovido é:
+#### C04
 
 ```text
-README_CANONICAL_ENTRY = CREATED_IN_BRANCH
-SOURCE_HEAD            = OBSERVED
-RUNTIME                 = TOKEN_VAZIO_NOT_EXECUTED
-BENCHMARK               = TOKEN_VAZIO_NOT_EXECUTED
-ACADEMIC_NOVELTY        = TOKEN_VAZIO_PRIOR_ART
-CLAIM_ALLOWED           = false
+SHA3-256  58529f92382eb5e1c7c40fd358a95cfe97a43c697e0ac0d933333b67cb417143
+BLAKE3    d3b7d347cd6f6bf6ddd6794cdc98117974ace86422d3dec9cd4427c7c1892afb
+SHA-256   4eefdbbe6b9d1e762150936fed28aea328ac82c7d1715f3754bdfcd377d6f614
+MD5       1b1d131c2601d431791d33df877c21e8  LEGACY_COMPATIBILITY_ONLY
 ```
 
-## Relação com Conversations Chunks
+#### C06
 
 ```text
-CONVERSATIONS_CHUNKS_PRIVATE
-  preserva genealogia, corpus e índices
-
-PCR_Rafaelia_Code_seed
-  preserva sementes, contratos e pontos de reconstrução
-
-Google Drive longitudinal
-  preserva memória editorial e revisões
-
-GitHub PRs
-  preservam deltas versionados e revisão humana
+local       2026-07-28T22:50:22-03:00
+utc         2026-07-29T01:50:22Z
+predecessor 8fd2bf030ab577a5db2e382dd6f43d6bb8b9b1c0be3721dda4492fdfdb6b5adf
+SHA3-256    73dff903204d7a28ec2e72339826ff40a28a94fe03169dd77a7822573202c1bd
+BLAKE3      a7885bb28fdbbb5f81025f93502bb7a97b7dba8719fdff032718e0666ec66158
+SHA-256     259797d0b4474111ab734f7d5493a2c54697613fe2bfa6a64aface5e0e70a3f6
+MD5         c828a35bbce731beb800574f9cfb6e14  LEGACY_COMPATIBILITY_ONLY
 ```
 
-A relação é de proveniência e coordenação. Não implica identidade de conteúdo nem sincronização automática.
+O primeiro envio de C06 foi bloqueado pelo filtro do conector antes de qualquer escrita. A repetição usa o mesmo escopo benigno, conteúdo reduzido e `retry=1`.
 
-## Camadas de execução
+## Governança
 
-A imagem de “dois ciclos de quatro” fica tipada assim:
+- menor privilégio e separação de funções;
+- proveniência, integridade e rastreabilidade;
+- consistência, completude declarada e qualidade de dados;
+- falha e contradição preservadas;
+- reversibilidade e melhoria contínua;
+- Drive revision ID separado de hash criptográfico.
 
-| Camada | Porta | Função |
-|---|---:|---|
-| Superfície | 1 | intenção/autorização |
-| Superfície | 2 | ambiente de transformação |
-| Superfície | 3 | GitHub versionado |
-| Superfície | 4 | Drive e relatório humano |
-| Controle | 5 | integridade e hashing |
-| Controle | 6 | proveniência e semântica |
-| Controle | 7 | risco, oposição e rollback |
-| Controle | 8 | conferência, selagem e retorno |
-
-TBB, AVX-512, árvore Maple e freestanding são referências arquiteturais. O estado atual é:
-
-```text
-PARALLEL_TREE_MODEL = DOCUMENTED_ANALOGY
-TBB_RUNTIME         = TOKEN_VAZIO_NOT_EXECUTED
-AVX512_RUNTIME      = TOKEN_VAZIO_NOT_EXECUTED
-FREESTANDING_BUILD  = TOKEN_VAZIO_NOT_EXECUTED
-```
-
-## Controles de governança
-
-A operação adota:
-
-- escopo mínimo e separação de funções;
-- fonte autoritativa e proveniência;
-- integridade, rastreabilidade e revisão;
-- qualidade, consistência e completude declarada;
-- tratamento explícito de erro, lacuna e contradição;
-- reversibilidade e melhoria contínua.
-
-Esses controles são alinhados a boas práticas de segurança da informação e qualidade de dados, sem reivindicação de auditoria de certificação.
+Controles alinhados a boas práticas de segurança da informação e qualidade de dados, sem reivindicar certificação.
 
 ## Limites
 
-Nesta branch é proibido:
-
 ```text
-alterar código
-criar workflow/YML
-executar binário
-mesclar automaticamente
-rebasear
-force-push
-apagar histórico
-promover hipótese
+TBB_RUNTIME        = TOKEN_VAZIO_NOT_EXECUTED
+AVX512_RUNTIME     = TOKEN_VAZIO_NOT_EXECUTED
+MAPLE_TREE_RUNTIME = TOKEN_VAZIO_NOT_EXECUTED
+FREESTANDING_BUILD = TOKEN_VAZIO_NOT_EXECUTED
+MERGE              = false
 ```
 
-## Fechamento C02
-
-- **F_ok:** caminho ausente de README foi preservado e uma entrada canônica foi criada na branch.
-- **F_gap:** commit, PR, append no Drive e comentário ainda precisam de confirmação.
-- **F_next:** confirmar C02 e abrir C03 no corpus.
-
----
-
-`APPENDING_BEYOND_ONLY · README-CUSTODY-8CYCLE-V1`
-
-
-## Índice recíproco C04 — PCR ↔ corpus
-
-| Coordenada | Valor |
-|---|---|
-| Corpus de origem | `rafaelmeloreisnovo/CONVERSATIONS_CHUNKS_PRIVATE` |
-| PR do corpus | `#27` |
-| Commit cruzado confirmado | `8897cda18f3af297b28420bdb2f3dd6a55248fed` |
-| PCR | `rafaelmeloreisnovo/PCR_Rafaelia_Code_seed` |
-| PR do PCR | `#109` |
-| Drive longitudinal | revisão `AIroW35xrT5LvzhBsnB7LW5aPxcRzOyrUPr5pn_V_fmWWCxDdapp1fxE9-X66y_m1jnZ3oHIfwXBIYeq-xEBjdWWB6nQr5Lz2DDTNjkSRFk` |
-
-```text
-PCR_Rafaelia_Code_seed
-  --IS_INDEXED_BY-->
-CONVERSATIONS_CHUNKS_PRIVATE
-
-CONVERSATIONS_CHUNKS_PRIVATE
-  --PRESERVES_SOURCE_CONTEXT_FOR-->
-PCR_Rafaelia_Code_seed
-```
-
-Essas arestas são navegacionais. Qualquer claim de equivalência binária, reprodução de runtime ou identidade semântica permanece `TOKEN_VAZIO`.
-
-### Evento C04
-
-```text
-local       2026-07-28T22:46:04-03:00
-utc         2026-07-29T01:46:04Z
-predecessor 8be1751ec2003041e485e3978299161dfdab9ab4abcf89c14bc48b10c8f0d6be
-SHA3-256    58529f92382eb5e1c7c40fd358a95cfe97a43c697e0ac0d933333b67cb417143
-BLAKE3      d3b7d347cd6f6bf6ddd6794cdc98117974ace86422d3dec9cd4427c7c1892afb
-SHA-256     4eefdbbe6b9d1e762150936fed28aea328ac82c7d1715f3754bdfcd377d6f614
-MD5         1b1d131c2601d431791d33df877c21e8  LEGACY_COMPATIBILITY_ONLY
-```
-
-- **F_ok:** índice recíproco materializado.
-- **F_gap:** commit, Drive e comentário ainda pendentes.
-- **F_next:** C05 — quatro superfícies e quatro controles no corpus.
+- **F_ok:** contrato de retorno definido.
+- **F_gap:** C07 e C08 pendentes.
+- **F_next:** pré-selagem C07.
