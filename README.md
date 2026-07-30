@@ -46,9 +46,9 @@ Mensagem de commit e merge são metadados de proveniência. Não provam execuç�
 | C01 | reancorar corpus após merges V1 | `e4701e93297b0b2c531d3a70ac9051b6c26871e7` |
 | C02 | reancorar PCR após merges V1 | `8d5b7163f26ddee84dbcb493362e47c22b276508` |
 | C03 | concatenar índice corpus → PCR → Drive | `c39cd47b6ba2d4025d327ce91593cc324504ee68` |
-| C04 | concatenar índice PCR → corpus → Drive | `THIS_DELTA` |
-| C05 | fixar quatro superfícies e quatro controles | `PENDING` |
-| C06 | fixar gate de retorno 8 → 1 | `PENDING` |
+| C04 | concatenar índice PCR → corpus → Drive | `2f051511eb7d56bbd6afbef664312985a208c123` |
+| C05 | fixar quatro superfícies e quatro controles | `4e5631f20e3fbc17003f3e85ea6c7691e1bf930e` |
+| C06 | fixar gate de retorno 8 → 1 | `THIS_DELTA` |
 | C07 | pré-selar receipts e resíduos | `PENDING` |
 | C08 | selar e conferir lote federado | `PENDING` |
 
@@ -59,7 +59,9 @@ Mensagem de commit e merge são metadados de proveniência. Não provam execuç�
 | C01 | `147e6d36eb60e525549d25efb6252112eb3e06cbf09cbe3bfaee9360aed690b4` |
 | C02 | `46fbd2e2766b29713dbc4f1daa5615fa1781111803a042d0cdc72309089844bc` |
 | C03 | `fb58d91f006651baae02a45dffe1fe51acc410fe0ba3b951cf1eb75cd99e45fa` |
-| C04 | `a64a7abed92a2c3d8df8f163e843d979e5a9a3506b93db63a00450916954f415` |
+| C04 | `c4ea62bd481c598f7137d492b85eea36c13b8ec3632fd49c424d42ec2ddaf671` |
+| C05 | `b92b5dcd108dd579493e435956d61422f121bbe009505143dc13f96470fb4bc7` |
+| C06 | `810f099203581912bb588201ff4c6e5ddbc69f85b70fde5910ea1af6a8d078a4` |
 
 ## Contrato de reconstrução
 
@@ -132,9 +134,9 @@ FORCE_PUSH             = false
 
 ## Retroalimentação
 
-- **F_ok:** índice recíproco PCR → corpus → Drive fixado.
-- **F_gap:** C05–C08.
-- **F_next:** C05 no corpus.
+- **F_ok:** gate 8 → 1 e bloqueios de runtime fixados.
+- **F_gap:** C07–C08.
+- **F_next:** C07 no PCR.
 
 ---
 
