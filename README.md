@@ -48,8 +48,8 @@ Mensagem de commit e merge são metadados de proveniência. Não provam execuç�
 | C03 | concatenar índice corpus → PCR → Drive | `c39cd47b6ba2d4025d327ce91593cc324504ee68` |
 | C04 | concatenar índice PCR → corpus → Drive | `2f051511eb7d56bbd6afbef664312985a208c123` |
 | C05 | fixar quatro superfícies e quatro controles | `4e5631f20e3fbc17003f3e85ea6c7691e1bf930e` |
-| C06 | fixar gate de retorno 8 → 1 | `THIS_DELTA` |
-| C07 | pré-selar receipts e resíduos | `PENDING` |
+| C06 | fixar gate de retorno 8 → 1 | `a179f8a45e28706e9f8687631aeeb27b006c7a91` |
+| C07 | pré-selar receipts e resíduos | `THIS_DELTA` |
 | C08 | selar e conferir lote federado | `PENDING` |
 
 ### Receipts V2
@@ -61,7 +61,8 @@ Mensagem de commit e merge são metadados de proveniência. Não provam execuç�
 | C03 | `fb58d91f006651baae02a45dffe1fe51acc410fe0ba3b951cf1eb75cd99e45fa` |
 | C04 | `c4ea62bd481c598f7137d492b85eea36c13b8ec3632fd49c424d42ec2ddaf671` |
 | C05 | `b92b5dcd108dd579493e435956d61422f121bbe009505143dc13f96470fb4bc7` |
-| C06 | `810f099203581912bb588201ff4c6e5ddbc69f85b70fde5910ea1af6a8d078a4` |
+| C06 | `8310a9d675385dc0ac3febd27e6dba2763f60b93eb954a27ef980aa0ec2ad5ad` |
+| C07 | `e8ea67f202abb594d30f177ba9cee9b97c631f212d78b482ca3ac299c12ad3bf` |
 
 ## Contrato de reconstrução
 
@@ -134,9 +135,9 @@ FORCE_PUSH             = false
 
 ## Retroalimentação
 
-- **F_ok:** gate 8 → 1 e bloqueios de runtime fixados.
-- **F_gap:** C07–C08.
-- **F_next:** C07 no PCR.
+- **F_ok:** seis receipts reconciliados; `PRESEAL_MERKLE_ROOT_SHA3_256=b0221ff08693efa705929716c2e657b96797241eefd4ac5ef09569b7671c586d`.
+- **F_gap:** C08 e conferência final dos PRs/Drive.
+- **F_next:** C08 no corpus.
 
 ---
 
